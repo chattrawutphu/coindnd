@@ -3,7 +3,7 @@ var classesModel = {
 
     commonFlexClasses() {
         const commonClasses = "relative justify-between content-center flex border border-t-0 border-x-0 p-1 cursor-default";
-        return `${commonClasses} dark:text-gray-300 text-gray-800 dark:border-gray-400`;
+        return `${commonClasses} dark:text-gray-300 text-gray-800 dark:border-gray-500`;
     },
     commonTextClasses() {
         const commonClasses = "mr-4";
@@ -15,17 +15,17 @@ var classesModel = {
     },
 
     leftPanelClasses() {
-        const commonClasses = "basis-1/3 relative text-md content-start items-start";
-        return `${commonClasses} dark:bg-gray-500 bg-emerald-50`;
+        const commonClasses = "sm:col-span-1 xs:col-span-3  relative text-md content-start items-start";
+        return `${commonClasses} dark:bg-gray-600 bg-emerald-50`;
     },
     rightPanelClasses() {
-        const commonClasses = "basis-2/3 relative text-md content-start items-start ";
+        const commonClasses = "sm:col-span-2 xs:col-span-3  relative text-md content-start items-start ";
         return `${commonClasses} dark:border-l-0 border-l-2 border-l-gray-150`;
     },
 
     panelWrapperClasses() {
-        const commonClasses = "my-4 text-sm flex flex-row w-full shadow-md border border-l-4 rounded-r-lg";
-        return `${commonClasses} dark:bg-gray-600 dark:border-y-0  dark:border-r-0 dark:text-gray-100 dark:shadow-indigo-50/20 dark:border-l-indigo-400 bg-gray-50 text-gray-900 shadow-indigo-500/20 border-l-indigo-500`;
+        const commonClasses = "my-4 text-sm grid grid-cols-3 w-full shadow-md border border-l-4 rounded-r-lg";
+        return `${commonClasses} dark:bg-[#3a414b] dark:border-y-0  dark:border-r-0 dark:text-gray-100 dark:shadow-indigo-500/20 dark:border-l-indigo-400 bg-gray-50 text-gray-900 shadow-indigo-500/20 border-l-indigo-500`;
     },
     itemWrapperClasses: "TreeItem_Wrapper",
     whenPanelBgClasses() {
