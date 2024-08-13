@@ -16,6 +16,10 @@ async def read_root(request: Request):
     data = {"message": "Hello, World!", "value": 100}
     return templates.TemplateResponse("index.html", {"request": request, "data": data})
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/3", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("editor.html", {"request": request})
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("dnd editior.html", {"request": request})

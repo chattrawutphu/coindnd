@@ -1,3 +1,5 @@
+import defaultItems from './data';
+
 var classesModel = {
     containerClasses: "container mx-auto content-start",
 
@@ -46,36 +48,6 @@ var classesModel = {
     actionIconClasses: "size-4",
 };
 
-var templates = {
-    whenTemplate: {
-        commonTextClasses: "text-gray-700",
-        iconClasses: "whenIconClasses",
-        iconPath: "M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z",
-        title: "When:",
-        condition: "BTCUSDT <= 40000$",
-        panelBgClasses: "whenPanelBgClasses",
-        panelIconPath: "M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"
-    },
-
-    whileTemplate: {
-        commonTextClasses: "text-gray-700",
-        iconClasses: "whileIconClasses",
-        iconPath: "M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z",
-        title: "While:",
-        condition: "BTCUSDT <= 40000$",
-        panelBgClasses: "whilePanelBgClasses",
-        panelIconPath: "M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"
-    },
-    actionTemplate: {
-        commonTextClasses: "text-gray-700",
-        iconClasses: "actionIconClasses",
-        iconPath: "M9.58 1.077a.75.75 0 0 1 .405.82L9.165 6h4.085a.75.75 0 0 1 .567 1.241l-6.5 7.5a.75.75 0 0 1-1.302-.638L6.835 10H2.75a.75.75 0 0 1-.567-1.241l6.5-7.5a.75.75 0 0 1 .897-.182Z",
-        title: "Action:",
-        condition: "BTCUSDT <= 40000$",
-        panelBgClasses: "actionPanelBgClasses",
-        panelIconPath: "M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"
-    }
-}
 
 $(document).ready(function () {
 
