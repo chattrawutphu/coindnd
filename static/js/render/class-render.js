@@ -1,16 +1,16 @@
 var classesModel = {
-    containerClasses: "container mx-auto content-start",
+    containerClasses: "min-h-full h-full max-h-full p-1  overscroll-contain", //container mx-auto content-start
 
     commonFlexClasses() {
         const commonClasses = "relative justify-between content-center flex border border-t-0 border-x-0 p-1 cursor-default";
         return `${commonClasses} dark:text-gray-300 text-gray-800 dark:border-gray-500`;
     },
     commonTextClasses() {
-        const commonClasses = "mr-4";
+        const commonClasses = "me-2";
         return `${commonClasses} dark:text-emerald-500 text-emerald-500`;
     },
     commonTitleClasses() {
-        const commonClasses = "font-semibold text-xs mr-2";
+        const commonClasses = "font-semibold text-xs me-2";
         return `${commonClasses} dark:text-indigo-400 text-indigo-500`;
     },
 
@@ -20,15 +20,15 @@ var classesModel = {
     },
     rightPanelClasses() {
         const commonClasses = "col-span-3 sm:col-span-2 mb-[2px] relative text-md content-start items-start ";
-        return `${commonClasses} bg-gray-50 dark:bg-[#3a414b] dark:border-l-0 border-l-2 border-l-gray-150`;
+        return `${commonClasses} bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150`;
     },
 
     panelWrapperClasses() {
-        const commonClasses = "text-sm grid grid-cols-3 w-full shadow-md rounded-r-lg overflow-hidden";
+        const commonClasses = "text-sm grid grid-cols-3 shadow-md overflow-hidden"; //rounded-r-lg
         return `${commonClasses} dark:border-y-0 dark:text-gray-100 text-gray-900 `; //dark:shadow-indigo-500/20 shadow-indigo-500/20 
     },
     childrenPanelClasses() {
-        const commonClasses = "ml-8 col-span-3 ";
+        const commonClasses = "ms-4 md:ms-8 col-span-3 ";
         return `${commonClasses} `;
     },
     itemWrapperClasses: "TreeItem_Wrapper",
@@ -42,14 +42,14 @@ var classesModel = {
     actionIconClasses: "size-4",
 
     addMoreClasses() {
-        const commonClasses = "flex text-xs items-center gap-x-1 m-1 cursor-pointer opacity-50";
+        const commonClasses = "flex text-xs items-center gap-x-1 m-1 cursor-pointer opacity-30";
         return `${commonClasses} dark:text-gray-300 text-gray-800`;
     }
 };
 
 
 
-    //เพิ่ม class โดยอิงจาก data-class 
+//เพิ่ม class โดยอิงจาก data-class 
 export default function applyClasses() {
     $('[data-class]').each(function () {
         var className = $(this).data('class');

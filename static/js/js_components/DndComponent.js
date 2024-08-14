@@ -28,8 +28,6 @@
         {% endfor %}
     </div>
 </div>*/
-import { loadComponentScripts } from '/static/js/dnd-editor.js';
-
 function renderConditionMessage(params, message) {
     if (message.includes('{params[')) {
         message = message.replace(/{params\[(\d+)\]}/g, (match, index) => {
@@ -54,12 +52,13 @@ function createDndParams(params, message) {
     return div.outerHTML;
 }
 
-export async function renderContent(items) {
+export async function renderContent(items, level) {
+
     const results = await Promise.all(items.map(async (item) => {
 
         const addMoreTemplate = (text) => `
         <div data-class="addMoreClasses">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
             </svg>
             <p>${text}</p>
@@ -116,11 +115,12 @@ export async function renderContent(items) {
                  </div>
         `).join('');
 
-        const childrenContent = item.children && item.children.length > 0
-        ? await renderContent(item.children)
-        : '';
+        let childrenContent = '';
 
-        console.log(childrenContent)
+        if (item.children && item.children.length > 0) {
+            level = level + 1;
+            childrenContent = await renderContent(item.children, level);
+        }
 
     return `
         <div data-class="panelWrapperClasses"
@@ -129,7 +129,8 @@ export async function renderContent(items) {
              dnd-subtype="${item.subtype}"
              dnd-title="${item.title}"
              dnd-show-children="${item.showChildren}"
-             dnd-message="${item.message}">
+             dnd-message="${item.message}"
+             dnd-level="${level}">
             <div data-class="leftPanelClasses">
                 ${leftPanels}
                 ${addMoreCondition}

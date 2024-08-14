@@ -11,7 +11,7 @@ let defaultItems = [
             {
                 id: "WwBwoxYfR0OEbmAPtWkE2g",
                 type: "condition",
-                title: "when",
+                title: "if",
                 message: "{params[0]} {params[1]} {params[2]}",
                 params: [
                     { value: "BTCUSDT", type: "symbol", unit: "" },
@@ -56,7 +56,7 @@ let defaultItems = [
                     {
                         id: "BQZSHU_IsUGE0ZyqGo2Mxg",
                         type: "condition",
-                        title: "when",
+                        title: "if",
                         message: "{params[0]} {params[1]} {params[2]}",
                         params: [
                             { value: "FROG", type: "symbol", unit: "" },
@@ -77,7 +77,7 @@ let defaultItems = [
                     {
                         id: "BQZSHU_IsUGE0ZyqGo2Mxg2",
                         type: "condition",
-                        title: "when",
+                        title: "else",
                         message: "{params[0]} {params[1]} {params[2]}",
                         params: [
                             { value: "FROG", type: "symbol", unit: "" },

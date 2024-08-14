@@ -8,16 +8,41 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!--<link href="/static/styles/tailwind.css" rel="stylesheet">-->
     <link href="/static/styles/style.css" rel="stylesheet">
-    <script src="/static/js/app.js"></script>
+    <!--<script src="/static/js/app.js"></script>-->
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
 <body>
 
-    <div data-component="DarkmodeComponent"></div>
-    <div data-class="containerClasses" data-js-component="DndComponent">
+    <div data-class="containerClasses" class="flex relative">
+        <div class="hidden md:block w-52 lg:w-72 xl:w-96 dark:bg-[#3a414b] me-1 rounded-md overflow-hidden">
+            <div class="dark:text-gray-300 text-gray-800 bg-[#5b6677] px-2 py-1">
+                <div class="flex items-center">
+                    <div>Peroperties</div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full">
+            <div class="h-8 dark:text-gray-300 text-gray-800 bg-[#5b6677] rounded-md mb-1">
+                <button type="button" class="h-full float-right text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 text-center">Upgrade Plan</button>
+                <div data-component="DarkmodeComponent" class="float-right"></div>
+            </div>
+            <div data-class="" data-js-component="DndComponent" class="flex-1 w-full overflow-y-auto">
+
+            </div>
+        </div>
+
+        <div class="hidden md:block w-52 lg:w-72  xl:w-96  dark:bg-[#3a414b] ms-1 rounded-md overflow-hidden">
+            <div class="dark:text-gray-300 text-gray-800 bg-[#5b6677] px-2 py-1">
+                <div class="flex items-center">
+                    <div>Peroperties</div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
     <!--<div class="flex gap-x-2">
         <button id="update-button">Update Value</button><button id="update-button2">Update Value</button>
     </div>-->
