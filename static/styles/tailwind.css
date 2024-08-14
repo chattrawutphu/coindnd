@@ -642,6 +642,9 @@ video {
 .clear-none {
   clear: none;
 }
+.m-1 {
+  margin: 0.25rem;
+}
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -747,6 +750,10 @@ video {
 .size-4 {
   width: 1rem;
   height: 1rem;
+}
+.size-5 {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 .h-5 {
   height: 1.25rem;
@@ -1858,6 +1865,9 @@ video {
 }
 .opacity-30 {
   opacity: 0.3;
+}
+.opacity-50 {
+  opacity: 0.5;
 }
 .bg-blend-normal {
   background-blend-mode: normal;

@@ -11,7 +11,7 @@ let defaultItems = [
             {
                 id: "WwBwoxYfR0OEbmAPtWkE2g",
                 type: "condition",
-                title: "PriceCondition",
+                title: "when",
                 message: "{params[0]} {params[1]} {params[2]}",
                 params: [
                     { value: "BTCUSDT", type: "symbol", unit: "" },
@@ -22,7 +22,7 @@ let defaultItems = [
             {
                 id: "eRwWPP-o80yVeskQDGjdHg",
                 type: "condition",
-                title: "PriceCondition",
+                title: "and",
                 message: "{params[0]} {params[1]} {params[2]}",
                 params: [
                     { value: "DOGEUSDT", type: "symbol", unit: "" },
@@ -35,7 +35,7 @@ let defaultItems = [
             {
                 id: "mgda6S8WT06a4vvRV4Xm3w",
                 type: "action",
-                title: "PriceAction",
+                title: "action",
                 message: "{params[0]} {params[1]} {params[2]}",
                 params: [
                     { value: "LONG", type: "side", unit: "" },
@@ -52,7 +52,40 @@ let defaultItems = [
                 title: "IfCondition",
                 showChildren: true,
                 message: "Test comment for dev!",
-                conditions: [],
+                conditions: [
+                    {
+                        id: "BQZSHU_IsUGE0ZyqGo2Mxg",
+                        type: "condition",
+                        title: "when",
+                        message: "{params[0]} {params[1]} {params[2]}",
+                        params: [
+                            { value: "FROG", type: "symbol", unit: "" },
+                            { value: "<=", type: "operator", unit: "" },
+                            { value: "40000", type: "price", unit: "$" }
+                        ]
+                    },
+                ],
+                actions: []
+            },            {
+                id: "Dz6RG8FqUUe2EBX2gtdb6A2",
+                type: "container",
+                subtype: "if",
+                title: "IfCondition",
+                showChildren: true,
+                message: "Test comment for dev!",
+                conditions: [
+                    {
+                        id: "BQZSHU_IsUGE0ZyqGo2Mxg2",
+                        type: "condition",
+                        title: "when",
+                        message: "{params[0]} {params[1]} {params[2]}",
+                        params: [
+                            { value: "FROG", type: "symbol", unit: "" },
+                            { value: "<=", type: "operator", unit: "" },
+                            { value: "40000", type: "price", unit: "$" }
+                        ]
+                    },
+                ],
                 actions: []
             }
         ]
@@ -65,7 +98,8 @@ let defaultItems = [
         showChildren: true,
         message: "Test comment for dev!",
         conditions: [],
-        actions: []
+        actions: [],
+        children: []
     }
 ];
 

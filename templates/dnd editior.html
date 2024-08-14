@@ -6,148 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FastAPI with jQuery and Rivets.js</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!--<link href="/static/styles/tailwind.css" rel="stylesheet">
-    <script src="/static/js/app.js"></script>-->
+    <!--<link href="/static/styles/tailwind.css" rel="stylesheet">-->
+    <link href="/static/styles/style.css" rel="stylesheet">
+    <script src="/static/js/app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-        .TreeItem_Wrapper {
-            list-style: none;
-            box-sizing: border-box;
-            margin-bottom: -1px;
-        }
-
-        html.dark div[data-class="rightPanelClasses"]>div[data-class="commonFlexClasses"] {
-            border-color: rgb(75 85 99)
-        }
-
-        div>div[data-class="commonFlexClasses"]:last-of-type {
-            border-bottom: none;
-        }
-
-        html body {
-            background-color: #e5e7eb;
-            background-image: radial-gradient(circle, #9ca3af 1px, transparent 1px);
-            background-size: 16px 16px;
-            margin: 0;
-            height: 100vh;
-        }
-
-        html.dark body {
-            background-color: #1e1e2d;
-            background-image: radial-gradient(circle, #39394f 1px, transparent 1px);
-            background-size: 16px 16px;
-            margin: 0;
-            height: 100vh;
-        }
-    </style>
 </head>
 
 <body>
 
-
     <div data-component="DarkmodeComponent"></div>
-    <div data-class="containerClasses" data-js-component="ContainerComponent">
+    <div data-class="containerClasses" data-js-component="DndComponent">
     </div>
+    <!--<div class="flex gap-x-2">
+        <button id="update-button">Update Value</button><button id="update-button2">Update Value</button>
+    </div>-->
 
 
-    <script>
-
-        let test_data =
-        {
-            id: "RtrIHskFIUu5GbcprUTYqA",
-            type: "container",
-            subtype: "if",
-            title: "IfCondition",
-            showChildren: true,
-            message: "",
-            conditions: [
-                {
-                    id: "WwBwoxYfR0OEbmAPtWkE2g",
-                    type: "condition",
-                    title: "PriceCondition",
-                    message: "{params[0]} {params[1]} {params[2]}",
-                    params: [
-                        { value: "BTCUSDT", type: "symbol", unit: "" },
-                        { value: "<=", type: "operator", unit: "" },
-                        { value: "40000", type: "price", unit: "$" }
-                    ]
-                },
-                {
-                    id: "eRwWPP-o80yVeskQDGjdHg",
-                    type: "condition",
-                    title: "PriceCondition",
-                    message: "{params[0]} {params[1]} {params[2]}",
-                    params: [
-                        { value: "DOGEUSDT", type: "symbol", unit: "" },
-                        { value: "<=", type: "operator", unit: "" },
-                        { value: "0.05", type: "price", unit: "$" }
-                    ]
-                }
-            ],
-            actions: [
-                {
-                    id: "mgda6S8WT06a4vvRV4Xm3w",
-                    type: "action",
-                    title: "PriceAction",
-                    message: "{params[0]} {params[1]} {params[2]}",
-                    params: [
-                        { value: "LONG", type: "side", unit: "" },
-                        { value: "BTCUSDT", type: "symbol", unit: "" },
-                        { value: "500", type: "amount", unit: "$" }
-                    ]
-                }
-            ],
-            children: [
-                {
-                    id: "Dz6RG8FqUUe2EBX2gtdb6A",
-                    type: "container",
-                    subtype: "if",
-                    title: "IfCondition",
-                    showChildren: true,
-                    message: "Test comment for dev!",
-                    conditions: [],
-                    actions: []
-                }
-            ]
-        }
-
-        function loadComponentScripts() {
-            return new Promise((resolve, reject) => {
-                $(document).ready(async function () {
-                    try {
-                        const components = $('[data-js-component]');
-                        for (let i = 0; i < components.length; i++) {
-                            const $el = $(components[i]);
-                            const componentFile = '/static/js/js_components/' + $el.data('js-component') + '.js';
-                            const module = await import(componentFile);
-                            const content = module.renderContent(test_data);
-                            $el.html(content);
-                        }
-                        resolve(); // Notify that the first script has finished loading
-                    } catch (error) {
-                        console.error('Failed to load component:', error);
-                        reject(error); // Notify that an error occurred
-                    }
-                });
-            });
-        }
-
-        loadComponentScripts().then(() => {
-            const scripts = [
-                '/static/js/render/class-render.js',
-                '/static/js/render/component-render.js'
-            ];
-
-            scripts.forEach(src => {
-                const script = document.createElement('script');
-                script.src = src;
-                document.body.appendChild(script);
-            });
-        }).catch(error => {
-            console.error('Error loading components:', error);
-        });
-    </script>
+    <script type="module" src="/static/js/dnd-editor.js"></script>
 
 </body>
 

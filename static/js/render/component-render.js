@@ -1,4 +1,5 @@
-$(document).ready(function () {
+
+export default function applyComponents() {
     $('[data-component]').each(function () {
         var $el = $(this);
         var componentFile = '/static/components/' + $el.data('component') + '.html';
@@ -31,4 +32,4 @@ $(document).ready(function () {
             });*/
         });
     });
-});
+}
