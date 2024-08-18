@@ -1,35 +1,22 @@
+const { default: applyClasses } = await import('/static/js/render/class-render.js');
 
-export default function applyComponents() {
-    $('[data-component]').each(function () {
-        var $el = $(this);
-        var componentFile = '/static/components/' + $el.data('component') + '.html';
-        /*var templateName = $el.data('template');
-        var templateData = templates[templateName] || {};*/
+export default async function applyComponents(context = document) {
+    const components = $('[data-component]', context);
 
-        $.get(componentFile).done(function (data) {
+    for (const component of components) {
+        const $el = $(component);
+        const componentFile = '/static/components/' + $el.data('component') + '.html';
+
+        await $.get(componentFile).done(async function (data) {
             $el.html(data);
+            try {
+                // Recursively apply components for any inner components within this element
+                await applyComponents($el);
 
-            /*$el.find('[data-classblind]').each(function () {
-                var classblindName = $(this).data('classblind');
-                if (templateData[classblindName]) {
-                    $(this).attr('data-class', templateData[classblindName]);
-                }
-            });
-
-            $el.find('[data-text]').each(function () {
-                var textName = $(this).data('text');
-                if (templateData[textName]) {
-                    $(this).text(templateData[textName]);
-                }
-            });
-
-            $el.find('svg > path').each(function () {
-                var $path = $(this);
-                var dName = $path.data('d');
-                if (dName && templateData[dName]) {
-                    $path.attr('d', templateData[dName]);
-                }
-            });*/
+            } catch (error) {
+                console.log('Error loading classesModel:', componentClassesFile);
+                console.error('Error:', error);
+            }
         });
-    });
+    }
 }

@@ -53,20 +53,21 @@
         </div>
     `;
 
-        export async function loadComponentScripts(items) {
+        export async function renderDndEditorScripts(items) {
             try {
-                const selector = '[data-js-component]';
+                const selector = '[data-js-component="DndComponent"]';
                 const component = $(selector).first();
                     try {
                         const componentFile = `/static/js/js_components/DndComponent.js`;
                         const module = await import(componentFile);
                         
-                        // ตรวจสอบว่าโมดูลมีฟังก์ชัน renderContent และเรียกใช้งาน
                         if (typeof module.renderContent === 'function') {
                             const content = await module.renderContent(items, 0);
                             ;
                             $(component).html(content);
-                            $(component).after(addMoreContainerTemplate);
+                            $(component).append(addMoreContainerTemplate);
+
+                            
                         } else {
                             console.error('renderContent function not found in module:', componentFile);
                         }
@@ -79,14 +80,58 @@
                 console.error('Error loading components:', error);
             }
         }
-        
 
+
+        async function renderComponentScripts() {
+            async function renderComponent($el) {
+                const componentName = $el.data('js-component');
+        
+                if (componentName === 'DndComponent') {
+                    return; // Skip rendering for DndComponent
+                }
+        
+                try {
+                    const { default: renderContent } = await import(`/static/js/js_components/${componentName}.js`);
+                    const content = renderContent();
+                    $el.html(content);
+        
+                    // Find and render nested components
+                    const nestedComponents = $el.find('[data-js-component]');
+                    await Promise.all(nestedComponents.map(function () {
+                        return renderComponent($(this)); // Await each nested component rendering
+                    }));
+                
+                } catch (error) {
+                    console.error(`Error loading component "${componentName}":`, error);
+                }
+            }
+        
+            // Get all elements with data-js-component attribute and render them
+            const components = $('[data-js-component]');
+            await Promise.all(components.map(function () {
+                return renderComponent($(this)); // Await rendering of each component
+            }));
+        }
+        
+        
         $(document).ready(async () => {
-            loadComponentScripts(defaultItems).catch(error => {
-                console.error('Error loading component scripts:', error);
-            });
-            const { default: applyClasses } = await import('/static/js/render/class-render.js');
-            const { default: applyComponents } = await import('/static/js/render/component-render.js');
-            applyClasses();
-            applyComponents();
+            try {
+                await renderDndEditorScripts(defaultItems);
+
+                await renderComponentScripts();
+        
+                const { default: applyClasses } = await import('/static/js/render/class-render.js');
+                //const { default: applyComponents } = await import('/static/js/render/component-render.js');
+        
+                //await applyComponents();
+                applyClasses();
+
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = '/static/js/input-property.js';
+                document.body.appendChild(script);
+        
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
         });

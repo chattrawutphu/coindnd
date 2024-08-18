@@ -33,3 +33,17 @@ html.dark body {
         background-color: #374151;
     }
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #5b6677;
+    border-radius: 10px;
+  }

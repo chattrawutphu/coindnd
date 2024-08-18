@@ -40,18 +40,10 @@ function renderConditionMessage(params, message) {
 
 function createDndParams(params, message) {
     const div = document.createElement('div');
-    params.forEach((param, index) => {
-        div.setAttribute(`dnd-param${index}-name`, param.value);
-        div.setAttribute(`dnd-param${index}-type`, param.type);
-        div.setAttribute(`dnd-param${index}-unit`, param.unit);
-        if (param.price !== undefined) {
-            div.setAttribute(`dnd-param${index * 3}-price`, param.price);
-        }
-    });
     div.textContent = renderConditionMessage(params, message);
+    
     return div.outerHTML;
 }
-
 export async function renderContent(items, level) {
 
     const results = await Promise.all(items.map(async (item) => {
@@ -73,7 +65,9 @@ export async function renderContent(items, level) {
                  dnd-id="${condition.id}"
                  dnd-type="${condition.type}"
                  dnd-title="${condition.title}"
-                 dnd-message="${condition.message}">
+                 dnd-message="${condition.message}"
+                 dnd-template="${condition.template}"
+                 dnd-param="${encodeURIComponent(JSON.stringify(condition.params))}">
                  <div class="flex items-center">
                     <div data-class="commonTextClasses">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" data-class="iconClasses">
@@ -83,7 +77,7 @@ export async function renderContent(items, level) {
                     <div data-class="commonTitleClasses">${condition.title}</div>
                     ${createDndParams(condition.params, condition.message)}
                     </div>
-                    <div data-class="panelBgClasses">
+                    <div data-class="panelBgClasses" class="openProperty">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                             <path d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" />
                         </svg>
@@ -96,7 +90,8 @@ export async function renderContent(items, level) {
                  dnd-id="${action.id}"
                  dnd-type="${action.type}"
                  dnd-title="${action.title}"
-                 dnd-message="${action.message}">
+                 dnd-message="${action.message}"
+                 dnd-template="${action.template}">
                  <div class="flex items-center">
                     <div data-class="commonTextClasses">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" data-class="iconClasses">
@@ -107,7 +102,7 @@ export async function renderContent(items, level) {
                     <div data-class="commonTitleClasses">${action.title}</div>
                     ${createDndParams(action.params, action.message)}
                     </div>
-                    <div data-class="panelBgClasses">
+                    <div data-class="panelBgClasses"  class="openProperty">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                             <path d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" />
                         </svg>
