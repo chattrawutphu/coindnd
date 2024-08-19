@@ -29,10 +29,27 @@
     </div>
 </div>*/
 function renderConditionMessage(params, message) {
+    // Check if the message includes placeholders for params
     if (message.includes('{params[')) {
         message = message.replace(/{params\[(\d+)\]}/g, (match, index) => {
             const paramIndex = parseInt(index, 10);
-            return params[paramIndex] ? params[paramIndex].value : match;
+            const param = params[paramIndex];
+
+            // If the param exists
+            if (param) {
+                // Check if the param has a color property
+                const color = param.color;
+                const text = param.text;
+
+                // If color is specified, apply it to the text
+                if (color) {
+                    return `<span class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-0.5" style="color: ${color};">${text}</span>`;
+                } else {
+                    return text;
+                }
+            }
+            // If the param doesn't exist, return the original match
+            return match;
         });
     }
     return message;
@@ -40,10 +57,12 @@ function renderConditionMessage(params, message) {
 
 function createDndParams(params, message) {
     const div = document.createElement('div');
-    div.textContent = renderConditionMessage(params, message);
+    div.className = 'flex flex-wrap gap-x-1'; // Add classes to the div
+    div.innerHTML = renderConditionMessage(params, message); // Use innerHTML to render HTML
     
     return div.outerHTML;
 }
+
 export async function renderContent(items, level) {
 
     const results = await Promise.all(items.map(async (item) => {

@@ -13,11 +13,11 @@ let defaultItems = [
                 title: "if",
                 message: "{params[0]} {params[1]} {params[2]} of the {params[3]} within the last {params[4]} candlesticks",
                 params: [
-                    { value: "BTCUSDT", text:"BTC/USDT", type: "symbol", unit: "" },
-                    { value: "<=",text:"<=", type: "operator", unit: "" },
-                    { value: "hight",text:"highest price", type: "price", unit: "" },
-                    { value: "4h",text:"4 hour time frame", type: "timeframe", unit: "" },
-                    { value: "20",text:"", type: "candle", unit: "" },
+                    { value: "BTCUSDT", text:"BTC/USDT", color:"yellow", type: "symbol", unit: "" },
+                    { value: "<=",text:"<=", color:"white", type: "operator", unit: "" },
+                    { value: "hight",text:"highest price", color:"aqua", type: "price", unit: "" },
+                    { value: "4h",text:"4 hour time frame", color:"aqua", type: "timeframe", unit: "" },
+                    { value: "20",text:"20", type: "candle", color:"lime", unit: "" },
                 ],
                 template: "priceCondition" // Added template field
             },
