@@ -1,3 +1,5 @@
+var test = " "
+
 var classesModel = {
     containerClasses: "min-h-full h-full max-h-full p-1  overscroll-contain", //container mx-auto content-start
 
@@ -50,17 +52,19 @@ var classesModel = {
     darkmodeContainerClasses: "text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-1.5",
     
     //Property Input
-    inputContainerClasses: "w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap bg-gray-50 border border-gray-300 dark:text-gray-300 text-gray-800 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500",
+    inputContainerClasses: "w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap bg-gray-50 dark:text-gray-300 text-gray-800 text-sm rounded-lg block p-1.5 dark:bg-[#111827]",
   
-    inputLabelClasses: "float-none lg:float-right text-sm font-medium dark:text-gray-300 text-gray-800",
+    inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-gray-300 text-gray-800",
   
-    inputGridClasses: "grid grid-cols-3 gap-2",
+    inputGridClasses: "flex gap-2",
   
-    inputFormWrapperClasses: "flex flex-col gap-y-2",
+    inputFormWrapperClasses: "flex flex-col gap-y-1.5",
   
-    inputContainerWrapperClasses: "col-span-3 lg:col-span-1 self-center",
+    inputContainerWrapperClasses: "w-16 text-balance",
   
-    inputContainerContentClasses: "col-span-3 lg:col-span-2"
+    inputContainerContentClasses: "w-full lg:col-span-2",
+
+    inputSmallTextXSClasses: "text-sm col-span-5 dark:text-gray-500 text-gray-800 left-0 -top-2",
 };
 
 //เพิ่ม class โดยอิงจาก data-class 

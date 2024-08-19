@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .containerClasses{
     @apply min-h-full h-full max-h-full p-1  overscroll-contain
 }
