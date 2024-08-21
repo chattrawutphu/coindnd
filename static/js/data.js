@@ -10,26 +10,33 @@ let defaultItems = [
             {
                 id: "WwBwoxYfR0OEbmAPtWkE2g",
                 type: "condition",
+                subtype: "priceConditionWithCandlestick",
+                subtypeid: "8Pwc1k",
                 title: "if",
-                message: "{params[0]} {params[1]} {params[2]} of the {params[3]} within the last {params[4]} candlesticks",
+                message: "{params[0]} {params[1]} {params[2]}{params[3]} of the {params[4]} within the last {params[5]} candlesticks",
                 params: [
                     { value: "BTCUSDT", text:"BTC/USDT", color:"yellow", type: "symbol", unit: "" },
-                    { value: "<=",text:"<=", color:"white", type: "operator", unit: "" },
-                    { value: "hight",text:"highest price", color:"aqua", type: "price", unit: "" },
-                    { value: "4h",text:"4 hour time frame", color:"aqua", type: "timeframe", unit: "" },
-                    { value: "20",text:"20", type: "candle", color:"lime", unit: "" },
+                    { value: "gt",text:"Greater than", color:"lawngreen", type: "operator", unit: "" },
+                    { value: "high",text:"Highest price", color:"aqua", type: "candlePrice", unit: "" },
+                    { value: "inc-int",text:"+ 100", color:"white", type: "addition", unit: "" },
+                    { value: "4h",text:"4 hour timeframe", color:"aqua", type: "timeframe", unit: "" },
+                    { value: "20",text:"20", type: "candle", color:"white", unit: "" },
                 ],
                 template: "priceCondition" // Added template field
             },
             {
                 id: "Qe4XPy7MrT0T1ZwD3V4Y6H",
                 type: "condition",
+                subtype: "priceCondition",
+                subtypeid: "z3F2Gh",
                 title: "or",
-                message: "{params[0]} {params[1]} {params[2]}",
+                message: "{params[0]} {params[1]} {params[2]}{params[3]}",
                 params: [
-                    { value: "ETHUSDT", type: "symbol", unit: "" },
-                    { value: ">=", type: "operator", unit: "" },
-                    { value: "3000", type: "price", unit: "$" }
+                    { value: "SOLUSDT", text:"SOL/USDT", color:"yellow", type: "symbol", unit: "" },
+                    { value: "lt",text:"Less than", color:"lawngreen", type: "operator", unit: "" },
+                    { value: "3000",text:"3000$", color:"white", type: "price", unit: "$" },
+                    { value: "",text:"", color:"white", type: "addition", unit: "" },
+                    //{ value: "inc-int",text:"+ 100", color:"white", type: "addition", unit: "" },
                 ],
                 template: "priceCondition" // Added template field
             }

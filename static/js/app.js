@@ -79,8 +79,8 @@ var templates = {
 
 $(document).ready(function () {
 
-    //เพิ่ม class โดยอิงจาก data-class 
-    $('[data-class]').each(function () {
+    //เพิ่ม class โดยอิงจาก class 
+    $('[class]').each(function () {
         var className = $(this).data('class');
         if (classesModel[className]) {
             $(this).addClass(classesModel[className]);
@@ -97,14 +97,14 @@ $(document).ready(function () {
         $.get(componentFile).done(function (data) {
             $el.html(data);
 
-            $el.find('[data-classblind]').each(function () {
+            $el.find('[classblind]').each(function () {
                 var classblindName = $(this).data('classblind');
                 if (templateData[classblindName]) {
-                    $(this).attr('data-class', templateData[classblindName]);
+                    $(this).attr('class', templateData[classblindName]);
                 }
             });
 
-            $el.find('[data-class]').each(function () {
+            $el.find('[class]').each(function () {
                 var className = $(this).data('class');
                 if (classesModel[className]) {
                     $(this).addClass(classesModel[className]);

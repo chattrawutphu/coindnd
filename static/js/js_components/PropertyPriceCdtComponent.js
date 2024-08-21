@@ -6,9 +6,7 @@ export default function renderContent() {
                   <div class="inputGridClasses" data-js-component="InputConditionTypeComponent"></div>
                   <div class="inputGridClasses" data-js-component="InputSymbolComponent"></div>
                   <div class="inputGridClasses" data-js-component="InputOperatorComponent"></div>
-                  <div class="inputGridClasses" data-js-component="InputPriceCandlestickComponent"></div>
                   <div class="inputGridClasses" data-js-component="InputAdtCmdComponent"></div>
-                  <div class="inputGridClasses pt-4 mt-4 border-t border-t-gray-600" data-js-component="inputBasicOptionComponent"></div>
               </div>
           </form>
       </div>

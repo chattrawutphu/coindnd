@@ -4,7 +4,7 @@
     margin-bottom: -1px;
 }
 
-html.dark div[data-class="rightPanelClasses"]>div[data-class="commonFlexClasses"] {
+html.dark div.rightPanelClasses > div.commonFlexClasses {
     border-color: rgb(75 85 99)
 }
 
@@ -26,10 +26,10 @@ html.dark body {
 }
 
 @media (prefers-color-scheme: dark) {
-    div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"]  {
-        background-color: #5b6677;
+    div.leftPanelClasses > div.commonFlexClasses  {
+        background-color: #4D5568;
     }
-    div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"]  {
+    div.rightPanelClasses > div.commonFlexClasses  {
         background-color: #374151;
     }
 }
@@ -45,6 +45,6 @@ html.dark body {
   }
   
   ::-webkit-scrollbar-thumb {
-    background: #5b6677;
+    background: #4D5568;
     border-radius: 10px;
   }
