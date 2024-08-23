@@ -9,7 +9,7 @@ let defaultItems = [
         variables: [
             {name: "x", type: "integer", value:10, description: ""},
             {name: "y", type: "integer", value:-2, description: ""},
-            {name: "target-symbol", type: "sytmbol", value:"BTC/USDT", description: "test variable"}
+            {name: "target-symbol", type: "sytmbol", value:"BTC/USDT", description: ""}
         ],
         conditions: [
             {
@@ -90,9 +90,6 @@ let defaultItems = [
                 title: "IfCondition Level 1",
                 showChildren: true,
                 message: "Test comment for dev!",
-                variables: [
-                    {name: "x", type: "integer", value:10, description: ""},
-                ],
                 conditions: [
                     {
                         id: "BQZSHU_IsUGE0ZyqGo2Mxg",
@@ -141,9 +138,6 @@ let defaultItems = [
                         title: "IfCondition Level 2A",
                         showChildren: true,
                         message: "Test comment for dev!",
-                        variables: [
-                            {name: "x", type: "integer", value:10, description: ""},
-                        ],
                         conditions: [
                             {
                                 id: "FZQXLU_Hf3je0aOxlKxQqE",
@@ -179,9 +173,6 @@ let defaultItems = [
                                 title: "IfCondition Level 3A",
                                 showChildren: true,
                                 message: "Test comment for dev!",
-                                variables: [
-                                    {name: "x", type: "integer", value:10, description: ""},
-                                ],
                                 conditions: [
                                     {
                                         id: "dA9bHdGhxYT2xFaHPSe2Al",
@@ -231,7 +222,6 @@ let defaultItems = [
                                 title: "ElseCondition Level 3B",
                                 showChildren: true,
                                 message: "Test comment for dev!",
-                                variables: [],
                                 conditions: [],
                                 actions: [],
                                 children: []
@@ -245,7 +235,6 @@ let defaultItems = [
                         title: "ElseCondition Level 2B",
                         showChildren: true,
                         message: "Test comment for dev!",
-                        variables: [],
                         conditions: [],
                         actions: [],
                         children: []
@@ -259,7 +248,6 @@ let defaultItems = [
                 title: "ElseCondition Level 1",
                 showChildren: true,
                 message: "Test comment for dev!",
-                variables: [],
                 conditions: [
                     {
                         id: "Jp8A9QxE0V2kR6YcT4Xb1",

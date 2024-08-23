@@ -38,40 +38,33 @@ function decompressFromBase64(input) {
 }
 
 function renderConditionMessage(params, message) {
-    // Replace placeholders with corresponding params
     if (message.includes('{params[')) {
         message = message.replace(/{params\[(\d+)\]}/g, (match, index) => {
             const paramIndex = parseInt(index, 10);
             const param = params[paramIndex];
 
-            // If the param exists
             if (param) {
                 const color = param.color;
-                const text = param.text;
+                const text = param.text ? param.text : param.value;
+                const unit = param.unit;
 
-                // If color is specified, apply it to the text
                 if (text) {
                     if (color) {
-                        return `<span class="dark:bg-[#414b5a] font-medium border-gray-400 border rounded-md p-1 mb-1" style="color: ${color};"><span>${text}</span></span>`;
+                        return `<span class="dark:bg-[#414b5a] text-sm font-medium border-gray-400 border rounded-md px-1 pb-0.5 mb-1" style="color: ${color};">${text}${unit}</span>`;
                     } else {
-                        return `<span  class="mb-1">${text}</span>`;
+                        return `<span>${text}${unit}</span>`;
                     }
                 } else { return ""}
             }
             return match;
         });
     }
-
-    // Wrap individual words that are not inside any existing <span> or other tags
-    message = message.replace(/(?!<\/?span[^>]*>)(\b\w+\b)(?![^<>]*>)/g, (match) => {
-        return `<span class="items-center content-center mb-1">${match}</span>`;
-    });
-
+    
     return message;
 }
 function createDndParams(params, message) {
     const div = document.createElement('div');
-    div.className = 'flex flex-wrap gap-x-1'; // Add classes to the div
+    div.className = 'flex flex-wrap text-sm gap-x-1'; // Add classes to the div
     div.innerHTML = renderConditionMessage(params, message); // Use innerHTML to render HTML
 
     return div.outerHTML;
@@ -143,6 +136,17 @@ export async function renderContent(items, level) {
                  </div>
         `).join('');
 
+        const variables = item.variables.map(variable => `
+            <div class="flex gap-x-1 mx-2 text-indigo-600 justify-between">
+                <div class="flex gap-x-1">
+                    <div class="text-sm/[18px]">${variable.type}</div>
+                    <div class="text-[15px]/[18px] font-bold">${variable.name}</div>
+                    <div class="text-sm/[18px]"> = ${['integer', 'boolean'].includes(variable.type) ? variable.value : `"${variable.value}"`}</div>
+                </div>
+                ${variable.description ? `<div class="text-sm/[18px]"> # ${variable.description}</div>` : ''}
+            </div>
+        `).join('');        
+
         let childrenContent = '';
 
         if (item.children && item.children.length > 0) {
@@ -152,13 +156,16 @@ export async function renderContent(items, level) {
 
         return `
         <div class="panelWrapperClasses"
-             dnd-id="${item.id}"
-             dnd-type="${item.type}"
-             dnd-subtype="${item.subtype}"
-             dnd-title="${item.title}"
-             dnd-show-children="${item.showChildren}"
-             dnd-message="${item.message}"
-             dnd-level="${level}">
+            dnd-id="${item.id}"
+            dnd-type="${item.type}"
+            dnd-subtype="${item.subtype}"
+            dnd-title="${item.title}"
+            dnd-show-children="${item.showChildren}"
+            dnd-message="${item.message}"
+            dnd-level="${level}">
+            <div class="mb-1 col-span-30">
+                ${variables}
+            </div>
             <div class="leftPanelClasses">
                 ${leftPanels}
                 ${addMoreCondition}

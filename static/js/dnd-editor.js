@@ -51,6 +51,7 @@
             </svg>
             <p>Add Event</p>
         </div>
+        <div class="h-44"></div>
     `;
 
         export async function renderDndEditorScripts(items) {

@@ -1,4 +1,8 @@
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .containerClasses {
     @apply min-h-full h-full max-h-full p-1 overscroll-contain;
 }
@@ -12,23 +16,23 @@
 }
 
 .commonTitleClasses {
-    @apply font-semibold font-medium text-sm me-2 dark:text-indigo-400 text-indigo-500;
+    @apply font-semibold text-sm me-2 dark:text-indigo-400 text-indigo-500;
 }
 
 .leftPanelClasses {
-    @apply col-span-1 mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4 dark:bg-[#414b5a] bg-emerald-50 dark:border-l-indigo-400 border-l-indigo-500;
+    @apply col-span-10 mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4 dark:bg-[#414b5a] bg-emerald-50 dark:border-l-indigo-400 border-l-indigo-500;
 }
 
 .rightPanelClasses {
-    @apply col-span-2 mb-[2px] relative text-md content-start items-start bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150;
+    @apply col-span-20 mb-[2px] relative text-md content-start items-start bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150;
 }
 
 .panelWrapperClasses {
-    @apply text-sm grid grid-cols-3 shadow-md min-w-[32rem] dark:border-y-0 dark:border-r-0 dark:border dark:border-l dark:border-gray-700 dark:text-gray-100 text-gray-900;
+    @apply text-sm grid grid-cols-30  shadow-md min-w-[32rem] dark:border-y-0 dark:border-r-0 dark:border dark:border-l dark:border-gray-700 dark:text-gray-100 text-gray-900;
 }
 
 .childrenPanelClasses {
-    @apply ms-4 md:ms-8 col-span-3;
+    @apply ms-4 md:ms-8 col-span-30;
 }
 
 .panelBgClasses {
