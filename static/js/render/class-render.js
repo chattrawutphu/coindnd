@@ -12,25 +12,30 @@ var classesModel = {
         return `${commonClasses} dark:text-emerald-500 text-emerald-500`;
     },
     commonTitleClasses() {
-        const commonClasses = "font-semibold font-medium text-sm me-2";
+        const commonClasses = "font-semibold text-sm me-2";
         return `${commonClasses} dark:text-indigo-400 text-indigo-500`;
     },
 
+    numbertPanelClasses() {
+        const commonClasses = "col-[span_2/span_2] mb-0 sm:mb-[2px] relative text-md";
+        return commonClasses
+    },
+
     leftPanelClasses() {
-        const commonClasses = "col-span-1 mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4";
+        const commonClasses = "col-[span_12/span_12] mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4";
         return `${commonClasses} dark:bg-[#414b5a] bg-emerald-50 dark:border-l-indigo-400 border-l-indigo-500`;
     },
     rightPanelClasses() {
-        const commonClasses = "col-span-2 mb-[2px] relative text-md content-start items-start ";
+        const commonClasses = "col-[span_18/span_18] mb-[2px] relative text-md content-start items-start ";
         return `${commonClasses} bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150`;
     },
 
     panelWrapperClasses() {
-        const commonClasses = "text-sm grid grid-cols-3 shadow-md min-w-[32rem]"; //rounded-r-lg
-        return `${commonClasses} dark:border-y-0 dark:border-r-0  dark:border dark:border-l dark:border-gray-700 dark:text-gray-100 text-gray-900 `; //dark:shadow-indigo-500/20 shadow-indigo-500/20 
+        const commonClasses = "text-sm grid grid-cols-[repeat(30,_minmax(0,_1fr))] shadow-md min-w-[32rem]"; //rounded-r-lg
+        return `${commonClasses} dark:text-gray-100 text-gray-900 `; //dark:shadow-indigo-500/20 shadow-indigo-500/20 
     },
     childrenPanelClasses() {
-        const commonClasses = "ms-4 md:ms-8 col-span-3 ";
+        const commonClasses = "ms-[20px] md:ms-8 col-[span_30/span_30]";
         return `${commonClasses} `;
     },
     panelBgClasses() {
@@ -68,7 +73,7 @@ var classesModel = {
 
 //เพิ่ม class โดยอิงจาก class 
 export default function applyClasses(data = classesModel, context = $('body')) {
-    $('[class]', context).each(function () {
+    $('[data-class]', context).each(function () {
         const className = $(this).data('class');
         if (data[className]) $(this).addClass(data[className]);
     });

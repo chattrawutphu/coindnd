@@ -45,7 +45,7 @@
         import { defaultItems } from '/static/js/data.js';
 
         const addMoreContainerTemplate = `
-        <div class="addMoreClasses">
+        <div data-class="addMoreClasses">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
             </svg>
@@ -121,16 +121,30 @@
 
                 await renderComponentScripts();
         
-                //const { default: applyClasses } = await import('/static/js/render/class-render.js');
+                const { default: applyClasses } = await import('/static/js/render/class-render.js');
                 //const { default: applyComponents } = await import('/static/js/render/component-render.js');
         
                 //await applyComponents();
-                //applyClasses();
+                applyClasses();
+
+                $('div[data-class="numberPanelClasses"]').each(function(index) {
+                    $(this).html(`<span class="ps-2 opacity-30">${index + 1}</span>`); 
+                });
 
                 const script = document.createElement('script');
                 script.type = 'module';
                 script.src = '/static/js/input-property.js';
                 document.body.appendChild(script);
+
+                // $('div[data-class="numberPanelClasses"]').each(function() {
+                //     var $this = $(this);
+                //     var parentLevel = $this.closest('div[dnd-level]').attr('dnd-level'); // หาค่า dnd-level จาก element parent
+                //     if (parentLevel) {
+                //         var marginLeft = (parseInt(parentLevel, 10) -1 )* -33; // แปลง dnd-level เป็นตัวเลขและคูณกับ -20
+                //         console.log(marginLeft)
+                //         $this.css('margin-left', marginLeft + 'px'); // เพิ่ม margin-left
+                //     }
+                // });
         
             } catch (error) {
                 console.error('Error during initialization:', error);

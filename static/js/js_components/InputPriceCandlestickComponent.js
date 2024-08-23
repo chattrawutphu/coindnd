@@ -1,12 +1,12 @@
 export default function renderContent() {
     const html = `
-        <div class="inputContainerWrapperClasses">
-            <label for="first_name" class="inputLabelClasses">Price</label>
+        <div data-class="inputContainerWrapperClasses">
+            <label for="first_name" data-class="inputLabelClasses">Price</label>
         </div>
-        <div class="inputContainerContentClasses">
+        <div data-class="inputContainerContentClasses">
             <div class="grid grid-cols-5 gap-y-2">
                 <div class="col-span-5">
-                    <select id="countries" class="inputContainerClasses" >
+                    <select id="countries" data-class="inputContainerClasses" >
                         <option value="high" selected>Highest price</option>
                         <option value="open">Highest open price</option>
                         <option value="close">Highest close price</option>
@@ -15,9 +15,9 @@ export default function renderContent() {
                         <option value="lclose">Lowest close price</option>
                     </select>        
                 </div>
-                <label class="inputSmallTextXSClasses">of the</label>
+                <label data-class="inputSmallTextXSClasses">of the</label>
                 <div class="col-span-5 flex flex-col relative">
-                    <select id="timeframes" class="inputContainerClasses">
+                    <select id="timeframes" data-class="inputContainerClasses">
                         <option value="1m">1 minute timeframe</option>
                         <option value="5m">5 minute timeframe</option>
                         <option value="15m">15 minute timeframe</option>
@@ -29,12 +29,12 @@ export default function renderContent() {
                         <option value="1mo">1 month timeframe</option>
                     </select>        
                 </div>
-                <label class="inputSmallTextXSClasses">within the last</label>
+                <label data-class="inputSmallTextXSClasses">within the last</label>
                 <div class="col-span-3 flex flex-col relative ">
-                    <input type="text" id="first_name" class="inputContainerClasses" value=20 />
+                    <input type="text" id="first_name" data-class="inputContainerClasses" value=20 />
                 </div>
                 <div class="col-span-2 self-end">
-                    <select id="countries" class="inputContainerClasses" >
+                    <select id="countries" data-class="inputContainerClasses" >
                         <option selected>candlesticks</option>
                     </select>        
                 </div>

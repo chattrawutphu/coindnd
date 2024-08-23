@@ -1,10 +1,10 @@
 export default function renderContent() {
     const html = `
-        <div class="inputContainerWrapperClasses">
-            <label for="countries" class="inputLabelClasses">Operator</label>
+        <div data-class="inputContainerWrapperClasses">
+            <label for="countries" data-class="inputLabelClasses">Operator</label>
         </div>
-        <div class="inputContainerContentClasses">
-            <select id="countries" class="inputContainerClasses">
+        <div data-class="inputContainerContentClasses">
+            <select id="countries" data-class="inputContainerClasses">
                 <option selected>Choose an operator</option>
                 <option value="gt">Greater than</option>
                 <option value="gte">Greater than or equal to</option>

@@ -4,7 +4,7 @@
     margin-bottom: -1px;
 }
 
-html.dark div.rightPanelClasses > div.commonFlexClasses {
+html.dark div[data-class="rightPanelClasses"] > div[class="commonFlexClasses"] {
     border-color: rgb(75 85 99)
 }
 
@@ -26,10 +26,10 @@ html.dark body {
 }
 
 @media (prefers-color-scheme: dark) {
-    div.leftPanelClasses > div.commonFlexClasses  {
+    div[data-class="leftPanelClasses"] > div[class="commonFlexClasses"] {
         background-color: #4D5568;
     }
-    div.rightPanelClasses > div.commonFlexClasses  {
+    div[data-class="rightPanelClasses"] > div[class="commonFlexClasses"] {
         background-color: #374151;
     }
 }

@@ -1,12 +1,12 @@
 export default function renderContent() {
     const html = `
-        <div class="inputContainerWrapperClasses">
-            <label for="actions" class="inputLabelClasses">More Addition</label>
+        <div data-class="inputContainerWrapperClasses">
+            <label for="actions" data-class="inputLabelClasses">More Addition</label>
         </div>
-        <div class="inputContainerContentClasses">
+        <div data-class="inputContainerContentClasses">
             <div class="grid grid-cols-5 gap-y-2">
                 <div class="col-span-5">
-                    <select id="actions" class="inputContainerClasses">
+                    <select id="actions" data-class="inputContainerClasses">
                         <option value="" selected>-- Select an action --</option>
                         <option value="inc-int">Increase price by integer</option>
                         <option value="inc-last">Increase price by last digit</option>
@@ -17,7 +17,7 @@ export default function renderContent() {
                     </select>
                 </div>
                 <div class="col-span-5">
-                    <input type="text" id="value_input" class="inputContainerClasses" value="0.001" />
+                    <input type="text" id="value_input" data-class="inputContainerClasses" value="0.001" />
                 </div>
             </div>
         </div>

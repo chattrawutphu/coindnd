@@ -17,7 +17,7 @@
             margin-bottom: -1px;
         }
 
-        html.dark div[class="rightPanelClasses"] > div[class="commonFlexClasses"] {
+        html.dark div[data-class="rightPanelClasses"] > div[class="commonFlexClasses"] {
             border-color: rgb(75 85 99)
         }
 
@@ -48,8 +48,8 @@
     
     <div data-component="DarkmodeComponent"></div>
     <div class="containerClasses">
-        <div class="panelWrapperClasses">
-            <div class="leftPanelClasses">
+        <div data-class="panelWrapperClasses">
+            <div data-class="leftPanelClasses">
                 <div class="commonFlexClasses" data-component="EventComponent" data-template="whenTemplate">
                     <!--style="background-color: #f4fff8;">-->
                 </div>
@@ -57,7 +57,7 @@
                     <!--style="background-color: #f4fff8;">-->
                 </div>
             </div>
-            <div class="rightPanelClasses">
+            <div data-class="rightPanelClasses">
                 <div class="commonFlexClasses" data-component="EventComponent" data-template="actionTemplate">
                 </div>
             </div>
