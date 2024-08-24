@@ -1,42 +1,3 @@
-/*<div data-class="panelWrapperClasses"
-    dnd-id="{{item.id}}"
-    dnd-type="{{item.type}}"
-    dnd-subtype="{{item.subtype}}"
-    dnd-title="{{item.title}}"
-    dnd-show-children="{{item.showChildren}}"
-    dnd-message="{{item.message}}">
-    
-    <div data-class="leftPanelClasses">
-        {% for condition in item.conditions %}
-            <div class="commonFlexClasses"
-                dnd-id="{{condition.id}}"
-                dnd-type="{{condition.type}}"
-                dnd-title="{{condition.title}}"
-                dnd-message="{{condition.message}}">
-            </div>
-        {% endfor %}
-    </div>
-    
-    <div data-class="rightPanelClasses">
-        {% for action in item.actions %}
-            <div class="commonFlexClasses"
-                dnd-id="{{action.id}}"
-                dnd-type="{{action.type}}"
-                dnd-title="{{action.title}}"
-                dnd-message="{{action.message}}">
-            </div>
-        {% endfor %}
-    </div>
-</div>*/
-function compressToBase64(input) {
-    return btoa(unescape(encodeURIComponent(input)));
-}
-
-// ฟังก์ชันถอดรหัสข้อมูลจาก Base64
-function decompressFromBase64(input) {
-    return decodeURIComponent(escape(atob(input)));
-}
-
 function renderConditionMessage(params, message) {
     if (message.includes('{params[')) {
         message = message.replace(/{params\[(\d+)\]}/g, (match, index) => {
@@ -71,7 +32,6 @@ function createDndParams(params, message) {
 }
 
 export async function renderContent(items, level, parentid="") {
-
     const results = await Promise.all(items.map(async (item) => {
 
         const addMoreTemplate = (text) => `
@@ -111,6 +71,8 @@ export async function renderContent(items, level, parentid="") {
                  </div>
         `).join('');
 
+        
+
         const rightPanels = item.actions.map(action => `
             <div data-class="commonFlexClasses"
                  dnd-id="${action.id}"
@@ -149,13 +111,6 @@ export async function renderContent(items, level, parentid="") {
 
         const hasVariables = item.variables && item.variables.length > 0;
 
-        let childrenContent = '';
-
-        if (item.children && item.children.length > 0) {
-            level = level + 1;
-            childrenContent = await renderContent(item.children, level, item.id);
-        }
-
         return `
         <div data-class="panelWrapperClasses"
             dnd-parent-id="${parentid}"
@@ -166,11 +121,11 @@ export async function renderContent(items, level, parentid="") {
             dnd-show-children="${item.showChildren}"
             dnd-message="${item.message}"
             dnd-level="${level}">
-            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(level) * 24}px]">${variablesContent}</div>` : ''}
+            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(level+1) * 24}px]">${variablesContent}</div>` : ''}
             <div data-class="numberPanelClasses">
                 xx
             </div>
-            <div class="col-[span_29/span_29] ml-[${(level-1) * 24}px]">
+            <div class="col-[span_29/span_29] ml-[${(level) * 24}px]">
                 <div class="grid grid-cols-[repeat(30,_minmax(0,_1fr))]">
                 
                     <div data-class="leftPanelClasses">
@@ -184,7 +139,7 @@ export async function renderContent(items, level, parentid="") {
                 </div>          
             </div>
         </div>
-        ${childrenContent}
+        ${item.children && item.children.length > 0 ? await renderContent(item.children, level+=1, item.id) : ''}
     `;
     }));
             /*<div data-class="childrenPanelClasses" dnd-parent-id="${item.id}">
