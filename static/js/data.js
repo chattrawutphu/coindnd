@@ -7,7 +7,7 @@ let defaultItems = [
         "showChildren": true,
         "active": true,
         "group": {
-            "showGroup": false,
+            "showGroup": true,
             "name": "Group Name",
             "message": "test group name",
             "color": "green",
@@ -163,7 +163,7 @@ let defaultItems = [
                         "showChildren": true,
                         "active": true,
                         "group": {
-                            "showGroup": true,
+                            "showGroup": false,
                             "name": "Group Name 3",
                             "message": "test group name 3",
                             "color": "green",
@@ -171,9 +171,7 @@ let defaultItems = [
                             "active": true
                         },
                         "message": "Nested condition level 2",
-                        "variables": [
-                            { "id": "1OsYLCv-xUym6SNMTBLCog", "name": "z", "type": "integer", "value": 5, "description": "" }
-                        ],
+                        "variables": [],
                         "conditions": [
                             {
                                 "id": "wJX2CvC5U8KT3HdP9O3YlB",
@@ -226,7 +224,67 @@ let defaultItems = [
                                 "template": "placeOrder"
                             }
                         ],
-                        "children": []
+                        "children": [
+                            {
+                                "id": "Tj7KyN5XvK5M8NbP4R7TqW2",
+                                "type": "container",
+                                "subtype": "if",
+                                "title": "IfCondition Level 2",
+                                "showChildren": true,
+                                "active": true,
+                                "group": {
+                                    "showGroup": false,
+                                    "name": "Group Name 3.1",
+                                    "message": "test group name 3.1",
+                                    "color": "blue",
+                                    "showChildren": true,
+                                    "active": true
+                                },
+                                "message": "Another nested condition level 2",
+                                "variables": [],
+                                "conditions": [
+                                    {
+                                        "id": "hQX3R7yE6TZG9KwB3U5YbD2",
+                                        "type": "condition",
+                                        "title": "if",
+                                        "message": "{params[0]} {params[1]} {params[2]}",
+                                        "params": [
+                                            { "value": "ETH", "type": "symbol", "unit": "" },
+                                            { "value": "<", "type": "operator", "unit": "" },
+                                            { "value": "3000", "type": "price", "unit": "$" }
+                                        ],
+                                        "template": "priceCondition"
+                                    },
+                                    {
+                                        "id": "aD4Qe1HF5GzI3LbV2O7PkA2",
+                                        "type": "condition",
+                                        "title": "and",
+                                        "message": "{params[0]} {params[1]} {params[2]}",
+                                        "params": [
+                                            { "value": "XMR", "type": "symbol", "unit": "" },
+                                            { "value": ">", "type": "operator", "unit": "" },
+                                            { "value": "250", "type": "price", "unit": "$" }
+                                        ],
+                                        "template": "priceCondition"
+                                    }
+                                ],
+                                "actions": [
+                                    {
+                                        "id": "cQw4Ue6P5NzK3LbX1V9GhB2",
+                                        "type": "action",
+                                        "title": "action",
+                                        "message": "{params[0]} {params[1]} {params[2]}",
+                                        "params": [
+                                            { "value": "SELL", "type": "side", "unit": "" },
+                                            { "value": "XMRUSDT", "type": "symbol", "unit": "" },
+                                            { "value": "30", "type": "amount", "unit": "$" }
+                                        ],
+                                        "template": "placeOrder"
+                                    }
+                                ],
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "id": "Tj7KyN5XvK5M8NbP4R7TqW",
@@ -244,9 +302,7 @@ let defaultItems = [
                             "active": true
                         },
                         "message": "Another nested condition level 2",
-                        "variables": [
-                            { "id": "2PsZMCtEwVYm7QLnQDp1fB", "name": "a", "type": "integer", "value": 15, "description": "" }
-                        ],
+                        "variables": [],
                         "conditions": [
                             {
                                 "id": "hQX3R7yE6TZG9KwB3U5YbD",
@@ -299,7 +355,7 @@ let defaultItems = [
                 "showChildren": true,
                 "active": true,
                 "group": {
-                    "showGroup": false,
+                    "showGroup": true,
                     "name": "Group Name 5",
                     "message": "test group name 5",
                     "color": "red",

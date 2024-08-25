@@ -118,35 +118,50 @@
         $(document).ready(async () => {
             try {
                 await renderDndEditorScripts(defaultItems);
-
                 await renderComponentScripts();
         
                 const { default: applyClasses } = await import('/static/js/render/class-render.js');
-                //const { default: applyComponents } = await import('/static/js/render/component-render.js');
+                // const { default: applyComponents } = await import('/static/js/render/component-render.js');
         
-                //await applyComponents();
-                applyClasses();
-
+                // Wait for applyClasses() to complete
+                await applyClasses();
+        
+                // Run code that needs to happen after applyClasses()
                 $('div[data-class="numberPanelClasses"]').each(function(index) {
                     $(this).html(`<span class="ps-[8px] opacity-30">${index + 1}</span>`); 
                 });
-
+        
+                $('[data-class="panelWrapperClasses"]').each(function() {
+                    var $panelWrapper = $(this);
+                    var $lineGroupArea = $panelWrapper.find('[data-class="lineGroupAreaClasses"]').first();
+                    var $groupSections = $panelWrapper.find('[data-class="groupSectionClasses"]');
+                    
+                    if ($lineGroupArea.length > 0 && $groupSections.length > 0) {
+                        var lineGroupMarginLeft = $lineGroupArea.css('margin-left');
+                        $groupSections.css('margin-left', lineGroupMarginLeft);
+                    }
+                });
+        
                 function updateLineAreaHeights() {
                     $('[data-class="panelWrapperClasses"]').each(function() {
                         let $panelWrapper = $(this);
+                        let $lineGroupArea = $panelWrapper.find('[data-class="lineGroupAreaClasses"]').first();
+                        $lineGroupArea.css('height', $panelWrapper.height() + 'px');
+        
                         let $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
                         $lineArea.css('height', $panelWrapper.height() + 'px');
                     });
                 }
         
-                    updateLineAreaHeights()
-                    $(window).on('resize', updateLineAreaHeights);
-                
+                // Update line area heights after all other operations
+                updateLineAreaHeights();
+                $(window).on('resize', updateLineAreaHeights);
+        
                 const script = document.createElement('script');
                 script.type = 'module';
                 script.src = '/static/js/input-property.js';
                 document.body.appendChild(script);
-
+        
                 // $('div[data-class="numberPanelClasses"]').each(function() {
                 //     var $this = $(this);
                 //     var parentLevel = $this.closest('div[dnd-level]').attr('dnd-level'); // หาค่า dnd-level จาก element parent
@@ -156,13 +171,10 @@
                 //         $this.css('margin-left', marginLeft + 'px'); // เพิ่ม margin-left
                 //     }
                 // });
-
-
         
             } catch (error) {
                 console.error('Error during initialization:', error);
             }
-
         });
 
 

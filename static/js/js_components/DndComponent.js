@@ -15,12 +15,12 @@ function renderConditionMessage(params, message) {
                     } else {
                         return `<span>${text}${unit}</span>`;
                     }
-                } else { return ""}
+                } else { return "" }
             }
             return match;
         });
     }
-    
+
     return message;
 }
 function createDndParams(params, message) {
@@ -31,8 +31,8 @@ function createDndParams(params, message) {
     return div.outerHTML;
 }
 
-export async function renderContent(items, level=0, groupLevel=1, parentid="") {
-    const results = await Promise.all(items.map(async (item) => {
+export async function renderContent(items, level = -1, groupLevel = -1, parentid = "", ) {
+    const results = await Promise.all(items.map(async (item, index) => {
 
         const addMoreTemplate = (text) => `
         <div data-class="addMoreClasses">
@@ -71,7 +71,7 @@ export async function renderContent(items, level=0, groupLevel=1, parentid="") {
                  </div>
         `).join('');
 
-        
+
 
         const rightPanels = item.actions.map(action => `
             <div data-class="commonFlexClasses"
@@ -111,15 +111,19 @@ export async function renderContent(items, level=0, groupLevel=1, parentid="") {
 
         const hasVariables = item.variables && item.variables.length > 0;
 
-        const groupSection =`
-            <div class="my-1 col-[span_30/span_30] ml-[${((level+1)+(groupLevel-1)) * 24}px] bg-[#4D5568] dark:text-gray-300 text-gray-800 font-semibold py-2 px-4">
+        if (item.group.showGroup === true){
+            groupLevel += 1;
+        }
+
+        const groupSection = `
+            <div data-class="groupSectionClasses" class="my-1 col-[span_30/span_30] ml-[${(((level + 1) + (groupLevel + 1)) * 24)}px] bg-[#4D5568] dark:text-gray-300 text-gray-800 font-semibold py-2 px-4">
                 ${item.group.name}
-            </div>` 
+            </div>`
 
-        const childrenContent = item.children && item.children.length > 0 
-        ? await renderContent(item.children, level + 1, groupLevel, item.id)
-        : '';
-
+        const childrenContent = item.children && item.children.length > 0
+            ? await renderContent(item.children, level + 1, groupLevel, item.id)
+            : '';
+{/* <div data-class="lineAreaClasses" class="absolute bottom-0 bg-gray-700 ml-[${(((level + 1)) * 24)}px] w-[0.5px]" style="z-index: -1;"></div> */}
         return `
         <div data-class="panelWrapperClasses"
             dnd-parent-id="${parentid}"
@@ -130,15 +134,16 @@ export async function renderContent(items, level=0, groupLevel=1, parentid="") {
             dnd-show-children="${item.showChildren}"
             dnd-message="${item.message}"
             dnd-level="${level}">
-            ${item.group.showGroup ? `<div data-class="lineAreaClasses" class="absolute top-1 bg-gray-700 ml-[${(((level+1)+(groupLevel-1)) * 24)}px] w-[2px]" style="z-index: -1;"></div>` : ''}
+            ${item.group.showGroup ? `<div data-class="lineGroupAreaClasses" class="absolute top-1 bg-gray-700  opacity-80 ml-[${(((level + 1) + (groupLevel)) * 24)}px] w-[2px]" style="z-index: -1;"></div>` : ''}
+            <div data-class="lineAreaClasses" class="absolute bottom-0 bg-gray-700  opacity-50  ml-[${(((level + 0) + (groupLevel)) * 24)}px]  w-[0.5px]" style="z-index: -1;"></div>
             ${item.group && item.group.showGroup == true ? groupSection : ''}
-            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(((level+1)+(groupLevel)) * 24) - (item.group.showGroup === false ? 24 : 0)}px]">${variablesContent}</div>` : ''}
+            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(((level + 2) + (groupLevel)) * 24)}px]">${variablesContent}</div>` : ''}
 
-            <div class="col-[span_30/span_30] flex ml-[${((level + 1) * 24) - (item.group.showGroup === false ? 24 : 0)}px]">
+            <div class="col-[span_30/span_30] flex ml-[${((level + 1) * 24)+ (item.group.showGroup === true ? 24 : 0)}px]">
                 <div data-class="numberPanelClasses" class="absolute left-0 top-0">
                     xx
                 </div>
-                <div class="grid ml-[${groupLevel > 0 ? groupLevel * 24 : 24}px] grid-cols-[repeat(30,_minmax(0,_1fr))]">
+                <div class="grid ml-[${groupLevel > 0 ? groupLevel * 24 : 24}px] w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                 
                     <div data-class="leftPanelClasses">
                         ${leftPanels}
@@ -154,9 +159,9 @@ export async function renderContent(items, level=0, groupLevel=1, parentid="") {
         </div>
     `;
     }));
-            /*<div data-class="childrenPanelClasses" dnd-parent-id="${item.id}">
-                ${childrenContent}
-            </div>*/
+    /*<div data-class="childrenPanelClasses" dnd-parent-id="${item.id}">
+        ${childrenContent}
+    </div>*/
 
     return results.join('');
 }
