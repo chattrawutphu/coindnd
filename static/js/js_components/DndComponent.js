@@ -132,9 +132,9 @@ export async function renderContent(items, level=0, groupLevel=1, parentid="") {
             dnd-level="${level}">
             ${item.group.showGroup ? `<div data-class="lineAreaClasses" class="absolute top-1 bg-gray-700 ml-[${(((level+1)+(groupLevel-1)) * 24)}px] w-[2px]" style="z-index: -1;"></div>` : ''}
             ${item.group && item.group.showGroup == true ? groupSection : ''}
-            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${((level+1)+(groupLevel)) * 24}px]">${variablesContent}</div>` : ''}
+            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(((level+1)+(groupLevel)) * 24) - (item.group.showGroup === false ? 24 : 0)}px]">${variablesContent}</div>` : ''}
 
-            <div class="col-[span_30/span_30] flex ml-[${((level-1)+(groupLevel+1)) * 24}px]">
+            <div class="col-[span_30/span_30] flex ml-[${((level + 1) * 24) - (item.group.showGroup === false ? 24 : 0)}px]">
                 <div data-class="numberPanelClasses" class="absolute left-0 top-0">
                     xx
                 </div>

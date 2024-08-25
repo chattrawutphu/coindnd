@@ -63,7 +63,7 @@
                         const module = await import(componentFile);
                         
                         if (typeof module.renderContent === 'function') {
-                            const content = await module.renderContent(items, 0);
+                            const content = await module.renderContent(items);
                             ;
                             $(component).html(content);
                             $(component).append(addMoreContainerTemplate);
@@ -128,9 +128,20 @@
                 applyClasses();
 
                 $('div[data-class="numberPanelClasses"]').each(function(index) {
-                    $(this).html(`<span class="ps-2 opacity-30">${index + 1}</span>`); 
+                    $(this).html(`<span class="ps-[8px] opacity-30">${index + 1}</span>`); 
                 });
 
+                function updateLineAreaHeights() {
+                    $('[data-class="panelWrapperClasses"]').each(function() {
+                        let $panelWrapper = $(this);
+                        let $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
+                        $lineArea.css('height', $panelWrapper.height() + 'px');
+                    });
+                }
+        
+                    updateLineAreaHeights()
+                    $(window).on('resize', updateLineAreaHeights);
+                
                 const script = document.createElement('script');
                 script.type = 'module';
                 script.src = '/static/js/input-property.js';
@@ -145,8 +156,13 @@
                 //         $this.css('margin-left', marginLeft + 'px'); // เพิ่ม margin-left
                 //     }
                 // });
+
+
         
             } catch (error) {
                 console.error('Error during initialization:', error);
             }
+
         });
+
+
