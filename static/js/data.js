@@ -84,9 +84,9 @@ let defaultItems = [
                 title: "action",
                 message: "{params[0]} {params[1]} {params[2]}",
                 params: [
-                    { value: "LONG", type: "side", unit: "" },
-                    { value: "BTCUSDT", type: "symbol", unit: "" },
-                    { value: "500", type: "amount", unit: "$" }
+                    { value: "long",value: "LONG", type: "side", color: "aqua", unit: "" },
+                    { value: "btcusdt", text: "BTC/USDT", color: "yellow", type: "symbol", unit: "" },
+                    { value: "500", text: "500", color: "white", type: "amount", unit: "$" },
                 ],
                 template: "placeOrder" // Updated template field
             }

@@ -31,7 +31,7 @@ function createDndParams(params, message) {
     return div.outerHTML;
 }
 
-export async function renderContent(items, level, parentid="") {
+export async function renderContent(items, level=0, groupLevel=1, parentid="") {
     const results = await Promise.all(items.map(async (item) => {
 
         const addMoreTemplate = (text) => `
@@ -111,6 +111,15 @@ export async function renderContent(items, level, parentid="") {
 
         const hasVariables = item.variables && item.variables.length > 0;
 
+        const groupSection =`
+            <div class="my-1 col-[span_30/span_30] ml-[${((level+1)+(groupLevel-1)) * 24}px] bg-[#4D5568] dark:text-gray-300 text-gray-800 font-semibold py-2 px-4">
+                ${item.group.name}
+            </div>` 
+
+        const childrenContent = item.children && item.children.length > 0 
+        ? await renderContent(item.children, level + 1, groupLevel, item.id)
+        : '';
+
         return `
         <div data-class="panelWrapperClasses"
             dnd-parent-id="${parentid}"
@@ -121,12 +130,15 @@ export async function renderContent(items, level, parentid="") {
             dnd-show-children="${item.showChildren}"
             dnd-message="${item.message}"
             dnd-level="${level}">
-            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${(level+1) * 24}px]">${variablesContent}</div>` : ''}
-            <div data-class="numberPanelClasses">
-                xx
-            </div>
-            <div class="col-[span_29/span_29] ml-[${(level) * 24}px]">
-                <div class="grid grid-cols-[repeat(30,_minmax(0,_1fr))]">
+            ${item.group.showGroup ? `<div data-class="lineAreaClasses" class="absolute top-1 bg-gray-700 ml-[${(((level+1)+(groupLevel-1)) * 24)}px] w-[2px]" style="z-index: -1;"></div>` : ''}
+            ${item.group && item.group.showGroup == true ? groupSection : ''}
+            ${hasVariables ? `<div class="mb-1 col-[span_30/span_30] ml-[${((level+1)+(groupLevel)) * 24}px]">${variablesContent}</div>` : ''}
+
+            <div class="col-[span_30/span_30] flex ml-[${((level-1)+(groupLevel+1)) * 24}px]">
+                <div data-class="numberPanelClasses" class="absolute left-0 top-0">
+                    xx
+                </div>
+                <div class="grid ml-[${groupLevel > 0 ? groupLevel * 24 : 24}px] grid-cols-[repeat(30,_minmax(0,_1fr))]">
                 
                     <div data-class="leftPanelClasses">
                         ${leftPanels}
@@ -138,8 +150,8 @@ export async function renderContent(items, level, parentid="") {
                     </div>
                 </div>          
             </div>
+            ${childrenContent}
         </div>
-        ${item.children && item.children.length > 0 ? await renderContent(item.children, level+=1, item.id) : ''}
     `;
     }));
             /*<div data-class="childrenPanelClasses" dnd-parent-id="${item.id}">
