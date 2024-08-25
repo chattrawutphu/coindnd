@@ -66,7 +66,6 @@
                             const content = await module.renderContent(items);
                             ;
                             $(component).html(content);
-                            $(component).append(addMoreContainerTemplate);
 
                             
                         } else {
@@ -131,7 +130,7 @@
                     $(this).html(`<span class="ps-[8px] opacity-30">${index + 1}</span>`); 
                 });
         
-                $('[data-class="panelWrapperClasses"]').each(function() {
+                /*$('[data-class="panelWrapperClasses"]').each(function() {
                     var $panelWrapper = $(this);
                     var $lineGroupArea = $panelWrapper.find('[data-class="lineGroupAreaClasses"]').first();
                     var $groupSections = $panelWrapper.find('[data-class="groupSectionClasses"]');
@@ -140,16 +139,19 @@
                         var lineGroupMarginLeft = $lineGroupArea.css('margin-left');
                         $groupSections.css('margin-left', lineGroupMarginLeft);
                     }
-                });
+                });*/
         
-                function updateLineAreaHeights() {
+                /*function updateLineAreaHeights() {
                     $('[data-class="panelWrapperClasses"]').each(function() {
                         let $panelWrapper = $(this);
-                        let $lineGroupArea = $panelWrapper.find('[data-class="lineGroupAreaClasses"]').first();
-                        $lineGroupArea.css('height', $panelWrapper.height() + 'px');
-        
                         let $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
-                        $lineArea.css('height', $panelWrapper.height() + 'px');
+                        
+                        let groupSectionHeight = $panelWrapper.find('[data-class="groupSectionClasses"]').first().height() || 0;
+                        let variablePanelHeight = $panelWrapper.find('[data-class="variablePanelClasses"]').first().height() || 0;
+                        
+                        let adjustedHeight = ($panelWrapper.height() - variablePanelHeight);
+                        
+                        $lineArea.css('height', adjustedHeight + 'px');
                     });
                 }
         
@@ -160,7 +162,7 @@
                 const script = document.createElement('script');
                 script.type = 'module';
                 script.src = '/static/js/input-property.js';
-                document.body.appendChild(script);
+                document.body.appendChild(script);*/
         
                 // $('div[data-class="numberPanelClasses"]').each(function() {
                 //     var $this = $(this);
