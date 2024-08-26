@@ -20,7 +20,7 @@ let defaultItems = [
                 "title": "IfCondition Level 0",
                 "showChildren": true,
                 "active": true,
-                "message": "",
+                "message": "Setup the entire level by updating the Z height and Z elevation of most environment objects.",
                 "variables": [
                     { "id": "d1d-OcTnaEira8poGNgCxA", "name": "x", "type": "integer", "value": 10, "description": "" },
                     { "id": "MW_CmR-7rUOKr_kTskiBBQ", "name": "y", "type": "integer", "value": -2, "description": "" },
@@ -108,7 +108,7 @@ let defaultItems = [
                         "title": "IfCondition Level 1",
                         "showChildren": true,
                         "active": true,
-                        "message": "Test comment for dev!",
+                        "message": "",
                         "variables": [
                             { "id": "1OsYLCv-xUym6SNMTBLCog", "name": "x", "type": "integer", "value": 10, "description": "" }
                         ],
@@ -160,15 +160,7 @@ let defaultItems = [
                                 "title": "IfCondition Level 2",
                                 "showChildren": true,
                                 "active": true,
-                                "group": {
-                                    "showGroup": false,
-                                    "name": "Group Name 3",
-                                    "message": "test group name 3",
-                                    "color": "green",
-                                    "showChildren": true,
-                                    "active": true
-                                },
-                                "message": "Nested condition level 2",
+                                "message": "",
                                 "variables": [],
                                 "conditions": [
                                     {
@@ -230,7 +222,7 @@ let defaultItems = [
                                         "title": "IfCondition Level 2",
                                         "showChildren": true,
                                         "active": true,
-                                        "message": "Another nested condition level 2",
+                                        "message": "",
                                         "variables": [],
                                         "conditions": [
                                             {
@@ -283,7 +275,7 @@ let defaultItems = [
                                 "title": "IfCondition Level 2",
                                 "showChildren": true,
                                 "active": true,
-                                "message": "Another nested condition level 2",
+                                "message": "",
                                 "variables": [],
                                 "conditions": [
                                     {
@@ -336,7 +328,7 @@ let defaultItems = [
                         "title": "IfCondition Level 1 - Alternative",
                         "showChildren": true,
                         "active": true,
-                        "message": "Alternative branch with nested conditions",
+                        "message": "",
                         "variables": [
                             { "id": "3KzN2CtXwWYm8MbX3Lp3fC", "name": "b", "type": "integer", "value": 8, "description": "" }
                         ],
@@ -431,15 +423,7 @@ let defaultItems = [
                         "title": "IfCondition Level 1 - Nested",
                         "showChildren": true,
                         "active": true,
-                        "group": {
-                            "showGroup": true,
-                            "name": "Group Name 7",
-                            "message": "test group name 7",
-                            "color": "yellow",
-                            "showChildren": true,
-                            "active": true
-                        },
-                        "message": "Nested condition level 1",
+                        "message": "",
                         "variables": [
                             { "id": "5MnR4DnXxWYm0OqY5Mp5hF", "name": "d", "type": "integer", "value": 20, "description": "" }
                         ],

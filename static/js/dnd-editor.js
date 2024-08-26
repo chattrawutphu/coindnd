@@ -66,7 +66,7 @@
                             const content = await module.renderContent(items);
                             ;
                             $(component).html(content);
-
+                            $(component).append(addMoreContainerTemplate)
                             
                         } else {
                             console.error('renderContent function not found in module:', componentFile);

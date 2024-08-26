@@ -17,11 +17,11 @@ var classesModel = {
     },
     
     leftPanelClasses() {
-        const commonClasses = "col-[span_12/span_12] mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4";
+        const commonClasses = "col-[span_12/span_12] rounded-l-[3px] mb-0 sm:mb-[2px] relative text-md content-start items-start border-l-4 overflow-hidden";
         return `${commonClasses} dark:bg-[#414b5a] bg-emerald-50 dark:border-l-indigo-400 border-l-indigo-500`;
     },
     rightPanelClasses() {
-        const commonClasses = "col-[span_18/span_18] mb-[2px] relative text-md content-start items-start ";
+        const commonClasses = "col-[span_18/span_18] mb-[2px] rounded-r-[3px] relative text-md content-start items-start overflow-hidden";
         return `${commonClasses} bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150`;
     },
 
@@ -34,9 +34,10 @@ var classesModel = {
         return `${commonClasses} `;
     },
     panelBgClasses() {
-        const commonClasses = "relative flex pt-1 content-start gap-x-1 mx-2 cursor-pointer";
+        const commonClasses = "relative flex pt-1 content-start gap-x-1 px-0.5 cursor-pointer";
         return `${commonClasses} dark:opacity-50 opacity-30`;
     },
+    
     iconClasses: "size-4",
     whenIconClasses: "size-4",
     whileIconClasses: "size-4",

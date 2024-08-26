@@ -63,7 +63,7 @@ export async function renderContent(items, level = 2, parentid = "", ) {
                     <div data-class="commonTitleClasses">${condition.title}</div>
                     ${createDndParams(condition.params, condition.message)}
                     </div>
-                    <div data-class="panelBgClasses openProperty">
+                    <div data-class="panelBgClasses" class="openProperty">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                             <path d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" />
                         </svg>
@@ -90,7 +90,7 @@ export async function renderContent(items, level = 2, parentid = "", ) {
                     <div data-class="commonTitleClasses">${action.title}</div>
                     ${createDndParams(action.params, action.message)}
                     </div>
-                    <div data-class="panelBgClasses openProperty">
+                    <div data-class="panelBgClasses" class="openProperty">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                             <path d="M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" />
                         </svg>
@@ -99,13 +99,17 @@ export async function renderContent(items, level = 2, parentid = "", ) {
         `).join('');
 
         const variablesContent = item.variables.map(variable => `
-            <div class="flex gap-x-1 mx-2 justify-between">
-                <div class="flex gap-x-1">
+            <div class="flex gap-x-1 justify-between">
+                <div class="flex gap-x-1 items-center content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3  text-green-500">
+                        <path d="M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z" />
+                    </svg>
+
                     <div class="text-[13px]/[18px] text-green-500">${variable.type}</div>
                     <div class="text-[15px]/[18px] text-green-500 font-bold">${variable.name}</div>
                     <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(variable.type) ? variable.value : `"${variable.value}"`}</div>
                 </div>
-                ${variable.description ? `<div class="text-sm/[18px] text-green-500"> # ${variable.description}</div>` : ''}
+                ${variable.description ? `<div class="text-sm/[18px] text-gray-400"> # ${variable.description}</div>` : ''}
             </div>
         `).join('');
 
@@ -133,22 +137,27 @@ export async function renderContent(items, level = 2, parentid = "", ) {
             dnd-show-children="${item.showChildren}"
             dnd-message="${item.message}"
             dnd-level="${level}">
+
+            ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 top-0 col-[span_30/span_30] ml-[${((level) * 24)}px]">${variablesContent}</div>` : ''}
+            ${item.message !== "" ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${((level) * 24)}px]"># ${item.message}</div>` : ''}            
             
             ${item.subtype === "group" ? 
-                `<div data-class="groupSectionClasses" class="my-1 bg-[${item.backgroundColor}] text-[${item.textColor}] col-[span_30/span_30] ml-[${(level) * 24}px]  font-semibold py-2 px-4"
-                >
-                    ${item.title}
-                </div>` 
-                : 
-                ''}
-            
-            ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 top-0 col-[span_30/span_30] ml-[${((level) * 24)}px]">${variablesContent}</div>` : ''}
+                `<div data-class="groupSectionClasses" class="my-1 rounded-[3px] bg-[${item.backgroundColor}] text-[${item.textColor}] col-[span_30/span_30] ml-[${(level) * 24}px]  font-semibold pt-1 pb-2 px-3"> 
+                    <div class="flex gap-x-1 justify-between">
+                        <div class="text-[15px]/[18px]">
+                            ${item.title}
+                        </div>
+                        <div class="text-sm/[18px]">
+                            # ${item.message}
+                        </div>
+                    </div>
+                </div>` : ''}
 
             <div class=" col-[span_30/span_30] flex ml-[${((level) * 24)}px]">
-                <div data-class="numberPanelClasses" class="absolute left-0 top-0">
+                <div data-class="numberPanelClasses" class="absolute left-0 top-0 mt-[${(item.variables.length * 18)}px]">
                     xx
                 </div>
-                <div data-class="lineAreaClasses" class="absolute h-full opacity-50 ${item.subtype === 'group' ? `w-[2px]` : `w-[0.5px] bg-gray-700`}" style="background-color: ${item.subtype === 'group' ? item.backgroundColor : ''}; z-index: -1;"></div>
+                <div data-class="lineAreaClasses" class="absolute h-full ${item.subtype === 'group' ? `opacity-60 w-[2px]` : `opacity-80 w-[0.5px] bg-gray-700`}" style="background-color: ${item.subtype === 'group' ? item.backgroundColor : ''}; z-index: -1;"></div>
 
                 ${item.subtype !== "group" ? ` <div class="grid w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                 
