@@ -1,7 +1,7 @@
 var test = " "
 
 var classesModel = {
-    containerClasses: "min-h-full h-full max-h-full p-1  overscroll-contain", //container mx-auto content-start
+    containerClasses: " p-1 flex relative select-none overscroll-contain", //container mx-auto content-start
 
     commonFlexClasses() {
         const commonClasses = "relative justify-between flex border border-t-0 border-x-0 p-1 cursor-default";
@@ -36,6 +36,11 @@ var classesModel = {
     panelBgClasses() {
         const commonClasses = "relative flex pt-1 content-start gap-x-1 px-0.5 cursor-pointer";
         return `${commonClasses} dark:opacity-50 opacity-30`;
+    },
+
+    expandButtonClasses() {
+        const commonClasses = "absolute top-1 p-1 -left-[24px] text-gray-300 cursor-pointer";
+        return `${commonClasses}`;
     },
     
     iconClasses: "size-4",

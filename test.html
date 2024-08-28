@@ -1,9 +1,136 @@
-<span class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-1 pt-0.5 mb-1"
-    style="color: yellow;">BTC/USDT</span> <span
-    class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-1 pt-0.5 mb-1"
-    style="color: lime;">&lt;=</span> <span
-    class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-1 pt-0.5 mb-1" style="color: aqua;">Highest price</span>
-    <span>of </span> <span>the </span><span class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-1 pt-0.5 mb-1"
-    style="color: aqua;">4 hour timeframe</span><span>within </span><span>the </span><span>last </span>
-    <span class="dark:bg-gray-600 font-medium border-gray-400 border rounded-md p-1 pt-0.5 mb-1"
-    style="color: white;">20</span> <span> candlesticks</span>
+<script>
+    // STAR: Product Recommender Solution Widget
+    
+    $(function () {
+        var currentUrl = window.location.pathname;
+    
+        if (currentUrl.includes("/sme-banking/scb-sme-tools/product-recommender/recommender-solution")) {
+            var storedData = JSON.parse(localStorage.getItem("selectedProductRecommender"));
+            var selectedProducts = [];
+    
+            function initializePage() {
+                if (storedData) {
+                    updateHeroSection();
+                    fetchProducts();
+                } else {
+                    console.error("No stored data found");
+                }
+            }
+    
+            function updateHeroSection() {
+                $('#bannerIndustry').text(storedData.industries.title);
+                $('#bannerRevenue').text(storedData.revenue.title);
+                $('#revenueLabel').text(storedData.revenue.revenue === 'annual' ? 'รายได้ต่อปี' : 'รายได้ต่อเดือน');
+    
+                var businessPointsHtml = storedData.businessNeeds.map(function (need) {
+                    return '<li><p>' + need.title + '</p></li>';
+                }).join('');
+                $('#businessPoints').html(businessPointsHtml);
+            }
+    
+            function fetchProducts() {
+                $('#loader').show();
+                $.ajax({
+                    url: '/services/scb-sme/recommenderSolution',
+                    type: 'POST',
+                    data: JSON.stringify({
+                        industry: storedData.industries.value,
+                        revenue: storedData.revenue.value,
+                        business: storedData.businessNeeds.map(need => need.value).join(','),
+                        aliapath: $('.product-solution-container').data('url'),
+                        search: $('.product-solution-container').data('search'),
+                        lang: $('html').attr('lang')
+                    }),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        console.log(data)
+                        renderProducts(data);
+                        $('#loader').hide();
+                    },
+                    error: function () {
+                        console.error('Failed to fetch products');
+                        $('#loader').hide();
+                    }
+                });
+            }
+    
+            function renderProducts(data) {
+                $('.product-hero .desktop').attr('src', data.desktopImage);
+                $('.product-hero .mobile').attr('src', data.mobileImage);
+    
+                var productsHtml = data.sections.map(function (section) {
+                    if (section.productCards.length === 0) return '';
+    
+                    var cardsHtml = section.productCards.map(function (product) {
+                        return `
+                                <div class="inner-card icon-done" data-product='${JSON.stringify(product)}'>
+                                    <img class="icons" src="${product.iconPath}" alt="${product.title}" />
+                                    <span class="top-title">${product.businessNeedsTags}</span>
+                                    <h6>${product.title}</h6>
+                                    <p>${product.description}</p>
+                                    <a class="prolink primary-link" href="${urlWhitelister(product.url)}" target="_blank">
+            @Model.FindLabel
+                                    </a>
+                                </div>
+                            `;
+                    }).join('');
+    
+                    return `
+                            <article class="category">
+                                <h2>${section.sectionTitle}</h2>
+                                <div class="inner-card-holder">
+                                    ${cardsHtml}
+                                </div>
+                            </article>
+                        `;
+                }).join('');
+    
+                $('#productContainer').html(productsHtml);
+            }
+    
+            function urlWhitelister(url) {
+                var hostURL = window.location.host;
+                var whiteListUrls = ['www.scb.co.th', 'scb-dev-65-01.adobecqms.net', 'scb-stg-65-01.adobecqms.net', 'd2q36ptq1nb7gr.cloudfront.net', 'd38pld1or1op5g.cloudfront.net'];
+                return whiteListUrls.includes(hostURL) ? url.replace('/content/scb', '') : url;
+            }
+    
+            $(document).on('click', '.inner-card', function () {
+                $(this).toggleClass('pick');
+                var product = $(this).data('product');
+                var index = selectedProducts.findIndex(p => p.sfProduct === product.sfProduct);
+    
+                if (index === -1) {
+                    selectedProducts.push({
+                        sfProduct: product.sfProduct,
+                        sfProductType: product.sfProductType,
+                        sfProductName: product.pageName
+                    });
+                } else {
+                    selectedProducts.splice(index, 1);
+                }
+    
+                updateSelectedProductsDisplay();
+            });
+    
+            function updateSelectedProductsDisplay() {
+                if (selectedProducts.length > 0) {
+                    $('#defaultCTA').hide();
+                    $('#selectedProductsCTA').show();
+                    $('#selectedProductCount').text(selectedProducts.length);
+                } else {
+                    $('#defaultCTA').show();
+                    $('#selectedProductsCTA').hide();
+                }
+            }
+    
+            $('#addLeadsBtn').on('click', function () {
+                localStorage.setItem("selectedProduct", JSON.stringify(selectedProducts.map(p => p.sfProductName)));
+                localStorage.setItem("selectedLeads", JSON.stringify(selectedProducts));
+            });
+    
+            initializePage();
+        }
+    });
+    
+    // END: Product Recommender Solution Widget
+    </script>

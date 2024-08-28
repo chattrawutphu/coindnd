@@ -11,15 +11,17 @@
     <!-- <script src="/static/js/lz-string.min.js"></script> -->
     <!-- <link href="/static/styles/tailwind.css" rel="stylesheet"> -->
     <!-- <link href="/static/styles/base-tailwind.css" rel="stylesheet"> -->
-     <link href="/static/styles/style.css" rel="stylesheet">
+    <link href="/static/styles/style.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <script src="/static/js/tailwind.js"></script> -->
-    
+
 </head>
 
 <body>
-    <div data-class="containerClasses" class="flex relative select-none">
-        <div class="hidden md:block resize-x w-72 lg:w-96 xl:w-[28rem] dark:bg-gray-600/30 me-1 rounded-md overflow-hidden">
+    <div data-class="containerClasses" class="transform origin-top-left"
+        style="scale: 0.9; width: 111.11%; height: 111.11%;">
+        <div
+            class="hidden md:block resize-x w-72 lg:w-96 xl:w-[28rem] dark:bg-gray-600/30 me-1 rounded-md overflow-hidden">
             <div class="dark:text-gray-300 text-gray-800 bg-[#4D5568] px-2 py-1">
                 <div class="">
                     <div>Peroperties</div>
@@ -27,7 +29,7 @@
             </div>
             <div data-js-component="PropertyPriceCandlestickCdtComponent"></div>
         </div>
-        <div class="w-full flex flex-col">
+        <div class="w-full flex flex-col relative">
             <div class="h-8 mx-4 dark:text-gray-300 text-gray-800 bg-[#4D5568] items-center rounded-md mb-2">
                 <div class="float-left flex gap-x-1">
                     <button
@@ -74,14 +76,25 @@
                     Plan</button>
                 <div data-js-component="DarkmodeComponent" class="float-right"></div>
             </div>
-            <div data-js-component="DndComponent" class="h-auto px-1 md:h-4/6 overflow-auto">
-            </div>
-            <div class="hidden md:block resize-y relative h-2/6 mt-1 items-center dark:bg-gray-600/30 rounded-md">
-                <div class="h-[6px] w-[6px] -top-[10px] right-0  absolute dark:bg-[#111827] bg-white">
+            <div data-js-component="DndComponent" id="content" class="h-auto px-1 overflow-auto"></div>
+            <div class="absolute top-10 right-4">
+                <div id="minimap"
+                    class="h-64 w-8 bg-[#4D5568]/20 rounded-sm relative cursor-pointer group opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                    <div id="minimap-slider"
+                        class="absolute bg-[#4D5568] rounded-sm w-full opacity-100 transition-opacity duration-300 ease-in-out cursor-grab active:cursor-grabbing">
+                    </div>
                 </div>
             </div>
+
+
+            <!-- md:h-4/6 -->
+            <!-- <div class="hidden md:block resize-y relative h-2/6 mt-1 items-center dark:bg-gray-600/30 rounded-md">
+                <div class="h-[6px] w-[6px] -top-[10px] right-0  absolute dark:bg-[#111827] bg-white">
+                </div>
+            </div> -->
         </div>
-        <div class="hidden md:block resize-x w-72 lg:w-96 xl:w-[28rem] dark:bg-gray-600/30 ms-1 rounded-md overflow-hidden">
+        <div
+            class="hidden md:block resize-x w-72 lg:w-96 xl:w-[28rem] dark:bg-gray-600/30 ms-1 rounded-md overflow-hidden">
             <div class="dark:text-gray-300 text-gray-800 bg-[#4D5568] px-2 py-1">
                 <div class="flex items-center">
                     <div>Peroperties</div>
@@ -94,8 +107,156 @@
     </div>-->
 
     <script type="module" src="/static/js/dnd-editor.js"></script>
-    
+    <script>
+        $(document).ready(function () {
+    var isDragging = false;
+    var clickOffsetY;
+    var sliderHeight = '1rem';
+    var contentScrollRatio;
 
+    function calculateMinimapHeight() {
+        var contentHeight = $('#content')[0].scrollHeight;
+        var minHeight = 3 * 16; // 3rem in pixels
+        var maxHeight = 24 * 16; // 24rem in pixels
+        var contentMaxHeight = 10000; // maximum content height to consider
+
+        // Linear interpolation
+        var height = (contentHeight / contentMaxHeight) * (maxHeight - minHeight) + minHeight;
+
+        // Clamp the value between minHeight and maxHeight
+        return Math.max(minHeight, Math.min(height, maxHeight));
+    }
+
+    function updateMinimap() {
+        var contentHeight = $('#content')[0].scrollHeight;
+        var viewportHeight = $('#content').height();
+        var scrollTop = $('#content').scrollTop();
+        var minimapHeight = calculateMinimapHeight();
+
+        contentScrollRatio = contentHeight / minimapHeight;
+
+        var sliderHeightPx = parseFloat(sliderHeight) * 16;
+        var sliderTop = (scrollTop / (contentHeight - viewportHeight)) * (minimapHeight - sliderHeightPx);
+        sliderTop = Math.max(0, Math.min(sliderTop, minimapHeight - sliderHeightPx));
+
+        $('#minimap').css('height', minimapHeight + 'px');
+        $('#minimap-slider').css({
+            height: sliderHeight,
+            top: sliderTop + 'px',
+            display: 'block'
+        });
+
+        if (contentHeight <= viewportHeight) {
+            $('#minimap').hide();
+        } else {
+            $('#minimap').show();
+        }
+    }
+
+    function updateContentScroll(sliderTop) {
+        var contentHeight = $('#content')[0].scrollHeight;
+        var viewportHeight = $('#content').height();
+        var minimapHeight = calculateMinimapHeight();
+        var sliderHeightPx = parseFloat(sliderHeight) * 16;
+        var scrollRatio = sliderTop / (minimapHeight - sliderHeightPx);
+        var scrollTop = scrollRatio * (contentHeight - viewportHeight);
+        $('#content').scrollTop(scrollTop);
+    }
+
+    function startDragging(e) {
+        isDragging = true;
+        var sliderOffset = $('#minimap-slider').offset().top;
+        var clickY = e.pageY;
+
+        if (clickY < sliderOffset) {
+            // Click above the slider
+            $('#minimap-slider').css('top', (clickY - $('#minimap').offset().top) + 'px');
+        } else if (clickY > sliderOffset + parseFloat(sliderHeight) * 16) {
+            // Click below the slider
+            $('#minimap-slider').css('top', (clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16) + 'px');
+        }
+
+        clickOffsetY = clickY - $('#minimap-slider').offset().top;
+        $('body').css('user-select', 'none');
+        updateContentScroll($('#minimap-slider').position().top);
+    }
+
+    $('#content').on('scroll', updateMinimap);
+
+    $('#minimap').on('mousedown', startDragging);
+
+    $('#minimap-slider').on('mousedown', function (e) {
+        e.stopPropagation();
+        startDragging(e);
+    });
+
+    $(document).on('mousemove', function (e) {
+        if (isDragging) {
+            var minimapOffset = $('#minimap').offset().top;
+            var newTop = e.pageY - minimapOffset - clickOffsetY;
+            var sliderHeightPx = parseFloat(sliderHeight) * 16;
+            var maxTop = $('#minimap').height() - sliderHeightPx;
+            newTop = Math.max(0, Math.min(newTop, maxTop));
+            $('#minimap-slider').css('top', newTop + 'px');
+            updateContentScroll(newTop);
+        }
+    });
+
+    // Add event listener for hover on minimap
+    $('#minimap').hover(
+        function () {
+            $('#minimap').removeClass('opacity-0').addClass('opacity-100');
+        },
+        function () {
+            if (!isDragging) {
+                $('#minimap').removeClass('opacity-100').addClass('opacity-0');
+            }
+        }
+    );
+
+    $(document).on('mouseup', function () {
+        isDragging = false;
+        $('body').css('user-select', 'auto');
+        if (!$('#minimap').is(":hover")) {
+            $('#minimap').removeClass('opacity-100').addClass('opacity-0');
+        }
+    });
+
+    $('#minimap').on('wheel', function (e) {
+        e.preventDefault();
+        var delta = e.originalEvent.deltaY;
+        var currentScrollTop = $('#content').scrollTop();
+        $('#content').scrollTop(currentScrollTop + delta);
+    });
+
+    // Update size when expand button is clicked
+    $(document).on('click', '[data-class="expandButtonClasses"]', function () {
+        setTimeout(updateMinimap, 100); // Wait for the expansion to complete before updating
+    });
+
+    // Update size on window resize
+    var resizeTimer;
+    $(window).on('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            updateMinimap();
+        }, 250);
+    });
+
+    updateMinimap();
+
+    var observer = new MutationObserver(function (mutations) {
+        updateMinimap();
+    });
+
+    observer.observe($('#content')[0], {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
+});
+
+    </script>
 </body>
 
 </html>

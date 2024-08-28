@@ -42,9 +42,9 @@
         });*/
 
         //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-        import { defaultItems } from '/static/js/data.js';
-
-        const addMoreContainerTemplate = `
+    import { defaultItems } from '/static/js/data.js';
+    
+    const addMoreContainerTemplate = `
         <div data-class="addMoreClasses">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
@@ -53,130 +53,126 @@
         </div>
         <div class="h-44"></div>
     `;
-
-        export async function renderDndEditorScripts(items) {
-            try {
-                const selector = '[data-js-component="DndComponent"]';
-                const component = $(selector).first();
-                    try {
-                        const componentFile = `/static/js/js_components/DndComponent.js`;
-                        const module = await import(componentFile);
-                        
-                        if (typeof module.renderContent === 'function') {
-                            const content = await module.renderContent(items);
-                            ;
-                            $(component).html(content);
-                            $(component).append(addMoreContainerTemplate)
-                            
-                        } else {
-                            console.error('renderContent function not found in module:', componentFile);
-                        }
-                    } catch (error) {
-                        console.error('Error loading or rendering component:', error);
-                    }
-        
-
-            } catch (error) {
-                console.error('Error loading components:', error);
+    
+    async function renderDndEditorScripts(items) {
+        try {
+            const $component = $('[data-js-component="DndComponent"]').first();
+            if ($component.length === 0) return;
+    
+            const { renderContent } = await import('/static/js/js_components/DndComponent.js');
+            if (typeof renderContent !== 'function') {
+                throw new Error('renderContent function not found in DndComponent.js');
             }
+    
+            const content = await renderContent(items);
+            $component.html(content).append(addMoreContainerTemplate);
+        } catch (error) {
+            console.error('Error rendering DndComponent:', error);
         }
-
-
-        async function renderComponentScripts() {
-            async function renderComponent($el) {
-                const componentName = $el.data('js-component');
-        
-                if (componentName === 'DndComponent') {
-                    return; // Skip rendering for DndComponent
-                }
-        
-                try {
-                    const { default: renderContent } = await import(`/static/js/js_components/${componentName}.js`);
-                    const content = renderContent();
-                    $el.html(content);
-        
-                    // Find and render nested components
-                    const nestedComponents = $el.find('[data-js-component]');
-                    await Promise.all(nestedComponents.map(function () {
-                        return renderComponent($(this)); // Await each nested component rendering
-                    }));
-                
-                } catch (error) {
-                    console.error(`Error loading component "${componentName}":`, error);
-                }
-            }
-        
-            // Get all elements with data-js-component attribute and render them
-            const components = $('[data-js-component]');
-            await Promise.all(components.map(function () {
-                return renderComponent($(this)); // Await rendering of each component
+    }
+    
+    async function renderComponent($el) {
+        const componentName = $el.data('js-component');
+        if (componentName === 'DndComponent') return;
+    
+        try {
+            const { default: renderContent } = await import(`/static/js/js_components/${componentName}.js`);
+            const content = renderContent();
+            $el.html(content);
+    
+            const $nestedComponents = $el.find('[data-js-component]');
+            await Promise.all($nestedComponents.map(function() {
+                return renderComponent($(this));
             }));
+        } catch (error) {
+            console.error(`Error loading component "${componentName}":`, error);
         }
+    }
+    
+    function updateUIheight() {
+        const $panelWrappers = $('[data-class="panelWrapperClasses"]');
         
-        
-        $(document).ready(async () => {
-            try {
-                await renderDndEditorScripts(defaultItems);
-                await renderComponentScripts();
-        
-                const { default: applyClasses } = await import('/static/js/render/class-render.js');
-                // const { default: applyComponents } = await import('/static/js/render/component-render.js');
-        
-                // Wait for applyClasses() to complete
-                await applyClasses();
-        
-                // Run code that needs to happen after applyClasses()
-                $('div[data-class="numberPanelClasses"]').each(function(index) {
-                    $(this).html(`<span class="ps-[8px] opacity-30">${index + 1}</span>`); 
-                });
-        
-                /*$('[data-class="panelWrapperClasses"]').each(function() {
-                    var $panelWrapper = $(this);
-                    var $lineGroupArea = $panelWrapper.find('[data-class="lineGroupAreaClasses"]').first();
-                    var $groupSections = $panelWrapper.find('[data-class="groupSectionClasses"]');
+        $panelWrappers.each(function() {
+          const $panelWrapper = $(this);
+          const $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
+          const $numberPanel = $panelWrapper.find('[data-class="numberPanelClasses"]').first();
+          const $highlightArea = $panelWrapper.find('[data-class="highlightAreaClasses"]').first();
+
+          //const panelContainer = $panelWrapper.find('[data-class="panelContainerClasses"]').first().height() || 0;
+          const messagePanel = $panelWrapper.find('[data-class="messagePanelClasses"]').first().height() || 0;
+          const groupSection = $panelWrapper.find('[data-class="groupSectionClasses"]').first().height() || 0;
+          const variablePanel = $panelWrapper.find('[data-class="variablePanelClasses"]').first().height() || 0;
+          
+          const totalOffset = messagePanel + groupSection + variablePanel + 4;
+          const newHeight = $panelWrapper.height() - totalOffset;
+          
+          $lineArea.css({
+            'height': `${newHeight}px`,
+            'margin-top': `${totalOffset}px`
+          });
+          
+          $numberPanel.css('margin-top', `${totalOffset}px`);
+          $highlightArea.css('margin-top', `${totalOffset}px`);
+        });
+      }
+    
+    $(document).ready(async () => {
+        try {
+            await renderDndEditorScripts(defaultItems);
+    
+            const $components = $('[data-js-component]').not('[data-js-component="DndComponent"]');
+            await Promise.all($components.map(function() {
+                return renderComponent($(this));
+            }));
+    
+            const { default: applyClasses } = await import('/static/js/render/class-render.js');
+            await applyClasses();
+    
+            $('[data-class="numberPanelClasses"]').each(function(index) {
+                $(this).html(`<span>${index + 1}</span>`);
+            });
+    
+            $(document).on('click', '[data-class="expandButtonClasses"]', function() {
+                let $parentPanelWrapper = $(this).closest('[data-class="panelWrapperClasses"]');
+                let $siblingsPanelWrappers = $parentPanelWrapper.find('> [data-class="panelWrapperClasses"]');
+
+                $siblingsPanelWrappers.toggleClass('hidden');
+                /*$siblingsPanelWrappers.each(function() {
                     
-                    if ($lineGroupArea.length > 0 && $groupSections.length > 0) {
-                        var lineGroupMarginLeft = $lineGroupArea.css('margin-left');
-                        $groupSections.css('margin-left', lineGroupMarginLeft);
+                    if ($(this).hasClass('max-h-0')) {
+                        // Expanding
+                        $(this).removeClass('max-h-0')
+                               .addClass('max-h-[9999px]')
+                    } else {
+                        // Collapsing
+                        $(this).removeClass('max-h-[9999px]')
+                               .addClass('max-h-0')
                     }
                 });*/
-        
-                /*function updateLineAreaHeights() {
-                    $('[data-class="panelWrapperClasses"]').each(function() {
-                        let $panelWrapper = $(this);
-                        let $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
-                        
-                        let groupSectionHeight = $panelWrapper.find('[data-class="groupSectionClasses"]').first().height() || 0;
-                        let variablePanelHeight = $panelWrapper.find('[data-class="variablePanelClasses"]').first().height() || 0;
-                        
-                        let adjustedHeight = ($panelWrapper.height() - variablePanelHeight);
-                        
-                        $lineArea.css('height', adjustedHeight + 'px');
-                    });
-                }
-        
-                // Update line area heights after all other operations
-                updateLineAreaHeights();
-                $(window).on('resize', updateLineAreaHeights);
-        
-                const script = document.createElement('script');
-                script.type = 'module';
-                script.src = '/static/js/input-property.js';
-                document.body.appendChild(script);*/
-        
-                // $('div[data-class="numberPanelClasses"]').each(function() {
-                //     var $this = $(this);
-                //     var parentLevel = $this.closest('div[dnd-level]').attr('dnd-level'); // หาค่า dnd-level จาก element parent
-                //     if (parentLevel) {
-                //         var marginLeft = (parseInt(parentLevel, 10) -1 )* -33; // แปลง dnd-level เป็นตัวเลขและคูณกับ -20
-                //         console.log(marginLeft)
-                //         $this.css('margin-left', marginLeft + 'px'); // เพิ่ม margin-left
-                //     }
-                // });
-        
-            } catch (error) {
-                console.error('Error during initialization:', error);
-            }
-        });
+                
+                $(this).find('.expand-icon').toggleClass('hidden');
+                $(this).find('.collapse-icon').toggleClass('hidden');
+                updateUIheight(); //รอ 100 สำหรับการเลื่อนแบบสมูท
+            });
 
+            $(window).on('resize', function() {
+                setTimeout(function() {
+                    updateUIheight();
+                }, 50);
+            });
+            
+            updateUIheight();
+    
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = '/static/js/input-property.js';
+            document.body.appendChild(script);
+    
+        } catch (error) {
+            console.error('Error during initialization:', error);
+        }
 
+        /*$(document).on('contextmenu', function(e) {
+            e.preventDefault();
+        });*/
+    });
