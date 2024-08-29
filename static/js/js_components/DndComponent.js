@@ -28,8 +28,9 @@ const renderPanel = (items, type) => items.map((item, index, array) => `
             <div data-class="commonTitleClasses">${item.title}</div>
             ${createDndParams(item.params, item.message)}
         </div>
-        <div data-class="panelBgClasses" class="openProperty">
-            ${svgIcon("M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z", "size-4")}
+        <div data-class="panelBgClasses" class="">
+        <div class="cursor-pointer size-[18px] openProperty">${svgIcon("M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z", "size-4")}</div>
+            
         </div>
     </div>
 `).join('');
@@ -86,7 +87,7 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden=tr
                 <div data-class="lineAreaClasses" class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[2px]' : 'opacity-80 w-[0.5px] bg-gray-700'}" style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;"></div>
                 <div class="col-[span_30/span_30] flex ml-[${indent}]">
 
-                    <div data-class="numberPanelClasses" class="absolute left-0.5 top-0 rounded p-0.5 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
+                    <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
                         <div data-class="panelContainerClasses" class="grid relative w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">

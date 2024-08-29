@@ -42,6 +42,7 @@
         });*/
 
         //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
+    import { getContrastColor, rgb2hex } from '/static/js/global-script.js';    
     import { defaultItems } from '/static/js/data.js';
     
     const addMoreContainerTemplate = `
@@ -116,63 +117,106 @@
         });
       }
     
-    $(document).ready(async () => {
+      $(document).ready(async () => {
         try {
+            // 1. เรียกใช้ renderDndEditorScripts
             await renderDndEditorScripts(defaultItems);
-    
+            
+            // 2. เรนเดอร์คอมโพเนนต์ที่มี data-js-component (ยกเว้น DndComponent)
             const $components = $('[data-js-component]').not('[data-js-component="DndComponent"]');
             await Promise.all($components.map(function() {
                 return renderComponent($(this));
             }));
-    
+            
+            // 3. โหลด applyClasses จากไฟล์ class-render.js
             const { default: applyClasses } = await import('/static/js/render/class-render.js');
             await applyClasses();
-    
+            
+            // 4. อัพเดตการแสดงผลสำหรับ numberPanelClasses
             $('[data-class="numberPanelClasses"]').each(function(index) {
                 $(this).html(`<span>${index + 1}</span>`);
-            });
     
+                const bgColor = $(this).css('background-color');
+                const hexColor = rgb2hex(bgColor);
+                const textColor = getContrastColor(hexColor);
+                $(this).css('color', textColor);
+            });
+
+            $('[data-class="groupSectionClasses"]').each(function(index) {
+                const bgColor = $(this).css('background-color');
+                const hexColor = rgb2hex(bgColor);
+                const textColor = getContrastColor(hexColor);
+                $(this).css('color', textColor);
+            });
+            
+            // 5. ตั้งค่าอีเวนต์คลิก
             $(document).on('click', '[data-class="expandButtonClasses"]', function() {
                 let $parentPanelWrapper = $(this).closest('[data-class="panelWrapperClasses"]');
                 let $siblingsPanelWrappers = $parentPanelWrapper.find('> [data-class="panelWrapperClasses"]');
-
+        
                 $siblingsPanelWrappers.toggleClass('hidden');
-                /*$siblingsPanelWrappers.each(function() {
-                    
-                    if ($(this).hasClass('max-h-0')) {
-                        // Expanding
-                        $(this).removeClass('max-h-0')
-                               .addClass('max-h-[9999px]')
-                    } else {
-                        // Collapsing
-                        $(this).removeClass('max-h-[9999px]')
-                               .addClass('max-h-0')
-                    }
-                });*/
                 
                 $(this).find('.expand-icon').toggleClass('hidden');
                 $(this).find('.collapse-icon').toggleClass('hidden');
                 updateUIheight(); //รอ 100 สำหรับการเลื่อนแบบสมูท
             });
-
+        
+            // 6. อัพเดต UI height
             $(window).on('resize', function() {
                 setTimeout(function() {
                     updateUIheight();
                 }, 50);
             });
             
-            updateUIheight();
+        
+            // 7. เพิ่มสคริปต์จากไฟล์ input-property.js และ dnd-minimap.js และตรวจสอบการโหลดสคริปต์
+            const script1 = document.createElement('script');
+            script1.type = 'module';
+            script1.src = '/static/js/input-property.js';
+            script1.onload = checkAndRemoveHiddenClass;
+            document.body.appendChild(script1);
     
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.src = '/static/js/input-property.js';
-            document.body.appendChild(script);
+            const script2 = document.createElement('script');
+            script2.type = 'module';
+            script2.src = '/static/js/dnd-minimap.js';
+            script2.onload = checkAndRemoveHiddenClass;
+            document.body.appendChild(script2);
     
+            let scriptsLoaded = 0;
+    
+            function checkAndRemoveHiddenClass() {
+                scriptsLoaded += 1;
+                if (scriptsLoaded === 2) {
+                    // ลบ class "hidden" และค่อยๆ แสดง div ด้วยการ fadeIn
+                    $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
+                    $('#loadingSection').remove()
+                    updateUIheight();
+
+                    /*$(document).ready(function() {
+                        $('[data-class="commonFlexClasses"]').click(function() {
+                            $(this).addClass('');
+                        });
+                    });*/
+                    $(document).on('click', '[data-class="commonFlexClasses"]', function() {
+                        const $element = $(this);
+                        $element.addClass('ring-1 ring-white ring-inset');
+                    
+                        // เมื่อคลิกนอก element ครั้งแรกหลังจากเพิ่ม class ให้ลบ class ออก
+                        $(document).one('mousedown', function(event) {
+                            // เช็คว่าไม่ได้กดปุ่ม Shift ค้างไว้ และคลิกไม่ได้อยู่บน element เดิม
+                            if (!event.shiftKey && !$element.is(event.target) && $element.has(event.target).length === 0) {
+                                $element.removeClass('ring-1 ring-white ring-inset');
+                            }
+                        });
+                    });
+                }
+            }
         } catch (error) {
             console.error('Error during initialization:', error);
         }
-
+    
         /*$(document).on('contextmenu', function(e) {
             e.preventDefault();
         });*/
     });
+    

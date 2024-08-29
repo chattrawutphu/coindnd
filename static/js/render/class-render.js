@@ -34,7 +34,7 @@ var classesModel = {
         return `${commonClasses} `;
     },
     panelBgClasses() {
-        const commonClasses = "relative flex pt-1 content-start gap-x-1 px-0.5 cursor-pointer";
+        const commonClasses = "relative flex pt-1 content-start gap-x-1 px-0.5";
         return `${commonClasses} dark:opacity-50 opacity-30`;
     },
 
