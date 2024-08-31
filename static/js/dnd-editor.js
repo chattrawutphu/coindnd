@@ -52,7 +52,7 @@
             </svg>
             <p>Add Event</p>
         </div>
-        <div class="h-44"></div>
+        <div class="h-72"></div>
     `;
     
     async function renderDndEditorScripts(items) {
@@ -170,50 +170,35 @@
             
         
             // 7. เพิ่มสคริปต์จากไฟล์ input-property.js และ dnd-minimap.js และตรวจสอบการโหลดสคริปต์
-            const script1 = document.createElement('script');
-            script1.type = 'module';
-            script1.src = '/static/js/input-property.js';
-            script1.onload = checkAndRemoveHiddenClass;
-            document.body.appendChild(script1);
-    
-            const script2 = document.createElement('script');
-            script2.type = 'module';
-            script2.src = '/static/js/dnd-minimap.js';
-            script2.onload = checkAndRemoveHiddenClass;
-            document.body.appendChild(script2);
-    
-            let scriptsLoaded = 0;
-    
-            function checkAndRemoveHiddenClass() {
-                scriptsLoaded += 1;
-                if (scriptsLoaded === 2) {
-                    // ลบ class "hidden" และค่อยๆ แสดง div ด้วยการ fadeIn
-                    $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
-                    $('#loadingSection').remove()
-                    updateUIheight();
-
-                    /*$(document).ready(function() {
-                        $('[data-class="commonFlexClasses"]').click(function() {
-                            $(this).addClass('');
-                        });
-                    });*/
-                    $(document).on('click', '[data-class="commonFlexClasses"]', function() {
-                        const $element = $(this);
-                        $element.addClass('ring-1 ring-white ring-inset');
-                    
-                        // เมื่อคลิกนอก element ครั้งแรกหลังจากเพิ่ม class ให้ลบ class ออก
-                        $(document).one('mousedown', function(event) {
-                            // เช็คว่าไม่ได้กดปุ่ม Shift ค้างไว้ และคลิกไม่ได้อยู่บน element เดิม
-                            if (!event.shiftKey && !$element.is(event.target) && $element.has(event.target).length === 0) {
-                                $element.removeClass('ring-1 ring-white ring-inset');
-                            }
-                        });
-                    });
-                }
+            // ฟังก์ชันสำหรับสร้างและเพิ่ม script element
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+                });
             }
-        } catch (error) {
-            console.error('Error during initialization:', error);
-        }
+            
+            // ฟังก์ชันสำหรับอัพเดท UI
+            function updateUI() {
+                $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
+                $('#loadingSection').remove();
+                updateUIheight();
+            }
+            
+            // โหลดสคริปต์ทั้งหมดพร้อมกัน
+            Promise.all([
+                loadScript('/static/js/input-property.js'),
+                loadScript('/static/js/dnd-minimap.js')
+            ])
+            .then(updateUI)
+            .catch(error => console.error('Script loading error:', error));
+                    } catch (error) {
+                        console.error('Error during initialization:', error);
+                    }
     
         /*$(document).on('contextmenu', function(e) {
             e.preventDefault();

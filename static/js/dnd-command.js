@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function() {
     let isDragging = false;
     let clone = null;
     let startX, startY, startTime;
@@ -6,20 +6,21 @@ $(document).ready(function () {
     const speedThreshold = 0.1; // pixels per millisecond
     let lastHoveredElement = null;
     let currentDndType = null;
-    let lineRemovalTimeout = null;
+    let mouseX, mouseY;
+    let isScrolling = false;
+    let $currentTarget = null;
 
     function createDndLine(isTop, dndType) {
         const color = dndType === 'action' ? '#4ade80' : '#38bdf8';
-        return $('<div>')
-            .css({
-                position: 'absolute',
-                width: '100%',
-                height: '2px',
-                backgroundColor: color,
-                left: '0',
-                [isTop ? 'top' : 'bottom']: '0',
-                zIndex: 1001
-            });
+        return $('<div>').css({
+            position: 'absolute',
+            width: '100%',
+            height: '2px',
+            backgroundColor: color,
+            left: '0',
+            [isTop ? 'top' : 'bottom']: '0',
+            zIndex: 1001
+        });
     }
 
     function updateLinePosition($element, isTopHalf, dndType) {
@@ -29,10 +30,10 @@ $(document).ready(function () {
             dndLine.data('dndType', dndType);
             $element.append(dndLine);
         } else if (dndLine.parent()[0] !== $element[0]) {
-            dndLine.remove().css(isTopHalf ? { top: 0, bottom: 'auto' } : { top: 'auto', bottom: 0 });
+            dndLine.remove().css(isTopHalf ? {top: 0, bottom: 'auto'} : {top: 'auto', bottom: 0});
             $element.append(dndLine);
         } else {
-            dndLine.css(isTopHalf ? { top: 0, bottom: 'auto' } : { top: 'auto', bottom: 0 });
+            dndLine.css(isTopHalf ? {top: 0, bottom: 'auto'} : {top: 'auto', bottom: 0});
         }
     }
 
@@ -44,122 +45,96 @@ $(document).ready(function () {
         lastHoveredElement = null;
     }
 
-    function resetLineRemovalTimeout() {
-        if (lineRemovalTimeout) {
-            clearTimeout(lineRemovalTimeout);
-            lineRemovalTimeout = null;
-        }
-    }
+    function handleDragMove(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
 
-    function startLineRemovalTimeout() {
-        resetLineRemovalTimeout();
-        lineRemovalTimeout = setTimeout(removeLine, 500);
-    }
-
-    function handleMouseMove(e) {
-        if (!isDragging) {
-            const currentTime = new Date().getTime();
-            const dx = e.pageX - startX;
-            const dy = e.pageY - startY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const timeElapsed = currentTime - startTime;
-            const speed = distance / timeElapsed;
-
-            if (speed > speedThreshold && !clone) {
-                isDragging = true;
-                const $target = $(e.target).closest('[data-class="commonFlexClasses"]');
-
-                if ($target.length) {
-                    currentDndType = $target.attr('dnd-type');
-                    const targetOffset = $target.offset();
-                    const originalWidth = $target.outerWidth();
-                    const originalHeight = $target.outerHeight();
-
-                    // Calculate new dimensions
-                    let newWidth = Math.min(originalWidth * 0.8, 400);
-                    let newHeight = Math.min(originalHeight * 0.8, 200);
-
-                    clone = $('<div>')
-                        .attr({
-                            'id': 'draganddropSection',
-                            'dnd-type': currentDndType
-                        })
-                        .addClass('clone-container')
-                        .css({
-                            position: 'fixed',
-                            'pointer-events': 'none',
-                            'z-index': 1000,
-                            width: newWidth,
-                            height: newHeight,
-                            left: e.clientX - newWidth / 2,
-                            top: e.clientY - newHeight / 2,
-                            overflow: 'hidden'
-                        })
-                        .appendTo('body');
-
-                    $target.clone()
-                        .addClass('opacity-50')
-                        .css({
-                            width: originalWidth,
-                            height: originalHeight,
-                            transform: `scale(${newWidth / originalWidth}, ${newHeight / originalHeight})`,
-                            'transform-origin': 'top left'
-                        })
-                        .removeAttr('data-class')
-                        .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end()
-                        .appendTo(clone);
-                }
-            }
-        }
-
-        if (isDragging && clone) {
+        if (clone) {
             clone.css({
-                left: e.clientX - clone.outerWidth() / 2,
-                top: e.clientY - clone.outerHeight() / 2
+                left: mouseX - clone.outerWidth() / 2,
+                top: mouseY - clone.outerHeight() / 2
             });
 
-            let found = false;
-            $('[data-class="commonFlexClasses"]').each(function () {
-                if (this === clone[0] || $.contains(clone[0], this)) return true; // Skip clone and its children
+            if (!isScrolling) {
+                let found = false;
+                $('[data-class="commonFlexClasses"]').each(function() {
+                    if (this === clone[0] || $.contains(clone[0], this)) return true; // Skip clone and its children
 
-                const $this = $(this);
-                const thisDndType = $this.attr('dnd-type');
-                if (thisDndType !== currentDndType) return true; // Skip if dnd-type doesn't match
+                    const $this = $(this);
+                    const thisDndType = $this.attr('dnd-type');
+                    if (thisDndType !== currentDndType) return true; // Skip if dnd-type doesn't match
 
-                const rect = this.getBoundingClientRect();
+                    const rect = this.getBoundingClientRect();
+                    
+                    if (mouseX >= rect.left && mouseX <= rect.right &&
+                        mouseY >= rect.top && mouseY <= rect.bottom) {
+                        
+                        const isTopHalf = mouseY < (rect.top + rect.height / 2);
+                        updateLinePosition($this, isTopHalf, currentDndType);
+                        lastHoveredElement = $this;
+                        found = true;
+                        return false; // Break the loop
+                    }
+                });
 
-                if (e.clientX >= rect.left && e.clientX <= rect.right &&
-                    e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                if (!found && lastHoveredElement) {
+                    const lastRect = lastHoveredElement[0].getBoundingClientRect();
+                    const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
+                    const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
 
-                    const isTopHalf = e.clientY < (rect.top + rect.height / 2);
-                    updateLinePosition($this, isTopHalf, currentDndType);
-                    lastHoveredElement = $this;
-                    found = true;
-                    resetLineRemovalTimeout();
-                    return false; // Break the loop
+                    if (horizontalDistance > 256 || verticalDistance > 128) {
+                        removeLine();
+                    } else {
+                        updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType);
+                    }
                 }
-            });
-
-            if (!found) {
-                if (lastHoveredElement) {
-                    // Keep the line at the last position
-                    updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType);
-                    startLineRemovalTimeout();
-                }
-            } else {
-                resetLineRemovalTimeout();
             }
         }
     }
 
-    $(document).on('mousedown', '[data-class="commonFlexClasses"]', function (e) {
-        startX = e.pageX;
-        startY = e.pageY;
-        startTime = new Date().getTime();
-        $(document).on('mousemove', handleMouseMove);
-    });
+    function startDragging(e) {
+        const targetOffset = $currentTarget.offset();
+        const originalWidth = $currentTarget.outerWidth();
+        const originalHeight = $currentTarget.outerHeight();
+        
+        // Calculate new dimensions
+        const newWidth = Math.min(originalWidth * 0.8, 400);
+        const newHeight = Math.min(originalHeight * 0.8, 200);
 
-    $(document).on('mouseup', function () {
+        clone = $('<div>')
+            .attr({
+                'id': 'draganddropSection',
+                'dnd-type': currentDndType
+            })
+            .addClass('clone-container')
+            .css({
+                position: 'fixed',
+                'pointer-events': 'none',
+                'z-index': 1000,
+                width: newWidth,
+                height: newHeight,
+                left: e.clientX - newWidth / 2,
+                top: e.clientY - newHeight / 2,
+                overflow: 'hidden'
+            })
+            .appendTo('body');
+
+        $currentTarget.clone()
+            .addClass('opacity-70')
+            .css({
+                width: originalWidth,
+                height: originalHeight,
+                transform: `scale(${newWidth / originalWidth}, ${newHeight / originalHeight})`,
+                'transform-origin': 'top left'
+            })
+            .removeAttr('data-class')
+            .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end()
+            .appendTo(clone);
+
+        handleDragMove(e);
+    }
+
+    function stopDragging() {
         isDragging = false;
         if (clone) {
             clone.remove();
@@ -167,7 +142,76 @@ $(document).ready(function () {
         }
         removeLine();
         currentDndType = null;
-        resetLineRemovalTimeout();
-        $(document).off('mousemove', handleMouseMove);
+        $currentTarget = null;
+        $(document).off('mousemove', handleDragMove);
+    }
+
+    function checkDragThreshold(e) {
+        const currentTime = new Date().getTime();
+        const dx = e.pageX - startX;
+        const dy = e.pageY - startY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const timeElapsed = currentTime - startTime;
+        const speed = distance / timeElapsed;
+
+        if (speed > speedThreshold) {
+            isDragging = true;
+            $(document).off('mousemove', checkDragThreshold);
+            $(document).on('mousemove', handleDragMove);
+            startDragging(e);
+        }
+    }
+
+    $(document).on('mousedown', '[data-class="commonFlexClasses"]', function(e) {
+        if (e.which !== 1) return; // Only proceed if left mouse button is pressed
+        if ($(e.target).closest('#minimap, #minimap-slider').length) return; // Don't start drag if clicked on minimap
+
+        startX = e.pageX;
+        startY = e.pageY;
+        startTime = new Date().getTime();
+    
+        $currentTarget = $(this);
+        currentDndType = $currentTarget.attr('dnd-type');
+        
+        $(document).on('mousemove', checkDragThreshold);
+    });
+    
+    $(document).on('mouseup', function() {
+        $(document).off('mousemove', checkDragThreshold);
+        if (isDragging) {
+            stopDragging();
+        }
+    });
+
+    // Handle scroll event
+    let scrollTimeout;
+    $(window).on('scroll', function() {
+        isScrolling = true;
+        if (isDragging) {
+            if (dndLine) {
+                dndLine.hide();
+            }
+            if (clone) {
+                clone.css({
+                    left: mouseX - clone.outerWidth() / 2,
+                    top: mouseY - clone.outerHeight() / 2
+                });
+            }
+        }
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(function() {
+            isScrolling = false;
+            if (dndLine) {
+                dndLine.show();
+            }
+            if (isDragging) {
+                handleDragMove({ clientX: mouseX, clientY: mouseY });
+            }
+        }, 150);
+    });
+
+    // Prevent drag and drop functionality from interfering with minimap
+    $('#minimap, #minimap-slider').on('mousedown mousemove mouseup', function(e) {
+        e.stopPropagation();
     });
 });
