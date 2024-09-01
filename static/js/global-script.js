@@ -17,3 +17,14 @@ export function rgb2hex(rgb) {
     }
     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
+
+    
+export function RemoveBorderLastcommonFlexClasses() {
+    $('div[data-class="leftPanelClasses"]').each(function() {
+        $(this).find('div[data-class="commonFlexClasses"]').removeClass('border-0').last().addClass('border-0');
+    });
+
+    $('div[data-class="rightPanelClasses"]').each(function() {
+        $(this).find('div[data-class="commonFlexClasses"]').removeClass('border-0').last().addClass('border-0');
+    });
+};

@@ -11,10 +11,10 @@ const createDndParams = (params, message) => `<div class="flex flex-wrap text-sm
 
 const svgIcon = (path, className = 'size-4') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="${className}"><path d="${path}" /></svg>`;
 
-const addMoreTemplate = text => `<div data-class="addMoreClasses">${svgIcon("M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z")}<p>${text}</p></div>`;
+const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="addMoreClasses">${svgIcon("M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z")}<p>${text}</p></div>`;
 
 const renderPanel = (items, type) => items.map((item, index, array) => `
-    <div data-class="commonFlexClasses" class="${index === array.length - 1 ? 'border-b-0' : ''} ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 "
+    <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 "
          dnd-id="${item.id}" dnd-type="${item.type}" dnd-title="${item.title}"
          dnd-message="${item.message}" dnd-template="${item.template}"
          ${type === 'condition' ? `dnd-param="${LZString.compressToEncodedURIComponent(JSON.stringify(item.params))}"` : ''}>
@@ -95,11 +95,11 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden=tr
                                 <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}
                             <div data-class="leftPanelClasses">
                                 ${renderPanel(conditions, 'condition')}
-                                ${addMoreTemplate('Add condition')}
+                                ${addMoreTemplate('condition','Add condition')}
                             </div>
                             <div data-class="rightPanelClasses">
                                 ${renderPanel(actions, 'action')}
-                                ${addMoreTemplate('Add action')}
+                                ${addMoreTemplate('action', 'Add action')}
                             </div>
                         </div>
                     ` : ''}

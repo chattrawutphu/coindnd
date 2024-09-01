@@ -1,3 +1,4 @@
+import { RemoveBorderLastcommonFlexClasses } from '/static/js/global-script.js';
 $(document).ready(function() {
     let isDragging = false;
     let clone = null;
@@ -19,7 +20,7 @@ $(document).ready(function() {
             backgroundColor: color,
             left: '0',
             [isTop ? 'top' : 'bottom']: '0',
-            zIndex: 1001
+            zIndex: 1
         });
     }
 
@@ -48,40 +49,66 @@ $(document).ready(function() {
     function handleDragMove(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
-
+    
         if (clone) {
             clone.css({
                 left: mouseX - clone.outerWidth() / 2,
                 top: mouseY - clone.outerHeight() / 2
             });
-
+    
             if (!isScrolling) {
                 let found = false;
-                $('[data-class="commonFlexClasses"]').each(function() {
+                $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"]').each(function() {
                     if (this === clone[0] || $.contains(clone[0], this)) return true; // Skip clone and its children
-
+    
                     const $this = $(this);
                     const thisDndType = $this.attr('dnd-type');
-                    if (thisDndType !== currentDndType) return true; // Skip if dnd-type doesn't match
+                    const isAddMore = $this.attr('data-class') === 'addMoreClasses';
+    
+                    // ตรวจสอบว่า element ที่มี data-class="addMoreClasses" ไม่มี div อื่นรอบๆ
+                    function isIsolatedAddMore($element) {
+                        const $parent = $element.parent();
+                        const $siblings = $parent.children();
+                        return $siblings.length === 1 && $siblings[0] === $element[0];
+                    }
 
-                    const rect = this.getBoundingClientRect();
-                    
-                    if (mouseX >= rect.left && mouseX <= rect.right &&
-                        mouseY >= rect.top && mouseY <= rect.bottom) {
+                    // ตรวจสอบเงื่อนไขสำหรับ addMoreClasses
+                    if (isAddMore && isIsolatedAddMore($this)) {
+                        // Check if dnd types match for addMoreClasses
+                        if ((currentDndType === 'condition' && thisDndType === 'condition') || (currentDndType === 'action' && thisDndType === 'action')) {
+                            
+                            const rect = this.getBoundingClientRect();
+                            
+                            if (mouseX >= rect.left && mouseX <= rect.right &&
+                                mouseY >= rect.top && mouseY <= rect.bottom) {
+                                
+                                updateLinePosition($this, true, currentDndType); // Always show line at the top for addMoreClasses
+                                lastHoveredElement = $this;
+                                found = true;
+                                return false; // Break the loop
+                            }
+                        }
+                    } else if (!isAddMore && thisDndType === currentDndType) {
+                        // Existing logic for commonFlexClasses
+                        const rect = this.getBoundingClientRect();
                         
-                        const isTopHalf = mouseY < (rect.top + rect.height / 2);
-                        updateLinePosition($this, isTopHalf, currentDndType);
-                        lastHoveredElement = $this;
-                        found = true;
-                        return false; // Break the loop
+                        if (mouseX >= rect.left && mouseX <= rect.right &&
+                            mouseY >= rect.top && mouseY <= rect.bottom) {
+                            
+                            const isTopHalf = mouseY < (rect.top + rect.height / 2);
+                            updateLinePosition($this, isTopHalf, currentDndType);
+                            lastHoveredElement = $this;
+                            found = true;
+                            return false; // Break the loop
+                        }
                     }
                 });
-
+    
                 if (!found && lastHoveredElement) {
                     const lastRect = lastHoveredElement[0].getBoundingClientRect();
                     const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
                     const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
-
+    
                     if (horizontalDistance > 256 || verticalDistance > 128) {
                         removeLine();
                     } else {
@@ -104,7 +131,8 @@ $(document).ready(function() {
         clone = $('<div>')
             .attr({
                 'id': 'draganddropSection',
-                'dnd-type': currentDndType
+                'dnd-type': currentDndType,
+                'dnd-id': $currentTarget.attr('dnd-id') // Add this line to copy the dnd-id
             })
             .addClass('clone-container')
             .css({
@@ -134,13 +162,37 @@ $(document).ready(function() {
         handleDragMove(e);
     }
 
-    function stopDragging() {
+    function stopDragging(e) {
         isDragging = false;
         if (clone) {
+            const dndId = clone.attr('dnd-id');
+            const $draggedElement = $(`[data-class="commonFlexClasses"][dnd-id="${dndId}"]`).first();
+            
+            if (dndLine) {
+                const $targetParent = dndLine.parent();
+                const isTopHalf = dndLine.css('top') === '0px';
+    
+                if ($draggedElement.length && $targetParent.length) {
+                    if ($targetParent.attr('data-class') === 'addMoreClasses') {
+                        // If dropping on addMoreClasses, always insert at the top
+                        $targetParent.before($draggedElement);
+                    } else {
+                        // Existing logic for commonFlexClasses
+                        if (isTopHalf) {
+                            $targetParent.before($draggedElement);
+                        } else {
+                            $targetParent.after($draggedElement);
+                        }
+                    }
+                }
+                removeLine();
+                RemoveBorderLastcommonFlexClasses()
+            }
+    
             clone.remove();
             clone = null;
+            $('#updateUI').trigger('click');
         }
-        removeLine();
         currentDndType = null;
         $currentTarget = null;
         $(document).off('mousemove', handleDragMove);
@@ -176,10 +228,10 @@ $(document).ready(function() {
         $(document).on('mousemove', checkDragThreshold);
     });
     
-    $(document).on('mouseup', function() {
+    $(document).on('mouseup', function(e) {
         $(document).off('mousemove', checkDragThreshold);
         if (isDragging) {
-            stopDragging();
+            stopDragging(e);
         }
     });
 

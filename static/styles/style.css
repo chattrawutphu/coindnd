@@ -28,10 +28,20 @@ html.dark body {
 @media (prefers-color-scheme: dark) {
     div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"] {
         background-color: #4D5568;
+        
+        border-bottom: 1px solid;
+        border-color: #6b7280;
     }
     div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
         background-color: #374151;
+
+        border-bottom: 1px solid;
+        border-color: #6b7280;
     }
+}
+
+.border-0 {
+    border-bottom: none !important;
 }
 
 #draganddropSection {

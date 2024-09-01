@@ -72,36 +72,40 @@ $(document).ready(function () {
         var contentTop = $('#content').offset().top;
         var slidMinimap = $('#minimap-slider').css('top');
         var minimapScale = minimapHeight / contentHeight;
- 
+    
         let lastButtonBottom = 0;
-        const minButtonSpacing = 2;
- 
+        let lastButtonRight = -30;
+    
         $highlights.each(function (index) {
             const bgColor = $(this).css('background-color');
             const text = $(this).text();
             const hexColor = rgb2hex(bgColor);
             const textColor = getContrastColor(hexColor);
             let elementTop = $(this).offset().top - contentTop;
-            let buttonTop = parseInt(elementTop * minimapScale) + (parseInt(slidMinimap) * 0.845);
- 
-            if (index > 0 && buttonTop - lastButtonBottom < minButtonSpacing) {
-                buttonTop = lastButtonBottom + minButtonSpacing;
-            }
- 
+            let buttonTop = parseInt((parseInt(elementTop * minimapScale) + (parseInt(slidMinimap)) * 0.85) * 1.12);
+    
             const highlightHeight = $(this).outerHeight();
             const buttonHeight = Math.max(16, highlightHeight * minimapScale);
- 
+    
+            if (buttonTop < lastButtonBottom) {
+                buttonTop = lastButtonBottom - buttonHeight;
+                lastButtonRight -= 22;
+            } else {
+                lastButtonRight = -30;
+            }
+    
             $('#button-container').append(`
                 <button class="highlight-button absolute font-bold rounded text-xs"
-                        data-index="${index}"
-                        style="background-color: ${bgColor}; color: ${textColor};
-                            top: ${buttonTop}px; left: -30px;
-                            height: ${buttonHeight}px; min-width: 20px;
-                            display: flex; align-items: center; justify-content: center;">
+                    data-index="${index}"
+                    style="background-color: ${bgColor}; color: ${textColor};
+                        top: ${buttonTop}px; left: ${lastButtonRight}px;
+                        height: ${buttonHeight}px; min-width: 20px;
+                        opacity: 0.8;
+                        display: flex; align-items: center; justify-content: center;">
                     ${text}
                 </button>
             `);             
- 
+    
             lastButtonBottom = buttonTop + buttonHeight;
         });
         updateButtonStyles();
@@ -136,22 +140,58 @@ $(document).ready(function () {
         var sliderOffset = $('#minimap-slider').offset().top;
         var clickY = e.pageY;
  
-        if (clickY < sliderOffset) {
+        /*if (clickY < sliderOffset) {
             $('#minimap-slider').css('top', (clickY - $('#minimap').offset().top) + 'px');
         } else if (clickY > sliderOffset + parseFloat(sliderHeight) * 16) {
-            $('#minimap-slider').css('top', (clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16) + 'px');
-        }
+            $('#minimap-slider').css('top', ((parseFloat(clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16))*1.23) + 'px');
+        }*/
+        
+        $('#minimap-slider').css('top', ((parseFloat(clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16))*1.23) + 'px');
  
         clickOffsetY = clickY - $('#minimap-slider').offset().top;
         $('body').css('user-select', 'none');
         updateContentScroll($('#minimap-slider').position().top);
     }
+
+    function updateHighlightButtonList() {
+    var groups = {};
+
+    $('button.highlight-button').each(function() {
+        var $button = $(this);
+        var top = $button.css('top');
+
+        if (!groups[top]) {
+            groups[top] = [];
+        }
+
+        groups[top].push($button);
+    });
+
+    $.each(groups, function(top, buttons) {
+        buttons.sort(function(a, b) {
+            return $(a).data('index') - $(b).data('index');
+        });
+
+        var leftValues = $.map(buttons, function(button) {
+            return $(button).css('left');
+        }).reverse();
+
+        $.each(buttons, function(index) {
+            $(this).css('left', leftValues[index]);
+        });
+    });
+};
  
     function resizeAll() {
         updateHighlights();
         updateMinimap();
         updateToggleButtons();
+        updateHighlightButtonList();
     }
+
+    $(document).on('click', '#updateUI', function () {
+        resizeAll();
+    });
  
     $('#content').on('scroll', updateMinimap);
  

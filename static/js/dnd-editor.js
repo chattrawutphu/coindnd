@@ -42,7 +42,7 @@
         });*/
 
         //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-    import { getContrastColor, rgb2hex } from '/static/js/global-script.js';    
+    import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex } from '/static/js/global-script.js';    
     import { defaultItems } from '/static/js/data.js';
     
     const addMoreContainerTemplate = `
@@ -148,6 +148,10 @@
                 const textColor = getContrastColor(hexColor);
                 $(this).css('color', textColor);
             });
+
+            $(document).on('click', '#updateUI', function () {
+                updateUIheight()
+            });
             
             // 5. ตั้งค่าอีเวนต์คลิก
             $(document).on('click', '[data-class="expandButtonClasses"]', function() {
@@ -186,9 +190,19 @@
             function updateUI() {
                 $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
                 $('#loadingSection').remove();
+                
                 updateUIheight();
+                RemoveBorderLastcommonFlexClasses();
             }
             
+            //ป้องกัน id ซ้ำ
+            $('[data-class="commonFlexClasses"]').each(function() {
+                    const dndId = $(this).attr('dnd-id');
+                    const $duplicates = $(`[data-class="commonFlexClasses"][dnd-id="${dndId}"]`);
+                    $duplicates.slice(1).each(function() {
+                        $(this).attr('dnd-id', crypto.randomUUID());
+                    });
+                });
             // โหลดสคริปต์ทั้งหมดพร้อมกัน
             Promise.all([
                 loadScript('/static/js/input-property.js'),

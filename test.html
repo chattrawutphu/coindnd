@@ -1,441 +1,65 @@
-<script>
-    $(document).ready(function () {
-        var loanCalculator = $('.loanCalculator');
-        if (loanCalculator.length) {
-            var state = {
-                loanType: 'lt1',
-                showResult: false,
-                monthlyInstallment: 0,
-                maxLoanAmount: 0,
-                totalInterest: 0,
-                grandTotal: 0,
-                isRate: false,
-                isYear: false,
-                applyloan: $('.loan-calculator').data('product-journey')
-            };
+<button  data-index="0" style="background-color: rgb(255, 0, 0); color: white; top: 2px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    1
+</button>
 
-            // Auto focus the first input 
-            setTimeout(function () {
-                $('#amountVal').trigger("focus");
-            }, 700);
+<button  data-index="1" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    12
+</button>
 
-            // Validation functions
-            function validateAmt(ele, val) {
-                val = parseInt(val.replace(/,/g, ''));
-                var minAmt = parseInt($(ele).attr('data-min-amount'));
-                var maxAmt = parseInt($(ele).attr('data-max-amount'));
+<button  data-index="2" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    13
+</button>
 
-                if (!val) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#amountError').text('');
-                } else if (val > maxAmt) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#amountError').text($(ele).attr('data-max-amount-error'));
-                } else if (val < minAmt) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#amountError').text($(ele).attr('data-min-amount-error'));
-                } else {
-                    $(ele).removeClass('error');
-                    $(ele).next().removeClass('error');
-                    $('#amountError').text('');
-                }
-            }
+<button  data-index="3" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    14
+</button>
 
-            function validateIns(ele, val) {
-                val = parseInt(val.replace(/,/g, ''));
-                var minIns = parseInt($(ele).attr('data-min-amount'));
-                var maxIns = parseInt($(ele).attr('data-max-amount'));
+<button  data-index="4" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    15
+</button>
 
-                if (!val) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#installmentError').text('');
-                } else if (val > maxIns) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#installmentError').text($(ele).attr('data-max-amount-error'));
-                } else if (val < minIns) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#installmentError').text($(ele).attr('data-min-amount-error'));
-                } else {
-                    $(ele).removeClass('error');
-                    $(ele).next().removeClass('error');
-                    $('#installmentError').text('');
-                }
-            }
+<button  data-index="5" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    16
+</button>
 
-            function validateRate(ele, val) {
-                var value = parseFloat(val);
-                var minRate = 0;
-                var maxRate = 99.999;
-                if (!val) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#interestError').text('');
-                } else if (value < minRate || value > maxRate || isNaN(value)) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#interestError').text('Invalid interest rate');
-                    state.isRate = true;
-                } else {
-                    $(ele).removeClass('error');
-                    $(ele).next().removeClass('error');
-                    $('#interestError').text('');
-                    state.isRate = false;
-                }
-            }
+<button  data-index="6" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    17
+</button>
 
-            function validateYear(ele, val) {
-                var value = parseFloat(val);
-                var maxYear = parseInt($(ele).attr('data-max-year'));
-                if (!val) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#durationError').text('');
-                } else if (value != 0.5 && value % 1 != 0) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#durationError').text('Invalid duration');
-                    state.isYear = true;
-                } else if (value > maxYear || value < 0) {
-                    $(ele).addClass('error');
-                    $(ele).next().addClass('error');
-                    $('#durationError').text('Maximum ' + maxYear + ' years');
-                    state.isYear = true;
-                } else {
-                    $(ele).removeClass('error');
-                    $(ele).next().removeClass('error');
-                    $('#durationError').text('');
-                    state.isYear = false;
-                }
-            }
+<button  data-index="7" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    18
+</button>
 
-            // Enable CTA
-            function enableClick() {
-                var yearVal = parseFloat($('#duriation').val());
-                var maxYear = parseFloat($('#duriation').attr('data-max-year')); // เปลี่ยนเป็น parseFloat
-                var amountVal = $('#amountVal').val();
-                var installmentVal = $('#installmentVal').val();
-                var interestVal = $('#interestVal').val();
+ที่ถูกต้องเป็น
 
-                // แก้ไขเงื่อนไขการตรวจสอบความถูกต้องของปี
-                var isValidYear = (yearVal === 0.5) || (Number.isInteger(yearVal) && yearVal > 0 && yearVal <= maxYear);
+<button data-index="0" style="background-color: rgb(255, 0, 0); color: white; top: 2px; left: -96px; height: 16px; min-width: 20px; opacity: 1; display: flex; align-items: center; justify-content: center;">
+    1
+</button>
 
-                var hasErrors = $('#amountError').text() || $('#installmentError').text() || $('#interestError').text() || $('#durationError').text();
+<button data-index="1" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    12
+</button>
 
-                console.log('Validation:', {
-                    loanType: state.loanType,
-                    amountVal: amountVal,
-                    installmentVal: installmentVal,
-                    interestVal: interestVal,
-                    yearVal: yearVal,
-                    maxYear: maxYear,
-                    isValidYear: isValidYear,
-                    hasErrors: hasErrors
-                });
+<button data-index="2" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    13
+</button>
 
-                if (state.loanType === 'lt1') {
-                    return !!(amountVal && interestVal && yearVal && isValidYear && !hasErrors);
-                } else {
-                    return !!(installmentVal && interestVal && yearVal && isValidYear && !hasErrors);
-                }
-            }
+<button  data-index="3" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    14
+</button>
 
-            // Submit inputs
-            function submitInputs() {
-                var yearVal = parseFloat($('#duriation').val());
-                if (yearVal == 0.5) {
-                    state.year = yearVal;
-                    state.months = 6;
-                } else {
-                    state.year = parseInt(yearVal);
-                    state.months = state.year * 12;
-                }
-                state.interest = parseFloat($('#interestVal').val());
-                if (state.loanType == "lt1") {
-                    state.amount = parseInt($('#amountVal').val().replace(/,/g, ''));
-                    calcInstallment();
-                } else {
-                    state.installment = parseInt($('#installmentVal').val().replace(/,/g, ''));
-                    var maxLoan = calcMaxLoan(state.installment, state.interest + 1, state.months);
-                    state.amount = maxLoan;
-                    state.maxLoanAmount = roundOff(maxLoan);
-                    calcInstallment();
-                }
-                state.showResult = true;
-                displayResults();
+<button data-index="4" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    15
+</button>
 
-                setTimeout(function () {
-                    var scrollTarget = (_isMobile() || _isTablet()) ?
-                        ($('#calcOutput').offset().top - $('.fixed-top .navbar').height()) :
-                        ($('.loanCalculator').offset().top - $('.fixed-top').height());
+<button data-index="5" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    16
+</button>
 
-                    $('html, body').animate({
-                        scrollTop: scrollTarget
-                    }, 500);
+<button data-index="6" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    17
+</button>
 
-                    // Added condition for www.scb.co.th
-                    var hostURL = window.location.host;
-                    var whiteListUrls = ['www.scb.co.th', 'scb-dev-65-01.adobecqms.net', 'scb-stg-65-01.adobecqms.net', 'd2q36ptq1nb7gr.cloudfront.net', 'd38pld1or1op5g.cloudfront.net'];
-                    if (whiteListUrls.includes(hostURL)) {
-                        $('#applyLoan').attr('href', $('#applyLoan').attr('href').replace('/content/scb', ''));
-                    }
-                }, 500);
-            }
-
-            // Helper functions
-            function outputValue(num) {
-                return new Intl.NumberFormat("th-TH").format(num);
-            }
-
-            function round3(num) {
-                return Math.ceil(num / 100) * 100;
-            }
-
-            function round0(num) {
-                return Math.round(num);
-            }
-
-            function roundOff(num) {
-                num = parseInt(num);
-                var nums = num.toString().length;
-                if (nums > 9 && state.loanType == "lt1") {
-                    return Math.floor(num / 10000000) * 10000000;
-                } else if (nums > 8 && state.loanType == "lt1") {
-                    return Math.floor(num / 10000000) * 10000000;
-                } else if (nums > 7) {
-                    if (state.loanType == "lt2") {
-                        return Math.floor(num / 100000) * 100000;
-                    } else {
-                        return Math.floor(num / 1000000) * 1000000;
-                    }
-                } else if (nums > 6) {
-                    return Math.floor(num / 100000) * 100000;
-                } else if (nums == 6) {
-                    return Math.floor(num / 10000) * 10000;
-                } else if (nums == 5) {
-                    return Math.floor(num / 1000) * 1000;
-                } else {
-                    return Math.floor(num / 100) * 100;
-                }
-            }
-
-            // Calculate monthly Installment & total Interest & Grand total
-            function calcInstallment() {
-                state.monthlyInstallment = getMonthlyInstallment();
-                state.monthlyInstallment = round3(state.monthlyInstallment);
-                state.totalInterest = getTotalInterest();
-                state.totalInterest = round0(state.totalInterest);
-                state.totalInterest = state.totalInterest === '' || state.totalInterest === null ? 0 : state.totalInterest;
-                state.grandTotal = parseFloat(state.amount) + parseFloat(state.totalInterest);
-                if (state.loanType == "lt2") {
-                    state.grandTotal = parseFloat(roundOff(state.amount)) + parseFloat(state.totalInterest);
-                }
-                state.grandTotal = round0(state.grandTotal);
-            }
-
-            // Calculate Maximum loan
-            function calcMaxLoan(payment, rate, periods) {
-                rate = rate / 100 / 12;
-                var maxBorrow = (payment * (1 - (1 / Math.pow(1 + rate, periods))) / rate);
-                maxBorrow = roundOff(maxBorrow);
-                return maxBorrow;
-            }
-
-            // Calculate monthly payment
-            function getMonthlyInstallment() {
-                var princ = state.amount;
-                if (state.loanType == "lt2") {
-                    princ = roundOff(state.amount);
-                }
-                var term = state.months;
-                var intr = (state.interest + 1) / 1200;
-                var monthlyPay = princ * intr / (1 - (Math.pow(1 / (1 + intr), term)));
-                return monthlyPay;
-            }
-
-            function getTotalInterest() {
-                var days = 30.41666667;
-                var interest = state.interest;
-                var PrincipleRemaining = state.amount,
-                    monthlyInstallment = state.monthlyInstallment,
-                    monthlyInterest, principleAmount = 0, totalInterest = 0, sumInterest = 0;
-                if (state.loanType == "lt2") {
-                    PrincipleRemaining = roundOff(state.amount);
-                }
-
-                for (var i = 1; i <= state.months; i++) {
-                    monthlyInterest = PrincipleRemaining * interest / 365 * days / 100;
-                    monthlyInterest = parseFloat(monthlyInterest.toFixed(2));
-
-                    if (state.loanType == "lt2") {
-                        principleAmount = state.installment - monthlyInterest;
-                    } else {
-                        principleAmount = monthlyInstallment - monthlyInterest;
-                    }
-                    principleAmount = parseFloat(principleAmount.toFixed(2));
-                    totalInterest = parseFloat(totalInterest) + parseFloat(monthlyInterest);
-                    PrincipleRemaining = PrincipleRemaining - principleAmount;
-                    PrincipleRemaining = parseFloat(PrincipleRemaining.toFixed(2));
-                    if (PrincipleRemaining < 0 || i == state.months) {
-                        sumInterest = totalInterest.toFixed(2);
-                        return sumInterest;
-                    }
-                }
-            }
-
-            function resetInputs() {
-                $('#duriation').val('');
-                $('#interestVal').val('');
-                $('#amountVal').val('');
-                $('#installmentVal').val('');
-                $('#calcOutput').hide();
-                $('#amountError, #installmentError, #interestError, #durationError').text('');
-                $('.error').removeClass('error');
-            }
-
-            function displayResults() {
-                if (state.showResult) {
-                    $('#calcOutput').show();
-                    if (state.loanType == 'lt1') {
-                        $('#resultHeading').html('@Model.ResultYourLoanAmount<br><span>' + outputValue(state.amount) + ' @Model.ResultCurrencyLabel</span>');
-                        $('#installmentRow').show();
-                        $('#maxLoanRow').hide();
-                        $('#monthlyInstallment').html(outputValue(state.monthlyInstallment) + ' <sub>@Model.ResultCurrencyLabel</sub>');
-                    } else {
-                        $('#resultHeading').html('@Model.ResultYourInstallment<br><span>' + outputValue(state.installment) + ' @Model.ResultCurrencyLabelMaxLoan</span>');
-                        $('#installmentRow').hide();
-                        $('#maxLoanRow').show();
-                        $('#maxLoanAmount').html(outputValue(state.maxLoanAmount) + ' <sub>@Model.ResultCurrencyLabel</sub>');
-                    }
-                    $('#resultYear').text(state.year + ' @Model.ResultYearLabel');
-                    $('#resultInterest').text('@Model.ResultInterestLabel ' + state.interest + '% @Model.ResultPerLabel');
-                    $('#totalInterest').html(outputValue(state.totalInterest) + ' <sub>@Model.ResultCurrencyLabel</sub>');
-                    $('#grandTotal').html(outputValue(state.grandTotal) + ' <sub>@Model.ResultCurrencyLabel</sub>');
-
-                    if (!state.applyloan) {
-                        $('#journeyMessage').text('@Model.ResultSecondJourney').show();
-                        $('#applyLoan').show();
-                        $('#applyLoanJourney').hide();
-                    } else {
-                        $('#journeyMessage').text('@Model.ResultJourney').show();
-                        $('#applyLoan').hide();
-                        $('#applyLoanJourney').show();
-                    }
-                } else {
-                    $('#calcOutput').hide();
-                }
-            }
-
-            function _isMobile() {
-                return window.innerWidth <= 767;
-            }
-            function _isTablet() {
-                return window.innerWidth > 767 && window.innerWidth <= 1024;
-            }
-
-            // Event listeners
-            $('input[name="loanType"]').on('change', function () {
-                state.loanType = $(this).val();
-                if (state.loanType === 'lt1') {
-                    $('#amountInput').show();
-                    $('#installmentInput').hide();
-                } else {
-                    $('#amountInput').hide();
-                    $('#installmentInput').show();
-                }
-            });
-
-            $('#amountVal').on('blur', function () {
-                validateAmt(this, $(this).val());
-            });
-
-            $('#installmentVal').on('blur', function () {
-                validateIns(this, $(this).val());
-            });
-
-            $('#interestVal').on('blur', function () {
-                validateRate(this, $(this).val());
-            });
-
-            $('#duriation').on('blur', function () {
-                validateYear(this, $(this).val());
-            });
-
-            // Fixed: Add event listener for calculateBtn
-            $('#calculateBtn').on('click', function () {
-                console.log('Calculate button clicked');
-                var canProceed = enableClick();
-                console.log('enableClick() returns:', canProceed);
-                if (canProceed) {
-                    submitInputs();
-                } else {
-                    console.log('Calculation cannot proceed. Please check your inputs.');
-                    var maxYear = $('#duriation').attr('data-max-year');
-                    alert('Please fill in all required fields correctly before calculating.\n\nMake sure:\n- Loan amount is filled (for loan amount calculation)\n- Monthly installment is filled (for maximum loan calculation)\n- Interest rate is filled\n- Loan duration is between 0.5 and ' + maxYear + ' years');
-                }
-            });
-
-            $('#editInputBtn').on('click', function (e) {
-                e.preventDefault();
-                resetInputs();
-            });
-
-            // Initialize
-            resetInputs();
-            $('#applyLoan').attr('href', '@Url.Content(Model.CTAProductLink)');
-            $('#applyLoanJourney').attr('href', '@Url.Content(Model.CTALink)');
-
-            if ('@Model.CTAProductLinkNewTab' === 'True') {
-                $('#applyLoan').attr('target', '_blank');
-            }
-
-            if ('@Model.CTALinkNewTab' === 'True') {
-                $('#applyLoanJourney').attr('target', '_blank');
-            }
-
-            // Money format directive equivalent
-            $('input[moneyformat]').on('input', function () {
-                var plainNumber = $(this).val().replace(/[\,\.]/g, '');
-                var formattedNumber = new Intl.NumberFormat('th-TH').format(plainNumber);
-                $(this).val(formattedNumber);
-            });
-
-            // Number input validation
-            $('input[type="number"]').on('keypress', function (event) {
-                var charCode = (event.which) ? event.which : event.keyCode;
-                if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-                    return false;
-                }
-                return true;
-            });
-
-
-        }
-
-        console.log('Max Year:', $('#duriation').attr('data-max-year'));
-        checkMaxYear();
-    });
-
-    function isNumberInput(evt, val) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    function checkMaxYear() {
-        var maxYear = $('#duriation').attr('data-max-year');
-        console.log('Max Year:', maxYear);
-        if (isNaN(parseFloat(maxYear))) {
-            console.error('Invalid data-max-year attribute');
-            $('#duriation').attr('data-max-year', '30'); // กำหนดค่าเริ่มต้นถ้าไม่ถูกต้อง
-        }
-    }
-</script>
+<button data-index="7" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
+    18
+</button>

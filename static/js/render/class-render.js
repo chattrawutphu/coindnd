@@ -4,8 +4,8 @@ var classesModel = {
     containerClasses: " p-1 flex relative select-none overscroll-contain", //container mx-auto content-start
 
     commonFlexClasses() {
-        const commonClasses = "relative justify-between flex border border-t-0 border-x-0 p-1 cursor-default";
-        return `${commonClasses} dark:text-gray-300 text-gray-800 dark:border-gray-500`;
+        const commonClasses = "relative justify-between flex p-1 cursor-default";
+        return `${commonClasses} dark:text-gray-300 text-gray-800`;
     },
     commonTextClasses() {
         const commonClasses = "me-2 pt-1";
@@ -49,8 +49,8 @@ var classesModel = {
     actionIconClasses: "size-4",
 
     addMoreClasses() {
-        const commonClasses = "flex text-xs items-center gap-x-1 m-1 cursor-pointer opacity-30";
-        return `${commonClasses} dark:text-gray-300 text-gray-800`;
+        const commonClasses = "flex text-xs items-center gap-x-1 m-1 cursor-pointer";
+        return `${commonClasses} dark:text-gray-500 text-gray-800`;
     },
 
     //Darkmode
