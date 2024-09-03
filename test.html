@@ -1,65 +1,69 @@
-<button  data-index="0" style="background-color: rgb(255, 0, 0); color: white; top: 2px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    1
-</button>
+<div class="province-slide">
+    <div class="province-carousel show-next owl-carousel owl-theme owl-loaded owl-drag">
+        <div class="owl-stage-outer">
+            <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s;">
+                @foreach (var PopularDes in Model.PopularDestinationList.Where(l=>l.LocationName!=""))
+                    {
+                    <div class="owl-item">
+                        <div class="item">
+                            <div class="item-slide-province">
+                                <a href="?province=@PopularDes.LocationName">
+                                    <div class="box-img">
+                                        <img alt="" src="@PopularDes.LeftImage"> </div>
+                                    <div class="box-text">
+                                        @PopularDes.LocationName
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    }
+            </div>
+        </div>
+        <div class="owl-nav disabled">
+            <div class="owl-prev disabled"><span class="icon-moon icon-ic-arrow-circle-left"></span></div>
+            <div class="owl-next disabled"><span class="icon-moon icon-ic-arrow-circle-right"></span></div>
+        </div>
+        <div class="owl-dots disabled"></div>
+    </div>
+</div>
 
-<button  data-index="1" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    12
-</button>
 
-<button  data-index="2" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    13
-</button>
 
-<button  data-index="3" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    14
-</button>
 
-<button  data-index="4" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    15
-</button>
-
-<button  data-index="5" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    16
-</button>
-
-<button  data-index="6" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    17
-</button>
-
-<button  data-index="7" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    18
-</button>
-
-ที่ถูกต้องเป็น
-
-<button data-index="0" style="background-color: rgb(255, 0, 0); color: white; top: 2px; left: -96px; height: 16px; min-width: 20px; opacity: 1; display: flex; align-items: center; justify-content: center;">
-    1
-</button>
-
-<button data-index="1" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    12
-</button>
-
-<button data-index="2" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    13
-</button>
-
-<button  data-index="3" style="background-color: rgb(255, 255, 255); color: black; top: 2px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    14
-</button>
-
-<button data-index="4" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -96px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    15
-</button>
-
-<button data-index="5" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -74px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    16
-</button>
-
-<button data-index="6" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -52px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    17
-</button>
-
-<button data-index="7" style="background-color: rgb(255, 255, 255); color: black; top: 23px; left: -30px; height: 16px; min-width: 20px; opacity: 0.8; display: flex; align-items: center; justify-content: center;">
-    18
-</button>
+<div class="province-slide">
+    <div class="province-carousel show-next owl-carousel owl-theme owl-loaded owl-drag">
+        <div class="owl-stage-outer">
+            <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s;">
+                    @foreach (var PopularDes in Model.PopularDestinationList.Where(l=>l.LocationName!=""))
+                    {
+                        <div class="owl-item active" style="width: 161.786px; margin-right: 20px;">
+                            <div class="item">
+                                <div class="item-slide-province">
+                                    <a href="?province=@PopularDes.LocationName">
+                                        <div class="box-img">
+                                            <img alt="" src="@PopularDes.LeftImage">
+                                        </div>
+                                        <div class="box-text">
+                                            <p>
+                                                @PopularDes.LocationName
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }                                                
+            </div>
+        </div>
+        <div class="owl-nav disabled">
+            <div class="owl-prev disabled">
+                <span class="icon-moon icon-ic-arrow-circle-left"></span>
+            </div>
+            <div class="owl-next disabled">
+                <span class="icon-moon icon-ic-arrow-circle-right"></span>
+            </div>
+        </div>
+        <div class="owl-dots disabled"></div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-let defaultItems = [
+let items = [
     {
         "id": "SY5ysCajjkeDKG4J0dzE8w",
         "type": "container",
@@ -108,4 +108,4 @@ let defaultItems = [
 ]
 
 
-export { defaultItems };
+export { items };

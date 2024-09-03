@@ -120,7 +120,18 @@
       $(document).ready(async () => {
         try {
             // 1. เรียกใช้ renderDndEditorScripts
-            await renderDndEditorScripts(defaultItems);
+            let items = defaultItems
+            console.log("pass1")
+            const storedItems = localStorage.getItem('items');
+            console.log("pass2")
+            if (storedItems) {
+                items = JSON.parse(storedItems);
+            } else {
+                localStorage.setItem('items', JSON.stringify(items));
+            }
+            console.log(items)
+            
+            await renderDndEditorScripts(items);
             
             // 2. เรนเดอร์คอมโพเนนต์ที่มี data-js-component (ยกเว้น DndComponent)
             const $components = $('[data-js-component]').not('[data-js-component="DndComponent"]');
