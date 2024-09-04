@@ -2,14 +2,16 @@ import { RemoveBorderLastcommonFlexClasses } from '/static/js/global-script.js';
 
 $(document).ready(function () {
 
-    //START: moveItem  for DnD application
+    /*
+    * START:  moveItem on localstorage for DnD application
+    */
     const storedItems = localStorage.getItem('items');
     let items = JSON.parse(storedItems);
-    
+
     function moveItem(sourceId, targetId, side, data = items) {
         console.log('sourceId ' + sourceId + " | targetId " + targetId)
         if (sourceId === targetId) return false;
-    
+
         const findInAll = (id, items) => {
             for (const item of items) {
                 if (item.id === id) return item;
@@ -28,7 +30,7 @@ $(document).ready(function () {
             }
             return null;
         };
-    
+
         const findParentArray = (id, items, parent = null) => {
             for (const item of items) {
                 if (item.id === id) return parent || items;
@@ -47,12 +49,12 @@ $(document).ready(function () {
             }
             return null;
         };
-    
+
         const source = findInAll(sourceId, data);
         const target = findInAll(targetId, data);
-    
+
         if (!source || !target) return false;
-    
+
         const sourceArray = findParentArray(sourceId, data);
         let targetArray;
         console.log("pass1" + side)
@@ -65,9 +67,9 @@ $(document).ready(function () {
         } else {
             targetArray = findParentArray(targetId, data);
         }
-    
+
         if (!sourceArray || !targetArray) return false;
-    
+
         const sourceIndex = sourceArray.findIndex(item => item.id === sourceId);
         sourceArray.splice(sourceIndex, 1);
         console.log(side);
@@ -77,16 +79,103 @@ $(document).ready(function () {
             const targetIndex = targetArray.findIndex(item => item.id === targetId);
             targetArray.splice(targetIndex + (side === "bottom" ? 1 : 0), 0, source);
         }
-    
+
         try {
             localStorage.setItem('items', JSON.stringify(data));
             console.log("บันทึกการเปลี่ยนแปลงลงใน localStorage สำเร็จ");
-            
+
         } catch (error) {
             console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
             return false;
         }
-    
+
+        return true;
+    }
+
+    async function moveMultipleItems(sourceIds, targetId, side, data = items) {
+        console.log('sourceIds ', sourceIds, " | targetId ", targetId);
+
+        const findInAll = (id, items) => {
+            for (const item of items) {
+                if (item.id === id) return item;
+                if (item.children && item.children.length) {
+                    const found = findInAll(id, item.children);
+                    if (found) return found;
+                }
+                if (item.conditions && item.conditions.length) {
+                    const found = findInAll(id, item.conditions);
+                    if (found) return found;
+                }
+                if (item.actions && item.actions.length) {
+                    const found = findInAll(id, item.actions);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        const findParentArray = (id, items, parent = null) => {
+            for (const item of items) {
+                if (item.id === id) return parent || items;
+                if (item.children && item.children.length) {
+                    const found = findParentArray(id, item.children, item.children);
+                    if (found) return found;
+                }
+                if (item.conditions && item.conditions.length) {
+                    const found = findParentArray(id, item.conditions, item.conditions);
+                    if (found) return found;
+                }
+                if (item.actions && item.actions.length) {
+                    const found = findParentArray(id, item.actions, item.actions);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        const sourcesAndParents = sourceIds.map(id => ({
+            source: findInAll(id, data),
+            sourceArray: findParentArray(id, data)
+        })).filter(item => item.source && item.sourceArray);
+
+        const target = findInAll(targetId, data);
+        if (!target) return false;
+
+        let targetArray;
+        if (side === 'condition') {
+            if (!target.conditions) target.conditions = [];
+            targetArray = target.conditions;
+        } else if (side === 'action') {
+            if (!target.actions) target.actions = [];
+            targetArray = target.actions;
+        } else {
+            targetArray = findParentArray(targetId, data);
+        }
+
+        if (!targetArray) return false;
+
+        // Remove all sources from their original positions
+        sourcesAndParents.forEach(({ source, sourceArray }) => {
+            const sourceIndex = sourceArray.findIndex(item => item.id === source.id);
+            sourceArray.splice(sourceIndex, 1);
+        });
+
+        // Add all sources to the target position
+        if (side === 'condition' || side === 'action') {
+            targetArray.push(...sourcesAndParents.map(item => item.source));
+        } else {
+            const targetIndex = targetArray.findIndex(item => item.id === targetId);
+            targetArray.splice(targetIndex + (side === "bottom" ? 1 : 0), 0, ...sourcesAndParents.map(item => item.source));
+        }
+
+        try {
+            localStorage.setItem('items', JSON.stringify(data));
+            console.log("บันทึกการเปลี่ยนแปลงลงใน localStorage สำเร็จ");
+        } catch (error) {
+            console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
+            return false;
+        }
+
         return true;
     }
 
@@ -146,16 +235,21 @@ $(document).ready(function () {
         console.log("After all async operations");
     }, 0);*/
 
+    /*
+    * END:  moveItem on localstorage for DnD application
+    */
+
     let isDragging = false;
     let clone = null;
     let startX, startY, startTime;
     let dndLine = null;
-    const speedThreshold = 0.1; // pixels per millisecond
+    const speedThreshold = 0.2; // pixels per millisecond
     let lastHoveredElement = null;
     let currentDndType = null;
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
+    let classSelection = 'select-active invert brightness-[0.7] contrast-150';
 
     function createDndLine(isTop, dndType) {
         const color = dndType === 'action' ? '#4ade80' : '#38bdf8';
@@ -210,6 +304,10 @@ $(document).ready(function () {
                     const $this = $(this);
                     const thisDndType = $this.attr('dnd-type');
                     const isAddMore = $this.attr('data-class') === 'addMoreClasses';
+
+                    if ($this.hasClass('select-active')) {
+                        return true; // ข้ามไปยัง element ถัดไป
+                    }
 
                     // ตรวจสอบว่า element ที่มี data-class="addMoreClasses" ไม่มี div อื่นรอบๆ
                     function isIsolatedAddMore($element) {
@@ -274,11 +372,25 @@ $(document).ready(function () {
         const newWidth = Math.min(originalWidth * 0.8, 400);
         const newHeight = Math.min(originalHeight * 0.8, 200);
 
+        const activeClass = classSelection;
+        // ตรวจสอบการกด Shift หรือ Ctrl
+        if (!e.shiftKey && !e.ctrlKey) {
+            if (!$currentTarget.hasClass("select-active")) {
+                var $commonFlexElements = $('[data-class="commonFlexClasses"]');
+                $commonFlexElements.removeClass(activeClass);
+            }
+            $currentTarget.addClass(activeClass);
+        }
+
+        // Count .select-active elementsป
+        const activeCount = $('[data-class="commonFlexClasses"].' + activeClass.split(' ')[0]).length;
+
+
         clone = $('<div>')
             .attr({
                 'id': 'draganddropSection',
                 'dnd-type': currentDndType,
-                'dnd-id': $currentTarget.attr('dnd-id') // Add this line to copy the dnd-id
+                'dnd-id': $currentTarget.attr('dnd-id')
             })
             .addClass('clone-container')
             .css({
@@ -293,7 +405,7 @@ $(document).ready(function () {
             })
             .appendTo('body');
 
-        $currentTarget.clone()
+        const clonedElement = $currentTarget.clone()
             .addClass('opacity-70')
             .css({
                 width: originalWidth,
@@ -302,8 +414,18 @@ $(document).ready(function () {
                 'transform-origin': 'top left'
             })
             .removeAttr('data-class')
-            .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end()
-            .appendTo(clone);
+            .removeClass(activeClass)
+            .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end();
+
+        // Add badge if there's more than one .select-active
+        if (activeCount > 1) {
+            $('<div>')
+                .addClass('absolute inline-flex items-center justify-center w-8 h-8 text-md font-bold text-white bg-red-500 rounded-full top-2 start-2')
+                .text(activeCount)
+                .appendTo(clonedElement);
+        }
+
+        clonedElement.appendTo(clone);
 
         handleDragMove(e);
     }
@@ -312,38 +434,43 @@ $(document).ready(function () {
         isDragging = false;
         if (clone) {
             const dndId = clone.attr('dnd-id');
-            const $draggedElement = $(`[data-class="commonFlexClasses"][dnd-id="${dndId}"]`).first();
+            const $selectedElements = $('[data-class="commonFlexClasses"].' + classSelection.split(' ')[0]);
 
             if (dndLine) {
                 const $targetParent = dndLine.parent();
                 const isTopHalf = dndLine.css('top') === '0px';
 
-                if ($draggedElement.length && $targetParent.length) {
+                if ($selectedElements.length && $targetParent.length) {
                     if ($targetParent.attr('data-class') === 'addMoreClasses') {
-                        $targetParent.before($draggedElement);
                         let parentTarget = $targetParent.closest("[data-class='panelWrapperClasses']");
-                        console.log("parentTarget Id: " + parentTarget.attr('dnd-id'))
-                        console.log("parentTarget Type: " + parentTarget.attr('dnd-type'))
-                        await operationQueue.enqueue(moveItem, dndId, parentTarget.attr('dnd-id'), $draggedElement.attr('dnd-type'));
+                        const targetId = parentTarget.attr('dnd-id');
+                        const sourceIds = $selectedElements.map(function () {
+                            return $(this).attr('dnd-id');
+                        }).get();
+
+                        await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, $selectedElements.first().attr('dnd-type'));
+                        $targetParent.before($selectedElements);
                     } else {
                         // Existing logic for commonFlexClasses
-                        if (isTopHalf) {
-                            let result = await operationQueue.enqueue(moveItem, dndId, $targetParent.attr('dnd-id'), 'top');
-                            console.log(result);
-                            if (result) {
-                                $targetParent.before($draggedElement);
-                            }
-                        } else {
-                            let result = await operationQueue.enqueue(moveItem, dndId, $targetParent.attr('dnd-id'), 'bottom');
-                            console.log(result);
-                            if (result) {
-                                $targetParent.after($draggedElement);
+                        const targetId = $targetParent.attr('dnd-id');
+                        const sourceIds = $selectedElements.map(function () {
+                            return $(this).attr('dnd-id');
+                        }).get();
+
+                        const position = isTopHalf ? 'top' : 'bottom';
+                        let result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
+
+                        if (result) {
+                            if (isTopHalf) {
+                                $targetParent.before($selectedElements);
+                            } else {
+                                $targetParent.after($selectedElements.get().reverse());
                             }
                         }
                     }
                 }
                 removeLine();
-                RemoveBorderLastcommonFlexClasses()
+                RemoveBorderLastcommonFlexClasses();
             }
 
             clone.remove();
@@ -423,4 +550,59 @@ $(document).ready(function () {
     $('#minimap, #minimap-slider').on('mousedown mousemove mouseup', function (e) {
         e.stopPropagation();
     });
+
+    /*
+    * START: Multi Selection
+    */
+    $(document).on('click', function (event) {
+        var $target = $(event.target);
+        var $commonFlexElements = $('[data-class="commonFlexClasses"]');
+        var activeClass = classSelection;
+        var $closestCommonFlex = $target.closest('[data-class="commonFlexClasses"]');
+
+        if ($closestCommonFlex.length) {
+            var targetDndType = $closestCommonFlex.attr('dnd-type');
+            var firstSelectedDndType = $commonFlexElements.filter('.' + activeClass.split(' ')[0]).first().attr('dnd-type');
+
+            if (!event.ctrlKey && !event.shiftKey) {
+                $commonFlexElements.removeClass(activeClass);
+                $closestCommonFlex.toggleClass(activeClass);
+            }
+            else if (event.ctrlKey) {
+                if (targetDndType === firstSelectedDndType) {
+                    $closestCommonFlex.addClass(activeClass);
+                }
+                else {
+                    $commonFlexElements.removeClass(activeClass);
+                    $closestCommonFlex.toggleClass(activeClass);
+                }
+            }
+            else if (event.shiftKey) {
+                if (targetDndType === firstSelectedDndType) {
+                    var $lastActive = $commonFlexElements.filter('.' + activeClass.split(' ')[0]).last();
+                    var startIndex = $commonFlexElements.index($lastActive);
+                    var endIndex = $commonFlexElements.index($closestCommonFlex);
+
+                    if (startIndex > endIndex) {
+                        [startIndex, endIndex] = [endIndex, startIndex];
+                    }
+
+                    $commonFlexElements.slice(startIndex, endIndex + 1).each(function () {
+                        if ($(this).attr('dnd-type') === targetDndType) {
+                            $(this).addClass(activeClass);
+                        }
+                    });
+                }
+                else {
+                    $commonFlexElements.removeClass(activeClass);
+                    $closestCommonFlex.toggleClass(activeClass);
+                }
+            }
+        } else {
+            $commonFlexElements.removeClass(activeClass);
+        }
+    });
+    /*
+    * END: Multi Selection
+    */
 });
