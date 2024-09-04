@@ -2,6 +2,7 @@ import { RemoveBorderLastcommonFlexClasses } from '/static/js/global-script.js';
 
 $(document).ready(function () {
 
+    //START: moveItem  for DnD application
     const storedItems = localStorage.getItem('items');
     let items = JSON.parse(storedItems);
     
