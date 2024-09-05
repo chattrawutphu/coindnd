@@ -1,99 +1,64 @@
 import { RemoveBorderLastcommonFlexClasses } from '/static/js/global-script.js';
 
 $(document).ready(function () {
+    const UndoManager = window.UndoManager;
+    const MAX_HISTORY = 50;
+    const undoManager = new UndoManager();
+    undoManager.setLimit(MAX_HISTORY);
 
-    /*
-    * START:  moveItem on localstorage for DnD application
-    */
-    const storedItems = localStorage.getItem('items');
-    let items = JSON.parse(storedItems);
+    let items = [];
 
-    function moveItem(sourceId, targetId, side, data = items) {
-        console.log('sourceId ' + sourceId + " | targetId " + targetId)
-        if (sourceId === targetId) return false;
-
-        const findInAll = (id, items) => {
-            for (const item of items) {
-                if (item.id === id) return item;
-                if (item.children && item.children.length) {
-                    const found = findInAll(id, item.children);
-                    if (found) return found;
-                }
-                if (item.conditions && item.conditions.length) {
-                    const found = findInAll(id, item.conditions);
-                    if (found) return found;
-                }
-                if (item.actions && item.actions.length) {
-                    const found = findInAll(id, item.actions);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
-
-        const findParentArray = (id, items, parent = null) => {
-            for (const item of items) {
-                if (item.id === id) return parent || items;
-                if (item.children && item.children.length) {
-                    const found = findParentArray(id, item.children, item.children);
-                    if (found) return found;
-                }
-                if (item.conditions && item.conditions.length) {
-                    const found = findParentArray(id, item.conditions, item.conditions);
-                    if (found) return found;
-                }
-                if (item.actions && item.actions.length) {
-                    const found = findParentArray(id, item.actions, item.actions);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
-
-        const source = findInAll(sourceId, data);
-        const target = findInAll(targetId, data);
-
-        if (!source || !target) return false;
-
-        const sourceArray = findParentArray(sourceId, data);
-        let targetArray;
-        console.log("pass1" + side)
-        if (side === 'condition') {
-            if (!target.conditions) target.conditions = [];
-            targetArray = target.conditions;
-        } else if (side === 'action') {
-            if (!target.actions) target.actions = [];
-            targetArray = target.actions;
-        } else {
-            targetArray = findParentArray(targetId, data);
-        }
-
-        if (!sourceArray || !targetArray) return false;
-
-        const sourceIndex = sourceArray.findIndex(item => item.id === sourceId);
-        sourceArray.splice(sourceIndex, 1);
-        console.log(side);
-        if (side === 'condition' || side === 'action') {
-            targetArray.push(source);
-        } else {
-            const targetIndex = targetArray.findIndex(item => item.id === targetId);
-            targetArray.splice(targetIndex + (side === "bottom" ? 1 : 0), 0, source);
-        }
-
-        try {
-            localStorage.setItem('items', JSON.stringify(data));
-            console.log("บันทึกการเปลี่ยนแปลงลงใน localStorage สำเร็จ");
-
-        } catch (error) {
-            console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
-            return false;
-        }
-
-        return true;
+    function updateUIFromCache(html) {
+        $('[data-js-component="DndComponent"]').html(html);
+        cleanupUI();
     }
 
-    async function moveMultipleItems(sourceIds, targetId, side, data = items) {
-        console.log('sourceIds ', sourceIds, " | targetId ", targetId);
+    function updateButtonStates() {
+        $('#undoBtn').prop('disabled', !undoManager.hasUndo());
+        $('#redoBtn').prop('disabled', !undoManager.hasRedo());
+    }
+
+    $(document).on('keydown', function (e) {
+        if (e.ctrlKey && e.key === 'z') {
+            e.preventDefault();
+            if (e.shiftKey) {
+                if (undoManager.hasRedo()) {
+                    undoManager.redo();
+                    cleanupUI();
+                    updateButtonStates();
+                }
+            } else {
+                if (undoManager.hasUndo()) {
+                    undoManager.undo();
+                    cleanupUI();
+                    updateButtonStates();
+                }
+            }
+        }
+    });
+
+    $('#undoBtn').on('click', function() {
+        if (undoManager.hasUndo()) {
+            undoManager.undo();
+            cleanupUI();
+            updateButtonStates();
+        }
+    });
+
+    $('#redoBtn').on('click', function() {
+        if (undoManager.hasRedo()) {
+            undoManager.redo();
+            cleanupUI();
+            updateButtonStates();
+        }
+    });
+
+    const storedItems = localStorage.getItem('items');
+    if (storedItems) {
+        items = JSON.parse(storedItems);
+    }
+
+    function moveMultipleItems(sourceIds, targetId, side, data = items) {
 
         const findInAll = (id, items) => {
             for (const item of items) {
@@ -175,9 +140,11 @@ $(document).ready(function () {
             console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
             return false;
         }
-
         return true;
     }
+
+    // Initial button state update
+    updateButtonStates();
 
     // Async Queue
     class AsyncOperationQueue {
@@ -261,7 +228,12 @@ $(document).ready(function () {
             left: '0',
             [isTop ? 'top' : 'bottom']: '0',
             zIndex: 1
-        });
+        }).addClass("drop-target-line");
+    }
+
+    function cleanupUI() {
+        removeLine()
+        RemoveBorderLastcommonFlexClasses();
     }
 
     function updateLinePosition($element, isTopHalf, dndType) {
@@ -283,6 +255,8 @@ $(document).ready(function () {
             dndLine.remove();
             dndLine = null;
         }
+        // ลบทุก element ที่มี class .drop-target-line
+        $('.drop-target-line').remove();
         lastHoveredElement = null;
     }
 
@@ -433,46 +407,78 @@ $(document).ready(function () {
     async function stopDragging(e) {
         isDragging = false;
         if (clone) {
-            const dndId = clone.attr('dnd-id');
             const $selectedElements = $('[data-class="commonFlexClasses"].' + classSelection.split(' ')[0]);
-
+    
             if (dndLine) {
                 const $targetParent = dndLine.parent();
                 const isTopHalf = dndLine.css('top') === '0px';
-
+    
                 if ($selectedElements.length && $targetParent.length) {
+                    // บันทึกสถานะก่อนการเปลี่ยนแปลง
+                    const oldState = JSON.parse(JSON.stringify(items));
+                    const oldHtml = $('[data-js-component="DndComponent"]').html();
+    
+                    let result;
                     if ($targetParent.attr('data-class') === 'addMoreClasses') {
                         let parentTarget = $targetParent.closest("[data-class='panelWrapperClasses']");
                         const targetId = parentTarget.attr('dnd-id');
                         const sourceIds = $selectedElements.map(function () {
                             return $(this).attr('dnd-id');
                         }).get();
-
-                        await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, $selectedElements.first().attr('dnd-type'));
-                        $targetParent.before($selectedElements);
+    
+                        result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, $selectedElements.first().attr('dnd-type'));
                     } else {
-                        // Existing logic for commonFlexClasses
                         const targetId = $targetParent.attr('dnd-id');
                         const sourceIds = $selectedElements.map(function () {
                             return $(this).attr('dnd-id');
                         }).get();
-
+    
                         const position = isTopHalf ? 'top' : 'bottom';
-                        let result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
-
-                        if (result) {
-                            if (isTopHalf) {
-                                $targetParent.before($selectedElements);
-                            } else {
-                                $targetParent.after($selectedElements.get().reverse());
-                            }
-                        }
+                        result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
                     }
+    
+                    if (result) {
+                        // อัปเดต DOM
+                        if ($targetParent.attr('data-class') === 'addMoreClasses') {
+                            $targetParent.before($selectedElements);
+                        } else if (isTopHalf) {
+                            $targetParent.before($selectedElements);
+                        } else {
+                            $targetParent.after($selectedElements.get().reverse());
+                        }
+    
+                        // บันทึกสถานะใหม่
+                        const newState = JSON.parse(JSON.stringify(items));
+                        const newHtml = $('[data-js-component="DndComponent"]').html();
+    
+                        // เพิ่มการกระทำลงใน undoManager
+                        undoManager.add({
+                            undo: function () {
+                                items = oldState;
+                                updateUIFromCache(oldHtml);
+                                updateButtonStates();
+                                cleanupUI(); // เพิ่มการเรียกใช้ cleanupUI ที่นี่
+                            },
+                            redo: function () {
+                                items = newState;
+                                updateUIFromCache(newHtml);
+                                updateButtonStates();
+                                cleanupUI(); // เพิ่มการเรียกใช้ cleanupUI ที่นี่
+                            }
+                        });
+    
+                    } else {
+                        // ถ้าการดำเนินการไม่สำเร็จ ให้กลับไปใช้สถานะเดิม
+                        items = oldState;
+                        updateUIFromCache(oldHtml);
+                    }
+    
+                    // อัปเดตสถานะปุ่ม undo/redo
+                    updateButtonStates();
                 }
-                removeLine();
-                RemoveBorderLastcommonFlexClasses();
+                cleanupUI(); // เรียกใช้ cleanupUI หลังจากจัดการกับ dndLine
             }
-
+    
             clone.remove();
             clone = null;
             $('#updateUI').trigger('click');
@@ -480,6 +486,7 @@ $(document).ready(function () {
         currentDndType = null;
         $currentTarget = null;
         $(document).off('mousemove', handleDragMove);
+        cleanupUI(); // เรียกใช้ cleanupUI อีกครั้งเพื่อความแน่ใจ
     }
 
     function checkDragThreshold(e) {
