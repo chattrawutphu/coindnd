@@ -19,7 +19,7 @@ $(document).ready(function () {
     }
 
     $(document).on('keydown', function (e) {
-        if (e.ctrlKey && e.key === 'z') {
+        if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
             e.preventDefault();
             if (e.shiftKey) {
                 if (undoManager.hasRedo()) {
@@ -33,6 +33,14 @@ $(document).ready(function () {
                     cleanupUI();
                     updateButtonStates();
                 }
+            }
+        }
+        else if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) {
+            e.preventDefault();
+            if (undoManager.hasRedo()) {
+                undoManager.redo();
+                cleanupUI();
+                updateButtonStates();
             }
         }
     });
@@ -232,7 +240,8 @@ $(document).ready(function () {
     }
 
     function cleanupUI() {
-        removeLine()
+        removeLine();
+        clearCommandSelection();
         RemoveBorderLastcommonFlexClasses();
     }
 
@@ -258,6 +267,11 @@ $(document).ready(function () {
         // ลบทุก element ที่มี class .drop-target-line
         $('.drop-target-line').remove();
         lastHoveredElement = null;
+    }
+
+    function clearCommandSelection(){
+        var $commonFlexElements = $('[data-class="commonFlexClasses"]');
+        $commonFlexElements.removeClass(activeClass);
     }
 
     function handleDragMove(e) {
