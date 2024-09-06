@@ -231,7 +231,7 @@ $(document).ready(function () {
         return $('<div>').css({
             position: 'absolute',
             width: '100%',
-            height: '2px',
+            height: '4px',
             backgroundColor: color,
             left: '0',
             [isTop ? 'top' : 'bottom']: '0',
@@ -591,7 +591,7 @@ $(document).ready(function () {
             }
             else if (event.ctrlKey) {
                 if (targetDndType === firstSelectedDndType) {
-                    $closestCommonFlex.addClass(activeClass);
+                    $closestCommonFlex.toggleClass(activeClass);
                 }
                 else {
                     $commonFlexElements.removeClass(activeClass);
