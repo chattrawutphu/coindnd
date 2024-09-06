@@ -271,7 +271,7 @@ $(document).ready(function () {
 
     function clearCommandSelection(){
         var $commonFlexElements = $('[data-class="commonFlexClasses"]');
-        $commonFlexElements.removeClass(activeClass);
+        $commonFlexElements.removeClass(classSelection);
     }
 
     function handleDragMove(e) {
