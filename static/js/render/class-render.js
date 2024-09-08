@@ -49,7 +49,7 @@ var classesModel = {
     actionIconClasses: "size-4",
 
     addMoreClasses() {
-        const commonClasses = "flex text-xs items-center gap-x-1 m-1 cursor-pointer";
+        const commonClasses = "flex flex-col items-start justify-start text-xs m-1 cursor-pointer h-full max-h-16";
         return `${commonClasses} dark:text-gray-500 text-gray-800`;
     },
 

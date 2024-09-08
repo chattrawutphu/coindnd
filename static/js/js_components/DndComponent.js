@@ -11,7 +11,12 @@ const createDndParams = (params, message) => `<div class="flex flex-wrap text-sm
 
 const svgIcon = (path, className = 'size-4') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="${className}"><path d="${path}" /></svg>`;
 
-const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="addMoreClasses">${svgIcon("M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z")}<p>${text}</p></div>`;
+const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="addMoreClasses">
+<div class="flex items-center gap-x-1">
+    ${svgIcon("M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z")}
+    <p>${text}</p>
+</div>
+</div>`;
 
 const renderPanel = (items, type) => items.map((item, index, array) => `
     <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 "
@@ -20,10 +25,10 @@ const renderPanel = (items, type) => items.map((item, index, array) => `
          ${type === 'condition' ? `dnd-param="${LZString.compressToEncodedURIComponent(JSON.stringify(item.params))}"` : ''}>
         <div class="flex">
             <div data-class="commonTextClasses">
-                ${svgIcon(type === 'condition' 
-                    ? "M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
-                    : "M9.58 1.077a.75.75 0 0 1 .405.82L9.165 6h4.085a.75.75 0 0 1 .567 1.241l-6.5 7.5a.75.75 0 0 1-1.302-.638L6.835 10H2.75a.75.75 0 0 1-.567-1.241l6.5-7.5a.75.75 0 0 1 .897-.182Z", 
-                "iconClasses")}
+                ${svgIcon(type === 'condition'
+    ? "M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z"
+    : "M9.58 1.077a.75.75 0 0 1 .405.82L9.165 6h4.085a.75.75 0 0 1 .567 1.241l-6.5 7.5a.75.75 0 0 1-1.302-.638L6.835 10H2.75a.75.75 0 0 1-.567-1.241l6.5-7.5a.75.75 0 0 1 .897-.182Z",
+    "iconClasses")}
             </div>
             <div data-class="commonTitleClasses">${item.title}</div>
             ${createDndParams(item.params, item.message)}
@@ -47,7 +52,7 @@ const renderVariables = variables => variables.map(v => `
     </div>
 `).join('');
 
-export const renderContent = async (items, level = 2, parentId = '', isHidden=true) => {
+export const renderContent = async (items, level = 2, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
         const { id, active, type, subtype, title, message, showChildren, highlight, variables, conditions, actions, children, backgroundColor, textColor } = item;
         const childrenContent = children?.length ? await renderContent(children, level + 1, id, showChildren) : '';
@@ -62,19 +67,17 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden=tr
             <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
         </svg>
     `;
-//<div data-class="panelWrapperClasses" class="${isHidden ? 'max-h-[9999px]' : 'max-h-0'} overflow-hidden transition-[max-height] duration-500 ease-in-out" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+        //<div data-class="panelWrapperClasses" class="${isHidden ? 'max-h-[9999px]' : 'max-h-0'} overflow-hidden transition-[max-height] duration-500 ease-in-out" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+        /*${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
+        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}        */
+
         return `
             <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'} overflow-hidden" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
 
-                
-
-                ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
-                
-                ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}
-                
                 ${subtype === "group" ? `
+
                     <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
@@ -90,12 +93,12 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden=tr
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
-                        <div data-class="panelContainerClasses" class="grid relative w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
+                        <div data-class="panelContainerClasses" class="grid relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                             ${children?.length > 0 ? `
                                 <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}
                             <div data-class="leftPanelClasses">
                                 ${renderPanel(conditions, 'condition')}
-                                ${addMoreTemplate('condition','Add condition')}
+                                ${addMoreTemplate('condition', 'Add condition')}
                             </div>
                             <div data-class="rightPanelClasses">
                                 ${renderPanel(actions, 'action')}
