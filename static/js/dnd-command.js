@@ -230,7 +230,7 @@ $(document).ready(function () {
         const color = dndType === 'action' ? '#4ade80' : (dndType === 'container' ? '#38bdf8' : '#4ade80');
         const width = (dndType === 'container' && !isLeftSide && !isTop) ? '90%' : '100%';
         const right = (dndType === 'container' && !isLeftSide && !isTop) ? '0' : 'auto';
-        
+
         const $line = $('<div>').css({
             position: 'absolute',
             width: width,
@@ -241,30 +241,30 @@ $(document).ready(function () {
             [isTop ? 'top' : 'bottom']: '0',
             zIndex: 1
         }).addClass("drop-target-line");
-    
+
         if (dndType === 'container' && !isLeftSide) {
             $line.addClass('isDropAsChild');
         }
-    
+
         return $line;
     }
-    
+
     function updateLinePosition($element, isTopHalf, dndType) {
         let $targetElement = $element;
         let isLeftSide = true;
-    
+
         if (dndType === 'container') {
             const $panelContainer = $element.find('[data-class="panelContainerClasses"]').first();
             if ($panelContainer.length) {
                 $targetElement = $panelContainer;
             }
-            
+
             // ตรวจสอบตำแหน่งเมาส์
             const rect = $element[0].getBoundingClientRect();
             const mouseX = window.event.clientX; // หมายเหตุ: ควรส่ง mouseX เป็นพารามิเตอร์แทนการใช้ window.event
             isLeftSide = (mouseX - rect.left) < (rect.width * 0.5);
         }
-    
+
         if (!dndLine || dndLine.data('dndType') !== dndType || dndLine.data('isLeftSide') !== isLeftSide || dndLine.data('isTopHalf') !== isTopHalf) {
             if (dndLine) dndLine.remove();
             dndLine = createDndLine(isTopHalf, dndType, isLeftSide);
@@ -284,7 +284,7 @@ $(document).ready(function () {
                 bottom: isTopHalf ? 'auto' : 0,
                 left: isLeftSide ? '0' : 'auto'
             };
-    
+
             if (dndType === 'container' && !isLeftSide && !isTopHalf) {
                 cssProps.width = '90%';
                 cssProps.right = '0';
@@ -292,9 +292,9 @@ $(document).ready(function () {
                 cssProps.width = '100%';
                 cssProps.right = 'auto';
             }
-    
+
             dndLine.css(cssProps);
-    
+
             if (dndType === 'container' && !isLeftSide) {
                 dndLine.addClass('isDropAsChild');
             } else {
@@ -325,113 +325,92 @@ $(document).ready(function () {
     }
 
     function handleDragMove(e) {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
 
-        if (clone) {
-            clone.css({
-                left: mouseX - clone.outerWidth() / 2,
-                top: mouseY - clone.outerHeight() / 2
-            });
+        if (!clone) return;
 
-            if (!isScrolling) {
-                let found = false;
-                $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]').each(function () {
-                    if (this === clone[0] || $.contains(clone[0], this)) return true; // ข้าม clone และ children ของมัน
+        clone.css({
+            left: mouseX - clone.outerWidth() / 2,
+            top: mouseY - clone.outerHeight() / 2
+        });
 
-                    const $this = $(this);
-                    const thisDndType = $this.attr('dnd-type');
-                    const isAddMore = $this.attr('data-class') === 'addMoreClasses';
-                    const isPanelWrapper = $this.attr('data-class') === 'panelWrapperClasses';
+        if (isScrolling) return;
 
-                    if ($this.hasClass('select-active')) {
-                        return true; // ข้ามไปยัง element ถัดไป
-                    }
+        let found = false;
+        $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]')
+            .not(clone)
+            .not(clone.find('*'))
+            .each(function () {
+                if (found) return false; // ออกจาก loop ถ้าเจอแล้ว
 
-                    // ฟังก์ชันตรวจสอบว่า element ที่มี data-class="addMoreClasses" ไม่มี div อื่นรอบๆ
-                    function isIsolatedAddMore($element) {
-                        const $parent = $element.parent();
-                        const $siblings = $parent.children();
-                        return $siblings.length === 1 && $siblings[0] === $element[0];
-                    }
+                const $this = $(this);
+                // ตรวจสอบ parent ทุกระดับที่มี data-class ที่กำหนด
+                if ($this.parents('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]')
+                    .filter('.select-active').length > 0 || $this.hasClass('select-active')) {
+                    return true;
+                }
 
-                    // ตรวจสอบเงื่อนไขสำหรับ addMoreClasses
-                    if (isAddMore && isIsolatedAddMore($this)) {
-                        // ตรวจสอบว่า dnd types ตรงกันสำหรับ addMoreClasses
-                        if ((currentDndType === 'condition' && thisDndType === 'condition')
-                            || (currentDndType === 'action' && thisDndType === 'action')) {
+                const thisDndType = $this.attr('dnd-type');
+                const elementClass = $this.attr('data-class');
+                const rect = this.getBoundingClientRect();
 
-                            const rect = this.getBoundingClientRect();
+                if (mouseX < rect.left || mouseX > rect.right || mouseY < rect.top || mouseY > rect.bottom) return true;
 
-                            if (mouseX >= rect.left && mouseX <= rect.right &&
-                                mouseY >= rect.top && mouseY <= rect.bottom) {
+                switch (elementClass) {
+                    case 'addMoreClasses':
+                        if ($this.parent().children().length !== 1 || $this.parent().children()[0] !== $this[0]) return true;
+                        if ((currentDndType === 'condition' && thisDndType === 'condition') ||
+                            (currentDndType === 'action' && thisDndType === 'action')) {
+                            updateLinePosition($this, true, currentDndType);
+                            lastHoveredElement = $this;
+                            found = true;
+                        }
+                        break;
 
-                                updateLinePosition($this, true, currentDndType); // แสดงเส้นที่ด้านบนเสมอสำหรับ addMoreClasses
-                                lastHoveredElement = $this;
-                                found = true;
-                                return false; // ออกจาก loop
+                    case 'panelWrapperClasses':
+                        if (currentDndType === 'container' && thisDndType === 'container') {
+                            const topDistance = mouseY - rect.top;
+                            const bottomDistance = rect.bottom - mouseY;
+                            if (topDistance <= 64 || bottomDistance <= 64) {
+                                const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
+                                    const panelRect = this.getBoundingClientRect();
+                                    return mouseX >= panelRect.left && mouseX <= panelRect.right &&
+                                        mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
+                                        (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
+                                });
+                                if ($hoveredPanels.length > 0 && $hoveredPanels.last()[0] === this) {
+                                    const isTopHalf = mouseY < (rect.top + rect.height / 2);
+                                    updateLinePosition($this, isTopHalf, currentDndType);
+                                    lastHoveredElement = $this;
+                                    found = true;
+                                }
+                            } else {
+                                removeLine();
                             }
                         }
-                    } else if (isPanelWrapper && currentDndType === 'container' && thisDndType === 'container') {
-                        // จัดการกับ panelWrapperClasses
-                        const rect = this.getBoundingClientRect();
-                    
-                        // เพิ่มเงื่อนไขตรวจสอบระยะห่างจาก top และ bottom
-                        const topDistance = mouseY - rect.top;
-                        const bottomDistance = rect.bottom - mouseY;
-                    
-                        if (mouseX >= rect.left && mouseX <= rect.right &&
-                            mouseY >= rect.top && mouseY <= rect.bottom &&
-                            (topDistance <= 64 || bottomDistance <= 64)) {
-                    
-                            const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
-                                const panelRect = this.getBoundingClientRect();
-                                const panelTopDistance = mouseY - panelRect.top;
-                                const panelBottomDistance = panelRect.bottom - mouseY;
-                    
-                                return mouseX >= panelRect.left && mouseX <= panelRect.right &&
-                                    mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
-                                    (panelTopDistance <= 64 || panelBottomDistance <= 64);
-                            });
-                    
-                            if ($hoveredPanels.length > 0 && $hoveredPanels.last()[0] === this) {
-                                const isTopHalf = mouseY < (rect.top + rect.height / 2);
-                                updateLinePosition($this, isTopHalf, currentDndType);
-                                lastHoveredElement = $this;
-                                found = true;
-                                return false; // ออกจาก loop
-                            }
-                        } else {
-                            // ถ้าไม่เข้าเงื่อนไข ให้ลบ line ออก
-                            removeLine();
-                        }
-                    } else if (!isAddMore && thisDndType === currentDndType) {
-                        // จัดการกับ commonFlexClasses
-                        const rect = this.getBoundingClientRect();
+                        break;
 
-                        if (mouseX >= rect.left && mouseX <= rect.right &&
-                            mouseY >= rect.top && mouseY <= rect.bottom) {
-
+                    default: // commonFlexClasses
+                        if (thisDndType === currentDndType) {
                             const isTopHalf = mouseY < (rect.top + rect.height / 2);
                             updateLinePosition($this, isTopHalf, currentDndType);
                             lastHoveredElement = $this;
                             found = true;
-                            return false; // ออกจาก loop
                         }
-                    }
-                });
-
-                if (!found && lastHoveredElement) {
-                    const lastRect = lastHoveredElement[0].getBoundingClientRect();
-                    const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
-                    const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
-
-                    if (horizontalDistance > 256 || verticalDistance > 128) {
-                        removeLine();
-                    } else {
-                        updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType);
-                    }
+                        break;
                 }
+            });
+
+        if (!found && lastHoveredElement) {
+            const lastRect = lastHoveredElement[0].getBoundingClientRect();
+            const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
+            const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
+
+            if (horizontalDistance > 256 || verticalDistance > 128) {
+                removeLine();
+            } else {
+                updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType);
             }
         }
     }
@@ -680,35 +659,66 @@ $(document).ready(function () {
     /*
     * START: Multi Selection
     */
-    $(document).on('click', function (event) {
-        var $target = $(event.target);
-        var $selectableElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
-        var activeClass = classSelection;
-        var $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
-      
-        if ($closestSelectableElement.length) {
-            var targetDndType = $closestSelectableElement.attr('dnd-type');
-            var $firstSelected = $selectableElements.filter('.' + activeClass.split(' ')[0]).first();
-            var firstSelectedDndType = $firstSelected.length ? $firstSelected.attr('dnd-type') : null;
+    $(document).on('mousedown', function (event) {
+        const $target = $(event.target);
+        const $selectableElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
+        const activeClass = classSelection;
+        const $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
     
-            if (!event.ctrlKey && !event.shiftKey) {
+        if (!$closestSelectableElement.length) {
+            $selectableElements.removeClass(activeClass);
+            return;
+        }
+    
+        const targetDndType = $closestSelectableElement.attr('dnd-type');
+        const elementClass = $closestSelectableElement.attr('data-class');
+        const $firstSelected = $selectableElements.filter('.' + activeClass.split(' ')[0]).first();
+        const firstSelectedDndType = $firstSelected.length ? $firstSelected.attr('dnd-type') : null;
+    
+        if (!event.ctrlKey && !event.shiftKey) {
+            if(!$closestSelectableElement.hasClass(activeClass)) {
                 $selectableElements.removeClass(activeClass);
                 $closestSelectableElement.toggleClass(activeClass);
             }
-            else if (event.ctrlKey) {
-                if (targetDndType === firstSelectedDndType) {
-                    $closestSelectableElement.toggleClass(activeClass);
-                }
-                else {
-                    $selectableElements.removeClass(activeClass);
-                    $closestSelectableElement.toggleClass(activeClass);
-                }
+        } else if (event.ctrlKey) {
+            if (targetDndType === firstSelectedDndType) {
+                $closestSelectableElement.toggleClass(activeClass);
+            } else {
+                $selectableElements.removeClass(activeClass);
+                $closestSelectableElement.toggleClass(activeClass);
             }
-            else if (event.shiftKey) {
+        } else if (event.shiftKey) {
+            if (elementClass === 'panelWrapperClasses') {
+                // ตรวจสอบ parent ทั้งหมดที่เป็น panelWrapperClasses
+                const $activeParent = $closestSelectableElement.parents('[data-class="panelWrapperClasses"].' + activeClass.split(' ')[0]).first();
+                
+                if ($activeParent.length) {
+                    // ถ้ามี parent ที่ active อยู่แล้ว ให้เลือก elements ระหว่าง parent นั้นกับ element ที่เลือก
+                    const $relevantElements = $activeParent.find('[data-class="panelWrapperClasses"]').add($activeParent);
+                    const startIndex = $relevantElements.index($activeParent);
+                    const endIndex = $relevantElements.index($closestSelectableElement);
+                    
+                    $relevantElements.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).addClass(activeClass);
+                } else {
+                    // ถ้าไม่มี parent ที่ active ให้เลือก element นี้และ siblings ที่อยู่ระดับเดียวกัน
+                    const $siblings = $closestSelectableElement.siblings('[data-class="panelWrapperClasses"]').add($closestSelectableElement);
+                    const $activeElement = $siblings.filter('.' + activeClass.split(' ')[0]).first();
+                    
+                    if ($activeElement.length) {
+                        const startIndex = $siblings.index($activeElement);
+                        const endIndex = $siblings.index($closestSelectableElement);
+                        
+                        $siblings.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).addClass(activeClass);
+                    } else {
+                        $closestSelectableElement.toggleClass(activeClass);
+                    }
+                }
+            } else {
+                // สำหรับ commonFlexClasses ใช้โค้ดเดิม
                 if (targetDndType === firstSelectedDndType) {
-                    var $lastActive = $selectableElements.filter('.' + activeClass.split(' ')[0]).last();
-                    var startIndex = $selectableElements.index($lastActive);
-                    var endIndex = $selectableElements.index($closestSelectableElement);
+                    const $lastActive = $selectableElements.filter('.' + activeClass.split(' ')[0]).last();
+                    let startIndex = $selectableElements.index($lastActive);
+                    let endIndex = $selectableElements.index($closestSelectableElement);
     
                     if (startIndex > endIndex) {
                         [startIndex, endIndex] = [endIndex, startIndex];
@@ -719,14 +729,11 @@ $(document).ready(function () {
                             $(this).addClass(activeClass);
                         }
                     });
-                }
-                else {
+                } else {
                     $selectableElements.removeClass(activeClass);
                     $closestSelectableElement.toggleClass(activeClass);
                 }
             }
-        } else {
-            $selectableElements.removeClass(activeClass);
         }
     });
     /*

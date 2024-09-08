@@ -172,6 +172,57 @@ let defaultItems = [
                             }
                         ],
                         "children": []
+                    },                    {
+                        "id": "gui-013a",
+                        "type": "container",
+                        "subtype": "if",
+                        "title": "BTC Exit Condition",
+                        "highlight": "",
+                        "showChildren": true,
+                        "active": true,
+                        "message": "Conditions for exiting a BTC trade",
+                        "variables": [],
+                        "conditions": [
+                            {
+                                "id": "gui-014",
+                                "type": "condition",
+                                "subtype": "profitCondition",
+                                "title": "if",
+                                "message": "Profit on {params[0]} position is {params[1]} {params[2]}",
+                                "active": true,
+                                "params": [
+                                    { "value": "btcusdt", "text": "BTC/USDT", "color": "yellow", "type": "symbol", "unit": "" },
+                                    { "value": "gt", "text": "Greater than", "color": "lawngreen", "type": "operator", "unit": "" },
+                                    { "value": "5", "text": "5", "color": "white", "type": "percentage", "unit": "%" }
+                                ]
+                            },
+                            {
+                                "id": "gui-015",
+                                "type": "condition",
+                                "subtype": "timeCondition",
+                                "title": "or",
+                                "message": "Position has been open for more than {params[0]}",
+                                "active": true,
+                                "params": [
+                                    { "value": "24h", "text": "24 hours", "color": "aqua", "type": "duration", "unit": "" }
+                                ]
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "id": "gui-016",
+                                "type": "action",
+                                "title": "action",
+                                "message": "Close {params[0]} position for {params[1]}",
+                                "active": true,
+                                "params": [
+                                    { "value": "btcusdt", "text": "BTC/USDT", "color": "yellow", "type": "symbol", "unit": "" },
+                                    { "value": "100", "text": "100%", "color": "white", "type": "percentage", "unit": "%" }
+                                ],
+                                "template": "closePosition"
+                            }
+                        ],
+                        "children": []
                     }
                 ]
             },
