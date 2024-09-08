@@ -77,11 +77,13 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
                 dnd-message="${message}" dnd-level="${level}">
 
                 ${subtype === "group" ? `
-
+                    
                     <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
+                        <div data-class="panelContainerClasses" class="">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
                             <div class="text-sm/[18px]"># ${message}</div>
+                        </div>
                         </div>
                         ${children?.length > 0 ? `
                             <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}

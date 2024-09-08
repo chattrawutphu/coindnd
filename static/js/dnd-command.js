@@ -224,7 +224,8 @@ $(document).ready(function () {
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
-    let classSelection = 'select-active invert brightness-[0.7] contrast-150';
+    const classSelection = 'select-active invert brightness-[0.7] contrast-150';
+    const effectClasses = 'invert brightness-[0.7] contrast-150';
 
     function createDndLine(isTop, dndType, isLeftSide = true) {
         const color = dndType === 'action' ? '#4ade80' : (dndType === 'container' ? '#38bdf8' : '#4ade80');
@@ -321,7 +322,11 @@ $(document).ready(function () {
 
     function clearCommandSelection() {
         var $commonFlexElements = $('[data-class="commonFlexClasses"]');
+        var $panelWrapperElements = $('[data-class="panelWrapperClasses"]');
+
         $commonFlexElements.removeClass(classSelection);
+        $panelWrapperElements.removeClass("select-active");
+        $panelWrapperElements.find('[data-class="panelContainerClasses"]').removeClass(effectClasses);
     }
 
     function handleDragMove(e) {
@@ -429,14 +434,28 @@ $(document).ready(function () {
         if (!e.shiftKey && !e.ctrlKey) {
             if (!$currentTarget.hasClass("select-active")) {
                 var $commonFlexElements = $('[data-class="commonFlexClasses"]');
+                var $panelWrapperElements = $('[data-class="panelWrapperClasses"]');
+
                 $commonFlexElements.removeClass(activeClass);
+                $panelWrapperElements.removeClass("select-active");
+                $panelWrapperElements.find('[data-class="panelContainerClasses"]').removeClass(effectClasses);
             }
-            $currentTarget.addClass(activeClass);
+
+            if ($currentTarget.attr('data-class') === "panelWrapperClasses") {
+                $currentTarget.addClass("select-active");
+                $currentTarget.find('[data-class="panelContainerClasses"]').addClass(effectClasses);
+            } else {
+                $currentTarget.addClass(activeClass);
+            }
         }
 
         // Count .select-active elementsป
-        const activeCount = $('[data-class="commonFlexClasses"].' + activeClass.split(' ')[0]).length;
-
+        let activeCount = 0
+        if ($currentTarget.attr('data-class') === "panelWrapperClasses") {
+            activeCount = $('[data-class="panelWrapperClasses"].' + activeClass.split(' ')[0]).length;
+        } else {
+            activeCount = $('[data-class="commonFlexClasses"].' + activeClass.split(' ')[0]).length;
+        }
 
         clone = $('<div>')
             .attr({
@@ -662,76 +681,129 @@ $(document).ready(function () {
     $(document).on('mousedown', function (event) {
         const $target = $(event.target);
         const $selectableElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
-        const activeClass = classSelection;
-        const $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
-    
-        if (!$closestSelectableElement.length) {
-            $selectableElements.removeClass(activeClass);
+        const activeClass = 'select-active';
+
+        // ตรวจสอบ expandButtonClasses ก่อน
+        if ($target.attr('data-class') === 'expandButtonClasses' || $target.closest('[data-class="expandButtonClasses"]').length) {
             return;
         }
-    
+
+        const $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
+
+        // ตรวจสอบเพิ่มเติมสำหรับ panelWrapperClasses
+        if ($closestSelectableElement.attr('data-class') === 'panelWrapperClasses') {
+            const $panelContainer = $closestSelectableElement.find('[data-class="panelContainerClasses"]');
+            if (!$panelContainer.is($target) && !$.contains($panelContainer[0], $target[0])) {
+                clearCommandSelection();
+                return;
+            }
+        }
+
+        function updateEffects($element, add) {
+            if ($element.attr('data-class') === 'panelWrapperClasses') {
+                const $panelContainer = $element.find('[data-class="panelContainerClasses"]');
+                if (add) {
+                    $panelContainer.addClass(effectClasses);
+                } else {
+                    $panelContainer.removeClass(effectClasses);
+                }
+            } else {
+                if (add) {
+                    $element.addClass(effectClasses);
+                } else {
+                    $element.removeClass(effectClasses);
+                }
+            }
+        }
+
+        function toggleActiveAndEffects($element) {
+            const isActive = $element.hasClass(activeClass);
+            $element.toggleClass(activeClass);
+            updateEffects($element, !isActive);
+        }
+
+        if (!$closestSelectableElement.length) {
+            $selectableElements.removeClass(activeClass);
+            $selectableElements.each(function () {
+                updateEffects($(this), false);
+            });
+            return;
+        }
+
         const targetDndType = $closestSelectableElement.attr('dnd-type');
         const elementClass = $closestSelectableElement.attr('data-class');
-        const $firstSelected = $selectableElements.filter('.' + activeClass.split(' ')[0]).first();
+        const $firstSelected = $selectableElements.filter('.' + activeClass).first();
         const firstSelectedDndType = $firstSelected.length ? $firstSelected.attr('dnd-type') : null;
-    
+
         if (!event.ctrlKey && !event.shiftKey) {
-            if(!$closestSelectableElement.hasClass(activeClass)) {
+            if (!$closestSelectableElement.hasClass(activeClass)) {
                 $selectableElements.removeClass(activeClass);
-                $closestSelectableElement.toggleClass(activeClass);
+                $selectableElements.each(function () {
+                    updateEffects($(this), false);
+                });
+                toggleActiveAndEffects($closestSelectableElement);
             }
         } else if (event.ctrlKey) {
             if (targetDndType === firstSelectedDndType) {
-                $closestSelectableElement.toggleClass(activeClass);
+                toggleActiveAndEffects($closestSelectableElement);
             } else {
                 $selectableElements.removeClass(activeClass);
-                $closestSelectableElement.toggleClass(activeClass);
+                $selectableElements.each(function () {
+                    updateEffects($(this), false);
+                });
+                toggleActiveAndEffects($closestSelectableElement);
             }
         } else if (event.shiftKey) {
             if (elementClass === 'panelWrapperClasses') {
-                // ตรวจสอบ parent ทั้งหมดที่เป็น panelWrapperClasses
-                const $activeParent = $closestSelectableElement.parents('[data-class="panelWrapperClasses"].' + activeClass.split(' ')[0]).first();
-                
+                const $activeParent = $closestSelectableElement.parents('[data-class="panelWrapperClasses"].' + activeClass).first();
+
                 if ($activeParent.length) {
-                    // ถ้ามี parent ที่ active อยู่แล้ว ให้เลือก elements ระหว่าง parent นั้นกับ element ที่เลือก
                     const $relevantElements = $activeParent.find('[data-class="panelWrapperClasses"]').add($activeParent);
                     const startIndex = $relevantElements.index($activeParent);
                     const endIndex = $relevantElements.index($closestSelectableElement);
-                    
-                    $relevantElements.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).addClass(activeClass);
+
+                    $relevantElements.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).each(function () {
+                        $(this).addClass(activeClass);
+                        updateEffects($(this), true);
+                    });
                 } else {
-                    // ถ้าไม่มี parent ที่ active ให้เลือก element นี้และ siblings ที่อยู่ระดับเดียวกัน
                     const $siblings = $closestSelectableElement.siblings('[data-class="panelWrapperClasses"]').add($closestSelectableElement);
-                    const $activeElement = $siblings.filter('.' + activeClass.split(' ')[0]).first();
-                    
+                    const $activeElement = $siblings.filter('.' + activeClass).first();
+
                     if ($activeElement.length) {
                         const startIndex = $siblings.index($activeElement);
                         const endIndex = $siblings.index($closestSelectableElement);
-                        
-                        $siblings.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).addClass(activeClass);
+
+                        $siblings.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).each(function () {
+                            $(this).addClass(activeClass);
+                            updateEffects($(this), true);
+                        });
                     } else {
-                        $closestSelectableElement.toggleClass(activeClass);
+                        toggleActiveAndEffects($closestSelectableElement);
                     }
                 }
             } else {
-                // สำหรับ commonFlexClasses ใช้โค้ดเดิม
                 if (targetDndType === firstSelectedDndType) {
-                    const $lastActive = $selectableElements.filter('.' + activeClass.split(' ')[0]).last();
+                    const $lastActive = $selectableElements.filter('.' + activeClass).last();
                     let startIndex = $selectableElements.index($lastActive);
                     let endIndex = $selectableElements.index($closestSelectableElement);
-    
+
                     if (startIndex > endIndex) {
                         [startIndex, endIndex] = [endIndex, startIndex];
                     }
-    
+
                     $selectableElements.slice(startIndex, endIndex + 1).each(function () {
                         if ($(this).attr('dnd-type') === targetDndType) {
                             $(this).addClass(activeClass);
+                            updateEffects($(this), true);
                         }
                     });
                 } else {
                     $selectableElements.removeClass(activeClass);
-                    $closestSelectableElement.toggleClass(activeClass);
+                    $selectableElements.each(function () {
+                        updateEffects($(this), false);
+                    });
+                    toggleActiveAndEffects($closestSelectableElement);
                 }
             }
         }
