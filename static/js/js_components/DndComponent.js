@@ -75,7 +75,8 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
             <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'} overflow-hidden" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
-
+                ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
+        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}
                 ${subtype === "group" ? `
                     
                     <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
@@ -89,7 +90,8 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
                             <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}
                     </div>
                 ` : ''}
-                <div data-class="lineAreaClasses" class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[2px]' : 'opacity-80 w-[0.5px] bg-gray-700'}" style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;"></div>
+                
+                <div data-class="lineAreaClasses" class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;"></div>
                 <div class="col-[span_30/span_30] flex ml-[${indent}]">
 
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
