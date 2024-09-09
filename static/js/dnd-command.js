@@ -61,6 +61,22 @@ $(document).ready(function () {
         }
     });
 
+    function saveToLocalStorage() {
+        try {
+            localStorage.setItem('items', JSON.stringify(items));
+            console.log("Successfully saved items to localStorage");
+            // Optionally, you can show a success message to the user
+            alert("Data saved successfully!");
+        } catch (error) {
+            console.error("Failed to save items to localStorage:", error);
+            // Optionally, you can show an error message to the user
+            alert("Failed to save data. Please try again.");
+        }
+    }
+    
+    // Add event listener for the save button
+    $('#saveBtn').on('click', saveToLocalStorage);
+
     const storedItems = localStorage.getItem('items');
     if (storedItems) {
         items = JSON.parse(storedItems);
@@ -141,13 +157,13 @@ $(document).ready(function () {
             targetArray.splice(targetIndex + (side === "bottom" ? 1 : 0), 0, ...sourcesAndParents.map(item => item.source));
         }
 
-        try {
+        /*try {
             localStorage.setItem('items', JSON.stringify(data));
             console.log("บันทึกการเปลี่ยนแปลงลงใน localStorage สำเร็จ");
         } catch (error) {
             console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
             return false;
-        }
+        }*/
         return true;
     }
 
