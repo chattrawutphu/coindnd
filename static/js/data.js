@@ -1,5 +1,25 @@
 let defaultItems = [
     {
+        "id": "var-001",
+        "name": "Main Trading Strategy",
+        "type": "container",
+        "subtype": "variable",
+        "variableType": "integer",
+        "initialValue": 3,
+        "value": 3,
+        "message": "Risk level from 1 (low) to 5 (high)",
+        "active": true,
+        
+    },
+    {
+        "id": "var-001",
+        "type": "container",
+        "subtype": "message",
+        "message": "Maximum number of open positions allowed",
+        "active": true,
+        
+    },
+    {
         "id": "gui-001",
         "type": "container",
         "subtype": "group",
@@ -318,7 +338,7 @@ let defaultItems = [
             },
         ]
     },
-    {
+    /*{
         "id": "gui-025",
             "type": "container",
             "subtype": "group",
@@ -753,7 +773,7 @@ let defaultItems = [
                 ]
             }
         ]
-    }
+    }*/
 ];
 
 export { defaultItems };

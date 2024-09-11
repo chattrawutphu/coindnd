@@ -52,13 +52,47 @@ const renderVariables = variables => variables.map(v => `
     </div>
 `).join('');
 
-export const renderContent = async (items, level = 2, parentId = '', isHidden = true) => {
+export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
+        const indent = `${level * 42}px`;
+
+        if (item.subtype === "variable") {
+            return `
+            <div data-class="panelWrapperClasses" class="${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2"
+            dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
+                <div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">
+                    <div data-class="panelContainerClasses" class="relative">    
+                        <div class="flex gap-x-1 justify-between">
+                            <div class="flex gap-x-1 items-center content-center">
+                                ${svgIcon("M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z", "size-3 text-green-500")}
+                                <div class="text-[13px]/[18px] text-green-500">${item.variableType}</div>
+                                <div class="text-[15px]/[18px] text-green-500 font-bold">${item.name}</div>
+                                <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
+                            </div>
+                            ${item.message ? `<div class="text-sm/[18px] text-gray-400"> # ${item.message}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>`
+        }
+
+        if (item.subtype === "message") {
+            return `
+            <div data-class="panelWrapperClasses" class="${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2"
+            dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
+                <div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]">
+                    <div data-class="panelContainerClasses"  class="relative">
+                    # ${item.message}
+                    </div>
+                </div>
+            </div>`
+        }
+
         const { id, active, type, subtype, title, message, showChildren, highlight, variables, conditions, actions, children, backgroundColor, textColor } = item;
         const childrenContent = children?.length ? await renderContent(children, level + 1, id, showChildren) : '';
         const hasVariables = variables?.length;
 
-        const indent = `${level * 24}px`;
+
         const iconSVG = (isExpanded) => `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="collapse-icon ${isExpanded == true ? '' : 'hidden'} size-4">
             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -72,15 +106,14 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
         ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}        */
 
         return `
-            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'} overflow-hidden" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'} overflow-hidden relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))]  min-w-[32rem] dark:text-gray-100 text-gray-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
-                ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
-        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}
+               
                 ${subtype === "group" ? `
                     
                     <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
-                        <div data-class="panelContainerClasses" class="">
+                        <div data-class="panelContainerClasses">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
                             <div class="text-sm/[18px]"># ${message}</div>

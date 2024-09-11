@@ -25,10 +25,6 @@ var classesModel = {
         return `${commonClasses} bg-gray-50 dark:bg-[#2B3544] dark:border-l-0 border-l-2 border-l-gray-150`;
     },
 
-    panelWrapperClasses() {
-        const commonClasses = "relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))]  min-w-[32rem]"; //rounded-r-lg
-        return `${commonClasses} dark:text-gray-100 text-gray-900 `; //dark:shadow-indigo-500/20 shadow-indigo-500/20 
-    },
     childrenPanelClasses() {
         const commonClasses = "ms-[20px] md:ms-8 col-[span_30/span_30]";
         return `${commonClasses} `;

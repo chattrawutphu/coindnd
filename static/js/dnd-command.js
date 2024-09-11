@@ -242,7 +242,7 @@ $(document).ready(function () {
     let $currentTarget = null;
     const classSelection = 'select-active invert brightness-[0.7] contrast-150';
     const effectClasses = 'invert brightness-[0.7] contrast-150';
-    const indent = 48;
+    const indent = 42;
     let isHandlingDragMove = false;
     
     const createDndLine = _.memoize((isTop, dndType, isLeftSide = true) => {
@@ -261,9 +261,9 @@ $(document).ready(function () {
             zIndex: 1
         }).addClass("drop-target-line");
     
-        if (dndType === 'container' && !isLeftSide) {
+        /*if (dndType === 'container' && !isLeftSide) {
             $line.addClass('isDropAsChild');
-        }
+        }*/
     
         return $line;
     }, (...args) => args.join('|'));
@@ -271,6 +271,7 @@ $(document).ready(function () {
     function updateLinePosition($element, isTopHalf, dndType, mouseX) {
         let $targetElement = $element;
         let isLeftSide = true;
+
     
         if (dndType === 'container') {
             const $panelContainer = $element.find('[data-class="panelContainerClasses"]').first();
@@ -286,22 +287,30 @@ $(document).ready(function () {
             if (dndLine) dndLine.remove();
             dndLine = createDndLine(isTopHalf, dndType, isLeftSide);
             dndLine.data('dndType', dndType);
-            dndLine.data('isLeftSide', isLeftSide);
-            dndLine.data('isTopHalf', isTopHalf);
             $targetElement.append(dndLine);
         } else if (dndLine.parent()[0] !== $targetElement[0]) {
             dndLine.detach().appendTo($targetElement);
         }
-    
+
+        const isVariableContainer = $element.attr('dnd-subtype') === 'variable';
+        const isMessageContainer = $element.attr('dnd-subtype') === 'message';
+        const isVariableDndLine = clone.attr('dnd-subtype') === 'variable';
+        const isMessageDndLine = clone.attr('dnd-subtype') === 'message';
+
         const cssProps = {
             top: isTopHalf ? 0 : 'auto',
             bottom: isTopHalf ? 'auto' : 0,
             left: isLeftSide ? '0' : 'auto',
-            width: (dndType === 'container' && !isLeftSide && !isTopHalf) ? `calc(100% - ${indent}px)` : '100%',
+            width: (isVariableContainer || isMessageContainer || isVariableDndLine || isMessageDndLine) ? '100%' : 
+                   (dndType === 'container' && !isLeftSide && !isTopHalf) ? `calc(100% - ${indent}px)` : '100%',
             right: (dndType === 'container' && !isLeftSide && !isTopHalf) ? '0' : 'auto'
         };
     
-        dndLine.css(cssProps).toggleClass('isDropAsChild', dndType === 'container' && !isLeftSide);
+        dndLine.css(cssProps);
+        
+        if (!(isVariableContainer || isMessageContainer || isVariableDndLine || isMessageDndLine)) {
+            dndLine.toggleClass('isDropAsChild', dndType === 'container' && !isLeftSide);
+        }
     }
     
     function cleanupUI() {
@@ -418,7 +427,7 @@ $(document).ready(function () {
                 const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
                 const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
     
-                if (horizontalDistance > 256 || verticalDistance > 128) {
+                if (horizontalDistance > 192 || verticalDistance > 96) {
                     removeLine();
                 } else {
                     updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType, mouseX);
@@ -462,7 +471,8 @@ $(document).ready(function () {
             .attr({
                 'id': 'draganddropSection',
                 'dnd-type': currentDndType,
-                'dnd-id': $currentTarget.attr('dnd-id')
+                'dnd-id': $currentTarget.attr('dnd-id'),
+                'dnd-subtype': $currentTarget.attr('dnd-subtype')
             })
             .addClass('clone-container')
             .css({
