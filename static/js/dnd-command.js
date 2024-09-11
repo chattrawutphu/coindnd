@@ -73,7 +73,7 @@ $(document).ready(function () {
             alert("Failed to save data. Please try again.");
         }
     }
-    
+
     // Add event listener for the save button
     $('#saveBtn').on('click', saveToLocalStorage);
 
@@ -240,16 +240,16 @@ $(document).ready(function () {
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
-    const classSelection = 'select-active invert brightness-[0.7] contrast-150';
-    const effectClasses = 'invert brightness-[0.7] contrast-150';
+    const classSelection = 'select-active ring-1 ring-pink-500 bg-pink-500/20';
+    const effectClasses = 'ring-1 ring-pink-500 bg-pink-500/20';
     const indent = 48;
     let isHandlingDragMove = false;
-    
+
     const createDndLine = _.memoize((isTop, dndType, isLeftSide = true) => {
         const color = dndType === 'action' ? '#4ade80' : (dndType === 'container' ? '#38bdf8' : '#4ade80');
         const width = (dndType === 'container' && !isLeftSide && !isTop) ? `calc(100% - ${indent}px)` : '100%';
         const right = (dndType === 'container' && !isLeftSide && !isTop) ? '0' : 'auto';
-    
+
         const $line = $('<div>').css({
             position: 'absolute',
             width: width,
@@ -260,56 +260,78 @@ $(document).ready(function () {
             [isTop ? 'top' : 'bottom']: '0',
             zIndex: 1
         }).addClass("drop-target-line");
-    
-        if (dndType === 'container' && !isLeftSide) {
+
+        /*if (dndType === 'container' && !isLeftSide) {
             $line.addClass('isDropAsChild');
-        }
-    
+        }*/
+
         return $line;
     }, (...args) => args.join('|'));
-    
+
     function updateLinePosition($element, isTopHalf, dndType, mouseX) {
         let $targetElement = $element;
         let isLeftSide = true;
-    
+
+
         if (dndType === 'container') {
             const $panelContainer = $element.find('[data-class="panelContainerClasses"]').first();
             if ($panelContainer.length) {
                 $targetElement = $panelContainer;
             }
-    
+
             const rect = $element[0].getBoundingClientRect();
             isLeftSide = (mouseX - rect.left) < (rect.width * 0.5);
         }
-    
+
         if (!dndLine || dndLine.data('dndType') !== dndType || dndLine.data('isLeftSide') !== isLeftSide || dndLine.data('isTopHalf') !== isTopHalf) {
             if (dndLine) dndLine.remove();
             dndLine = createDndLine(isTopHalf, dndType, isLeftSide);
             dndLine.data('dndType', dndType);
-            dndLine.data('isLeftSide', isLeftSide);
-            dndLine.data('isTopHalf', isTopHalf);
             $targetElement.append(dndLine);
         } else if (dndLine.parent()[0] !== $targetElement[0]) {
             dndLine.detach().appendTo($targetElement);
         }
-    
+
+        const isVariableContainer = $element.attr('dnd-subtype') === 'variable';
+        const isMessageContainer = $element.attr('dnd-subtype') === 'message';
+        /*const isVariableDndLine = clone.attr('dnd-subtype') === 'variable';
+        const isMessageDndLine = clone.attr('dnd-subtype') === 'message';*/
+
         const cssProps = {
             top: isTopHalf ? 0 : 'auto',
             bottom: isTopHalf ? 'auto' : 0,
             left: isLeftSide ? '0' : 'auto',
-            width: (dndType === 'container' && !isLeftSide && !isTopHalf) ? `calc(100% - ${indent}px)` : '100%',
+            width: (isVariableContainer || isMessageContainer) ? '100%' :
+                (dndType === 'container' && !isLeftSide && !isTopHalf) ? `calc(100% - ${indent}px)` : '100%',
             right: (dndType === 'container' && !isLeftSide && !isTopHalf) ? '0' : 'auto'
         };
-    
-        dndLine.css(cssProps).toggleClass('isDropAsChild', dndType === 'container' && !isLeftSide);
+
+        dndLine.css(cssProps);
+
+        if (!(isVariableContainer || isMessageContainer)) {
+            dndLine.toggleClass('isDropAsChild', dndType === 'container' && !isLeftSide);
+        }
     }
-    
+
     function cleanupUI() {
         removeLine();
         clearCommandSelection();
         RemoveBorderLastcommonFlexClasses();
+
+        //เพิ่มระยะให้ message-panel variable-panel
+        $('.single-panel').each(function () {
+            var $container = $(this).find('[data-class="panelContainerClasses"]');
+            $container.css({ 'padding-top': '', 'padding-bottom': '' });
+
+            if ($(this).prevAll('.single-panel').length === 0) {
+                $container.css('padding-top', '8px');
+            }
+            if ($(this).nextAll('.single-panel').length === 0) {
+                $container.css('padding-bottom', '8px');
+            }
+        });
     }
-    
+
     function removeLine() {
         if (dndLine) {
             dndLine.remove();
@@ -318,56 +340,56 @@ $(document).ready(function () {
         $('.drop-target-line').remove();
         lastHoveredElement = null;
     }
-    
+
     function clearCommandSelection() {
         $('[data-class="commonFlexClasses"]').removeClass(classSelection);
         $('[data-class="panelWrapperClasses"]')
             .removeClass("select-active")
             .find('[data-class="panelContainerClasses"]').removeClass(effectClasses);
     }
-    
+
     function handleDragMove(e) {
         if (isHandlingDragMove) return;
         isHandlingDragMove = true;
-    
+
         requestAnimationFrame(() => {
             const mouseX = e.clientX;
             const mouseY = e.clientY;
-    
+
             if (!clone) {
                 isHandlingDragMove = false;
                 return;
             }
-    
+
             clone.css({
                 left: mouseX - clone.outerWidth() / 2,
                 top: mouseY - clone.outerHeight() / 2
             });
-    
+
             if (isScrolling) {
                 isHandlingDragMove = false;
                 return;
             }
-    
+
             let found = false;
             $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]')
                 .not(clone)
                 .not(clone.find('*'))
                 .each(function () {
                     if (found) return false;
-    
+
                     const $this = $(this);
                     if ($this.parents('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]')
                         .filter('.select-active').length > 0 || $this.hasClass('select-active')) {
                         return true;
                     }
-    
+
                     const thisDndType = $this.attr('dnd-type');
                     const elementClass = $this.attr('data-class');
                     const rect = this.getBoundingClientRect();
-    
+
                     if (mouseX < rect.left || mouseX > rect.right || mouseY < rect.top || mouseY > rect.bottom) return true;
-    
+
                     switch (elementClass) {
                         case 'addMoreClasses':
                             if ($this.parent().children().length !== 1 || $this.parent().children()[0] !== $this[0]) return true;
@@ -378,7 +400,7 @@ $(document).ready(function () {
                                 found = true;
                             }
                             break;
-    
+
                         case 'panelWrapperClasses':
                             if (currentDndType === 'container' && thisDndType === 'container') {
                                 const topDistance = mouseY - rect.top;
@@ -401,7 +423,7 @@ $(document).ready(function () {
                                 }
                             }
                             break;
-    
+
                         default: // commonFlexClasses
                             if (thisDndType === currentDndType) {
                                 const isTopHalf = mouseY < (rect.top + rect.height / 2);
@@ -412,31 +434,31 @@ $(document).ready(function () {
                             break;
                     }
                 });
-    
+
             if (!found && lastHoveredElement) {
                 const lastRect = lastHoveredElement[0].getBoundingClientRect();
                 const horizontalDistance = Math.abs(mouseX - (lastRect.left + lastRect.width / 2));
                 const verticalDistance = Math.abs(mouseY - (lastRect.top + lastRect.height / 2));
-    
-                if (horizontalDistance > 256 || verticalDistance > 128) {
+
+                if (horizontalDistance > 192 || verticalDistance > 96) {
                     removeLine();
                 } else {
                     updateLinePosition(lastHoveredElement, dndLine ? dndLine.css('top') === '0px' : true, currentDndType, mouseX);
                 }
             }
-    
+
             isHandlingDragMove = false;
         });
     }
-    
+
     function startDragging(e) {
         const targetOffset = $currentTarget.offset();
         const originalWidth = $currentTarget.outerWidth();
         const originalHeight = $currentTarget.outerHeight();
-    
+
         const newWidth = Math.min(originalWidth * 0.8, 400);
         const newHeight = Math.min(originalHeight * 0.8, 200);
-    
+
         const activeClass = classSelection;
         if (!e.shiftKey && !e.ctrlKey) {
             if (!$currentTarget.hasClass("select-active")) {
@@ -445,7 +467,7 @@ $(document).ready(function () {
                     .removeClass("select-active")
                     .find('[data-class="panelContainerClasses"]').removeClass(effectClasses);
             }
-    
+
             if ($currentTarget.attr('data-class') === "panelWrapperClasses") {
                 $currentTarget.addClass("select-active")
                     .find('[data-class="panelContainerClasses"]').addClass(effectClasses);
@@ -453,16 +475,17 @@ $(document).ready(function () {
                 $currentTarget.addClass(activeClass);
             }
         }
-    
+
         const activeCount = $currentTarget.attr('data-class') === "panelWrapperClasses"
             ? $('[data-class="panelWrapperClasses"].' + activeClass.split(' ')[0]).length
             : $('[data-class="commonFlexClasses"].' + activeClass.split(' ')[0]).length;
-    
+
         clone = $('<div>')
             .attr({
                 'id': 'draganddropSection',
                 'dnd-type': currentDndType,
-                'dnd-id': $currentTarget.attr('dnd-id')
+                'dnd-id': $currentTarget.attr('dnd-id'),
+                'dnd-subtype': $currentTarget.attr('dnd-subtype')
             })
             .addClass('clone-container')
             .css({
@@ -476,7 +499,7 @@ $(document).ready(function () {
                 overflow: 'hidden'
             })
             .appendTo('body');
-    
+
         const clonedElement = $currentTarget.clone()
             .addClass('opacity-70')
             .css({
@@ -488,16 +511,16 @@ $(document).ready(function () {
             .removeAttr('data-class')
             .removeClass(activeClass)
             .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end();
-    
+
         if (activeCount > 1) {
             $('<div>')
                 .addClass('absolute inline-flex items-center justify-center w-8 h-8 text-md font-bold text-white bg-red-500 rounded-full top-2 start-2')
                 .text(activeCount)
                 .appendTo(clonedElement);
         }
-    
+
         clonedElement.appendTo(clone);
-    
+
         handleDragMove(e);
     }
 
@@ -505,17 +528,22 @@ $(document).ready(function () {
     async function stopDragging(e) {
         isDragging = false;
         if (clone) {
-            const $selectedElements = $('[data-class="commonFlexClasses"].' + classSelection.split(' ')[0]);
-
+            const $selectedElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]').filter('.' + classSelection.split(' ')[0]);
             if (dndLine) {
-                const $targetParent = dndLine.parent();
+                let $targetParent = dndLine.parent();
+                if ($targetParent.attr('data-class') !== 'addMoreClasses') {
+                    if ($targetParent.closest('[data-class="commonFlexClasses"]').length) {
+                        $targetParent = $targetParent.closest('[data-class="commonFlexClasses"]');
+                    }
+                    else if ($targetParent.closest('[data-class="panelWrapperClasses"]').length) {
+                        $targetParent = $targetParent.closest('[data-class="panelWrapperClasses"]');
+                    }
+                }
                 const isTopHalf = dndLine.css('top') === '0px';
-
                 if ($selectedElements.length && $targetParent.length) {
                     // บันทึกสถานะก่อนการเปลี่ยนแปลง
                     const oldState = JSON.parse(JSON.stringify(items));
                     const oldHtml = $('[data-js-component="DndComponent"]').html();
-
                     let result;
                     if ($targetParent.attr('data-class') === 'addMoreClasses') {
                         let parentTarget = $targetParent.closest("[data-class='panelWrapperClasses']");
@@ -523,18 +551,54 @@ $(document).ready(function () {
                         const sourceIds = $selectedElements.map(function () {
                             return $(this).attr('dnd-id');
                         }).get();
-
                         result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, $selectedElements.first().attr('dnd-type'));
-                    } else {
+                    }
+                    else if ($targetParent.attr('dnd-type') === 'container') {
                         const targetId = $targetParent.attr('dnd-id');
                         const sourceIds = $selectedElements.map(function () {
                             return $(this).attr('dnd-id');
                         }).get();
-
                         const position = isTopHalf ? 'top' : 'bottom';
+
+                        // หา ml-[ตัวเลขpx] class ของ $targetParent
+                        let $targetMargin = $targetParent.find('[data-class="panelWrapperMargin"], [data-class="groupSectionClasses"]').first();
+                        const marginClass = $targetMargin.length ? $targetMargin : $targetParent;
+
+                        // Extract the margin-left value
+                        const targetMlValue = (marginClass.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] ||
+                            ($targetParent.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1];
+
+                        // ปรับ ml-[ตัวเลขpx] class ของ selectedElements
+                        $selectedElements.each(function () {
+                            const $elementMargin = $(this).find('[data-class="panelWrapperMargin"], [data-class="groupSectionClasses"]').first();
+                            if ($elementMargin.length && targetMlValue) {
+                                // ลบ ml-[ตัวเลขpx] class เดิม
+                                $elementMargin.removeClass(function (index, className) {
+                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
+                                });
+                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
+                                $elementMargin.addClass(`ml-[${targetMlValue}px]`);
+                            }
+                            else {
+                                $(this).removeClass(function (index, className) {
+                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
+                                });
+                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
+                                $(this).addClass(`ml-[${targetMlValue}px]`);
+                            }
+                        });
+
                         result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
                     }
 
+                    else {
+                        const targetId = $targetParent.attr('dnd-id');
+                        const sourceIds = $selectedElements.map(function () {
+                            return $(this).attr('dnd-id');
+                        }).get();
+                        const position = isTopHalf ? 'top' : 'bottom';
+                        result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
+                    }
                     if (result) {
                         // อัปเดต DOM
                         if ($targetParent.attr('data-class') === 'addMoreClasses') {
@@ -544,39 +608,34 @@ $(document).ready(function () {
                         } else {
                             $targetParent.after($selectedElements.get().reverse());
                         }
-
                         // บันทึกสถานะใหม่
                         const newState = JSON.parse(JSON.stringify(items));
                         const newHtml = $('[data-js-component="DndComponent"]').html();
-
                         // เพิ่มการกระทำลงใน undoManager
                         undoManager.add({
                             undo: function () {
                                 items = oldState;
                                 updateUIFromCache(oldHtml);
                                 updateButtonStates();
-                                cleanupUI(); // เพิ่มการเรียกใช้ cleanupUI ที่นี่
+                                cleanupUI();
                             },
                             redo: function () {
                                 items = newState;
                                 updateUIFromCache(newHtml);
                                 updateButtonStates();
-                                cleanupUI(); // เพิ่มการเรียกใช้ cleanupUI ที่นี่
+                                cleanupUI();
                             }
                         });
-
                     } else {
                         // ถ้าการดำเนินการไม่สำเร็จ ให้กลับไปใช้สถานะเดิม
                         items = oldState;
                         updateUIFromCache(oldHtml);
                     }
-
                     // อัปเดตสถานะปุ่ม undo/redo
                     updateButtonStates();
                 }
-                cleanupUI(); // เรียกใช้ cleanupUI หลังจากจัดการกับ dndLine
+                cleanupUI();
             }
-
             clone.remove();
             clone = null;
             $('#updateUI').trigger('click');
@@ -584,7 +643,7 @@ $(document).ready(function () {
         currentDndType = null;
         $currentTarget = null;
         $(document).off('mousemove', handleDragMove);
-        cleanupUI(); // เรียกใช้ cleanupUI อีกครั้งเพื่อความแน่ใจ
+        cleanupUI();
     }
 
     function checkDragThreshold(e) {
@@ -693,7 +752,11 @@ $(document).ready(function () {
             return;
         }
 
-        if ($target.attr('data-js-component') === 'DndComponent' || $target.closest('[data-js-component="DndComponent"]').length) {
+        if ($target.is('input, label, select') || $target.closest('label').length) {
+            return;
+        }
+
+        if (true) { //$target.attr('data-js-component') === 'DndComponent' || $target.closest('[data-js-component="DndComponent"]').length
             const $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
 
             // ตรวจสอบเพิ่มเติมสำหรับ panelWrapperClasses
@@ -816,7 +879,7 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('keydown', function(event) {
+    $(document).on('keydown', function (event) {
         if (event.key === "Escape" || event.keyCode === 27) {
             if ($('.select-active').length > 0) {
                 clearCommandSelection();

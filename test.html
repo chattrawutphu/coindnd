@@ -1,69 +1,179 @@
-<div class="province-slide">
-    <div class="province-carousel show-next owl-carousel owl-theme owl-loaded owl-drag">
-        <div class="owl-stage-outer">
-            <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s;">
-                @foreach (var PopularDes in Model.PopularDestinationList.Where(l=>l.LocationName!=""))
-                    {
-                    <div class="owl-item">
-                        <div class="item">
-                            <div class="item-slide-province">
-                                <a href="?province=@PopularDes.LocationName">
-                                    <div class="box-img">
-                                        <img alt="" src="@PopularDes.LeftImage"> </div>
-                                    <div class="box-text">
-                                        @PopularDes.LocationName
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    }
-            </div>
-        </div>
-        <div class="owl-nav disabled">
-            <div class="owl-prev disabled"><span class="icon-moon icon-ic-arrow-circle-left"></span></div>
-            <div class="owl-next disabled"><span class="icon-moon icon-ic-arrow-circle-right"></span></div>
-        </div>
-        <div class="owl-dots disabled"></div>
-    </div>
-</div>
+@model dynamic
 
+@if
+ 
+(
+Model 
+!=
+ 
+null
+)
 
+{
 
+    
+<
+h2
+>
+Page Sections/Zones
+</
+h2
+>
 
-<div class="province-slide">
-    <div class="province-carousel show-next owl-carousel owl-theme owl-loaded owl-drag">
-        <div class="owl-stage-outer">
-            <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s;">
-                    @foreach (var PopularDes in Model.PopularDestinationList.Where(l=>l.LocationName!=""))
-                    {
-                        <div class="owl-item active" style="width: 161.786px; margin-right: 20px;">
-                            <div class="item">
-                                <div class="item-slide-province">
-                                    <a href="?province=@PopularDes.LocationName">
-                                        <div class="box-img">
-                                            <img alt="" src="@PopularDes.LeftImage">
-                                        </div>
-                                        <div class="box-text">
-                                            <p>
-                                                @PopularDes.LocationName
-                                            </p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    }                                                
-            </div>
-        </div>
-        <div class="owl-nav disabled">
-            <div class="owl-prev disabled">
-                <span class="icon-moon icon-ic-arrow-circle-left"></span>
-            </div>
-            <div class="owl-next disabled">
-                <span class="icon-moon icon-ic-arrow-circle-right"></span>
-            </div>
-        </div>
-        <div class="owl-dots disabled"></div>
-    </div>
-</div>
+    
+    @
+if
+ 
+(
+Model 
+is
+ 
+IEnumerable
+<
+object
+>
+)
+
+    
+{
+
+        
+<
+ul
+>
+
+            
+@foreach
+ 
+(
+var
+ item 
+in
+ Model
+)
+
+            
+{
+
+                
+<
+li
+>
+
+                    
+@if
+ 
+(
+item
+.
+GetType
+(
+)
+.
+GetProperty
+(
+"Identifier"
+)
+ 
+!=
+ 
+null
+)
+
+                    
+{
+
+                        @item
+.
+Identifier
+                    
+}
+
+                    
+else
+
+                    
+{
+
+                        @item
+.
+ToString
+(
+)
+
+                    
+}
+
+                
+</
+li
+>
+
+            
+}
+
+        
+</
+ul
+>
+
+    
+}
+
+    
+else
+
+    
+{
+
+        
+<
+p
+>
+Sections/Zones data structure is not as expected. Received type: 
+@
+Model
+.
+GetType
+(
+)
+.
+Name
+</
+p
+>
+
+        
+<
+pre
+>
+@
+Json
+.
+Serialize
+(
+Model
+)
+</
+pre
+>
+
+    
+}
+
+}
+
+else
+
+{
+
+    
+<
+p
+>
+No sections or zones found.
+</
+p
+>
+
+}

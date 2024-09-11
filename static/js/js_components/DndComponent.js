@@ -52,13 +52,44 @@ const renderVariables = variables => variables.map(v => `
     </div>
 `).join('');
 
-export const renderContent = async (items, level = 2, parentId = '', isHidden = true) => {
+export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
+        const spacingIndent = 48;
+        const indent = `${level * spacingIndent}px`;
+
+        if (item.subtype === "variable") {
+            return `
+            <div data-class="panelWrapperClasses" class="single-panel  ${item.active ? '' : 'line-through'} ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
+                    <div data-class="panelContainerClasses" class="relative  pb-[1.5px]  pt-[0.75px]">    
+                        <div class="flex gap-x-1 justify-between">
+                            <div class="flex gap-x-1 items-center content-center">
+                                ${svgIcon("M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z", "size-3 text-green-500")}
+                                <div class="text-[13px]/[18px] text-green-500">${item.variableType}</div>
+                                <div class="text-[15px]/[18px] text-green-500 font-bold">${item.name}</div>
+                                <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
+                            </div>
+                            ${item.message ? `<div class="text-sm/[18px] text-gray-400"> # ${item.message}</div>` : ''}
+                        </div>
+                    </div>
+            </div>`
+        }
+
+        if (item.subtype === "message") {
+            return `
+            <div data-class="panelWrapperClasses" class="single-panel ${item.active ? '' : 'line-through'} text-sm text-gray-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
+                    <div data-class="panelContainerClasses"  class="relative  pb-[1.5px] pt-[0.75px]">
+                    # ${item.message}
+                    </div>
+            </div>`
+        }
+
         const { id, active, type, subtype, title, message, showChildren, highlight, variables, conditions, actions, children, backgroundColor, textColor } = item;
         const childrenContent = children?.length ? await renderContent(children, level + 1, id, showChildren) : '';
         const hasVariables = variables?.length;
 
-        const indent = `${level * 24}px`;
+
         const iconSVG = (isExpanded) => `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="collapse-icon ${isExpanded == true ? '' : 'hidden'} size-4">
             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -67,20 +98,19 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
             <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
         </svg>
     `;
-        //<div data-class="panelWrapperClasses" class="${isHidden ? 'max-h-[9999px]' : 'max-h-0'} overflow-hidden transition-[max-height] duration-500 ease-in-out" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+        //<div data-class="panelWrapperClasses" class="${isHidden ? 'max-h-[9999px]' : 'max-h-0'}  transition-[max-height] duration-500 ease-in-out" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
         /*${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
         ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}        */
 
         return `
-            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'} overflow-hidden" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))]  min-w-[32rem] dark:text-gray-100 text-gray-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
-                ${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
-        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}
+               
                 ${subtype === "group" ? `
                     
-                    <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
-                        <div data-class="panelContainerClasses" class="">
+                    <div data-class="groupSectionClasses" class="mt-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
+                        <div data-class="panelContainerClasses">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
                             <div class="text-sm/[18px]"># ${message}</div>
@@ -91,8 +121,13 @@ export const renderContent = async (items, level = 2, parentId = '', isHidden = 
                     </div>
                 ` : ''}
                 
-                <div data-class="lineAreaClasses" class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;"></div>
-                <div class="col-[span_30/span_30] flex ml-[${indent}]">
+                    <div 
+                        data-class="lineAreaClasses" 
+                        class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" 
+                        style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;">
+                        ${subtype === 'group' ? `<div class="w-[${spacingIndent-3}px] h-full ml-[3px] opacity-20" style="background-color: ${backgroundColor}"></div>` : ''}
+                    </div>
+                <div data-class="panelWrapperMargin" class="col-[span_30/span_30] flex ml-[${indent}]">
 
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
