@@ -234,7 +234,7 @@ $(document).ready(function () {
     let clone = null;
     let startX, startY, startTime;
     let dndLine = null;
-    const speedThreshold = 0.3; // pixels per millisecond
+    const speedThreshold = 0.15; // pixels per millisecond
     let lastHoveredElement = null;
     let currentDndType = null;
     let mouseX, mouseY;
@@ -484,8 +484,6 @@ $(document).ready(function () {
             .attr({
                 'id': 'draganddropSection',
                 'dnd-type': currentDndType,
-                'dnd-id': $currentTarget.attr('dnd-id'),
-                'dnd-subtype': $currentTarget.attr('dnd-subtype')
                 'dnd-id': $currentTarget.attr('dnd-id'),
                 'dnd-subtype': $currentTarget.attr('dnd-subtype')
             })

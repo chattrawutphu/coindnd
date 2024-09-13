@@ -53,7 +53,6 @@ const renderVariables = variables => variables.map(v => `
 `).join('');
 
 export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
-export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
         const spacingIndent = 48;
         const indent = `${level * spacingIndent}px`;
@@ -112,8 +111,8 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                
                 ${subtype === "group" ? `
                     
-                    <div data-class="groupSectionClasses" class="mt-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
-                        <div data-class="panelContainerClasses">
+                    <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
+                        <div data-class="panelContainerClasses" class="">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
                             <div class="text-sm/[18px]"># ${message}</div>

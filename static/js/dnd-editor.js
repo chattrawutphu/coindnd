@@ -119,9 +119,7 @@ $(document).ready(async () => {
     try {
         // 1. เรียกใช้ renderDndEditorScripts
         let items = defaultItems
-        console.log("pass1")
         const storedItems = localStorage.getItem('items');
-        console.log("pass2")
         if (storedItems) {
             items = JSON.parse(storedItems);
         } else {

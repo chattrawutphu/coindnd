@@ -10,7 +10,7 @@ $(document).ready(function () {
     var contentScrollRatio;
     var resizeTimer;
     let isMinimapVisible = true;
- 
+
     function updateToggleButtons() {
         if (isMinimapVisible) {
             $('#show-minimap').addClass('hidden right-8').removeClass('right-2');
@@ -26,14 +26,14 @@ $(document).ready(function () {
             }, 0);
         }
     }
- 
-    function updateHighlights() { 
+
+    function updateHighlights() {
         $highlights = $('.isHighlight').filter(function () {
             return $(this).is(':visible');
         });
         createButtons();
     }
- 
+
     function calculateMinimapHeight() {
         var contentHeight = $('#content')[0].scrollHeight;
         var minHeight = 3 * 16;
@@ -42,21 +42,21 @@ $(document).ready(function () {
         var height = (contentHeight / contentMaxHeight) * (maxHeight - minHeight) + minHeight;
         return Math.max(minHeight, Math.min(height, maxHeight));
     }
- 
+
     function updateMinimap() {
         if (!isMinimapVisible) return;
- 
+
         var contentHeight = $('#content')[0].scrollHeight;
         var viewportHeight = $('#content').height();
         var scrollTop = $('#content').scrollTop();
         var minimapHeight = calculateMinimapHeight();
- 
+
         contentScrollRatio = contentHeight / minimapHeight;
- 
+
         var sliderHeightPx = parseFloat(sliderHeight) * 16;
         var sliderTop = (scrollTop / (contentHeight - viewportHeight)) * (minimapHeight - sliderHeightPx);
         sliderTop = Math.max(0, Math.min(sliderTop, minimapHeight - sliderHeightPx));
- 
+
         $('#minimap').css('height', minimapHeight + 'px');
         $('#minimap-slider').css({
             height: sliderHeight,
@@ -64,7 +64,7 @@ $(document).ready(function () {
             display: 'block'
         });
     }
- 
+
     function createButtons() {
         $('#button-container').empty();
         var contentHeight = $('#content')[0].scrollHeight;
@@ -72,10 +72,10 @@ $(document).ready(function () {
         var contentTop = $('#content').offset().top;
         var slidMinimap = $('#minimap-slider').css('top');
         var minimapScale = minimapHeight / contentHeight;
-    
+
         let lastButtonBottom = 0;
         let lastButtonRight = -30;
-    
+
         $highlights.each(function (index) {
             const bgColor = $(this).css('background-color');
             const text = $(this).text();
@@ -83,17 +83,17 @@ $(document).ready(function () {
             const textColor = getContrastColor(hexColor);
             let elementTop = $(this).offset().top - contentTop;
             let buttonTop = parseInt((parseInt(elementTop * minimapScale) + (parseInt(slidMinimap)) * 0.85) * 1.12);
-    
+
             const highlightHeight = $(this).outerHeight();
             const buttonHeight = Math.max(16, highlightHeight * minimapScale);
-    
+
             if (buttonTop < lastButtonBottom) {
                 buttonTop = lastButtonBottom - buttonHeight;
                 lastButtonRight -= 22;
             } else {
                 lastButtonRight = -30;
             }
-    
+
             $('#button-container').append(`
                 <button class="highlight-button absolute font-bold rounded text-xs"
                     data-index="${index}"
@@ -104,13 +104,13 @@ $(document).ready(function () {
                         display: flex; align-items: center; justify-content: center;">
                     ${text}
                 </button>
-            `);             
-    
+            `);
+
             lastButtonBottom = buttonTop + buttonHeight;
         });
         updateButtonStyles();
     }
- 
+
     function scrollToHighlight(index) {
         if ($highlights && $highlights.length > 0) {
             $highlights.eq(index)[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -118,12 +118,12 @@ $(document).ready(function () {
             updateButtonStyles();
         }
     }
- 
+
     function updateButtonStyles() {
         $('.highlight-button').css('opacity', '0.8');
         $(`.highlight-button[data-index="${currentIndex}"]`).css('opacity', '1');
     }
- 
+
     function updateContentScroll(sliderTop) {
         var contentHeight = $('#content')[0].scrollHeight;
         var viewportHeight = $('#content').height();
@@ -133,55 +133,55 @@ $(document).ready(function () {
         var scrollTop = scrollRatio * (contentHeight - viewportHeight);
         $('#content').scrollTop(scrollTop);
     }
- 
+
     function startDragging(e) {
         if (e.which !== 1) return; // Only proceed if left mouse button is pressed
         isDragging = true;
         var sliderOffset = $('#minimap-slider').offset().top;
         var clickY = e.pageY;
- 
+
         /*if (clickY < sliderOffset) {
             $('#minimap-slider').css('top', (clickY - $('#minimap').offset().top) + 'px');
         } else if (clickY > sliderOffset + parseFloat(sliderHeight) * 16) {
             $('#minimap-slider').css('top', ((parseFloat(clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16))*1.23) + 'px');
         }*/
-        
-        $('#minimap-slider').css('top', ((parseFloat(clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16))*1.23) + 'px');
- 
+
+        $('#minimap-slider').css('top', ((parseFloat(clickY - $('#minimap').offset().top - parseFloat(sliderHeight) * 16)) * 1.23) + 'px');
+
         clickOffsetY = clickY - $('#minimap-slider').offset().top;
         $('body').css('user-select', 'none');
         updateContentScroll($('#minimap-slider').position().top);
     }
 
     function updateHighlightButtonList() {
-    var groups = {};
+        var groups = {};
 
-    $('button.highlight-button').each(function() {
-        var $button = $(this);
-        var top = $button.css('top');
+        $('button.highlight-button').each(function () {
+            var $button = $(this);
+            var top = $button.css('top');
 
-        if (!groups[top]) {
-            groups[top] = [];
-        }
+            if (!groups[top]) {
+                groups[top] = [];
+            }
 
-        groups[top].push($button);
-    });
-
-    $.each(groups, function(top, buttons) {
-        buttons.sort(function(a, b) {
-            return $(a).data('index') - $(b).data('index');
+            groups[top].push($button);
         });
 
-        var leftValues = $.map(buttons, function(button) {
-            return $(button).css('left');
-        }).reverse();
+        $.each(groups, function (top, buttons) {
+            buttons.sort(function (a, b) {
+                return $(a).data('index') - $(b).data('index');
+            });
 
-        $.each(buttons, function(index) {
-            $(this).css('left', leftValues[index]);
+            var leftValues = $.map(buttons, function (button) {
+                return $(button).css('left');
+            }).reverse();
+
+            $.each(buttons, function (index) {
+                $(this).css('left', leftValues[index]);
+            });
         });
-    });
-};
- 
+    };
+
     function resizeAll() {
         updateHighlights();
         updateMinimap();
@@ -189,19 +189,19 @@ $(document).ready(function () {
         updateHighlightButtonList();
     }
 
-    $(document).on('click', '#updateUI', function () {
+    $(document).on('click', '#updateUI, #show-minimap', function () {
         resizeAll();
     });
- 
+
     $('#content').on('scroll', updateMinimap);
- 
+
     $('#minimap').on('mousedown', startDragging);
- 
+
     $('#minimap-slider').on('mousedown', function (e) {
         e.stopPropagation();
         startDragging(e);
     });
- 
+
     $(document).on('mousemove', function (e) {
         if (isDragging) {
             var minimapOffset = $('#minimap').offset().top;
@@ -213,43 +213,43 @@ $(document).ready(function () {
             updateContentScroll(newTop);
         }
     });
- 
+
     $(document).on('click', '.highlight-button', function () {
         const index = $(this).data('index');
         scrollToHighlight(index);
     });
- 
+
     $(document).on('mouseup', function () {
         isDragging = false;
         $('body').css('user-select', 'auto');
     });
- 
+
     $('#minimap').on('wheel', function (e) {
         e.preventDefault();
         var delta = e.originalEvent.deltaY;
         var currentScrollTop = $('#content').scrollTop();
         $('#content').scrollTop(currentScrollTop + delta);
     });
- 
+
     $(document).on('click', '[data-class="expandButtonClasses"]', function () {
         setTimeout(resizeAll, 100);
     });
- 
+
     $(window).on('resize', function () {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(resizeAll, 250);
     });
- 
-    $('#hide-minimap').on('click', function() {
+
+    $('#hide-minimap').on('click', function () {
         isMinimapVisible = false;
         updateToggleButtons();
     });
- 
-    $('#show-minimap').on('click', function() {
+
+    $('#show-minimap').on('click', function () {
         isMinimapVisible = true;
         updateToggleButtons();
         updateMinimap();
     });
- 
-    resizeAll();
- });
+
+    $('#hide-minimap').trigger('click');
+});
