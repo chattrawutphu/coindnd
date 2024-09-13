@@ -83,7 +83,6 @@ $(document).ready(function () {
     }
 
     function moveMultipleItems(sourceIds, targetId, side, data = items) {
-
         const findInAll = (id, items) => {
             for (const item of items) {
                 if (item.id === id) return item;
@@ -102,7 +101,7 @@ $(document).ready(function () {
             }
             return null;
         };
-
+    
         const findParentArray = (id, items, parent = null) => {
             for (const item of items) {
                 if (item.id === id) return parent || items;
@@ -121,15 +120,15 @@ $(document).ready(function () {
             }
             return null;
         };
-
+    
         const sourcesAndParents = sourceIds.map(id => ({
             source: findInAll(id, data),
             sourceArray: findParentArray(id, data)
         })).filter(item => item.source && item.sourceArray);
-
+    
         const target = findInAll(targetId, data);
         if (!target) return false;
-
+    
         let targetArray;
         if (side === 'condition') {
             if (!target.conditions) target.conditions = [];
@@ -137,36 +136,30 @@ $(document).ready(function () {
         } else if (side === 'action') {
             if (!target.actions) target.actions = [];
             targetArray = target.actions;
+        } else if (side === 'child') {
+            if (!target.children) target.children = [];
+            targetArray = target.children;
         } else {
             targetArray = findParentArray(targetId, data);
         }
-
+    
         if (!targetArray) return false;
-
+    
         // Remove all sources from their original positions
         sourcesAndParents.forEach(({ source, sourceArray }) => {
             const sourceIndex = sourceArray.findIndex(item => item.id === source.id);
             sourceArray.splice(sourceIndex, 1);
         });
-
+    
         // Add all sources to the target position
-        if (side === 'condition' || side === 'action') {
+        if (side === 'condition' || side === 'action' || side === 'child') {
             targetArray.push(...sourcesAndParents.map(item => item.source));
         } else {
             const targetIndex = targetArray.findIndex(item => item.id === targetId);
             targetArray.splice(targetIndex + (side === "bottom" ? 1 : 0), 0, ...sourcesAndParents.map(item => item.source));
         }
-
-        /*try {
-            localStorage.setItem('items', JSON.stringify(data));
-            console.log("บันทึกการเปลี่ยนแปลงลงใน localStorage สำเร็จ");
-        } catch (error) {
-            console.error("ไม่สามารถบันทึกลงใน localStorage ได้:", error);
-            return false;
-        }*/
         return true;
     }
-
     // Initial button state update
     updateButtonStates();
 
@@ -308,8 +301,10 @@ $(document).ready(function () {
 
         dndLine.css(cssProps);
 
-        if (!(isVariableContainer || isMessageContainer)) {
-            dndLine.toggleClass('isDropAsChild', dndType === 'container' && !isLeftSide);
+        if (!isVariableContainer && !isMessageContainer) {
+            if(dndType === 'container' && isLeftSide && !isTopHalf){
+                dndLine.addClass('isDropAsChild');
+            }
         }
     }
 
@@ -577,18 +572,23 @@ $(document).ready(function () {
                                     return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
                                 });
                                 // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                $elementMargin.addClass(`ml-[${targetMlValue}px]`);
-                            }
-                            else {
+                                $elementMargin.addClass(`ml-[${parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0)}px]`);
+                            } else {
                                 $(this).removeClass(function (index, className) {
                                     return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
                                 });
                                 // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                $(this).addClass(`ml-[${targetMlValue}px]`);
+                                $(this).addClass(`ml-[${parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0)}px]`);
                             }
+                            console.log((dndLine.hasClass("isDropAsChild") ? indent : 0))
                         });
-
-                        result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
+                        if (dndLine.hasClass("isDropAsChild")) {
+                            result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, "child");
+                        }
+                        else {
+                            result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
+                        }
+                        
                     }
 
                     else {
@@ -603,10 +603,16 @@ $(document).ready(function () {
                         // อัปเดต DOM
                         if ($targetParent.attr('data-class') === 'addMoreClasses') {
                             $targetParent.before($selectedElements);
-                        } else if (isTopHalf) {
+                        }
+                        else if (dndLine.hasClass("isDropAsChild")) {
+                            console.log(dndLine)
+                            $targetParent.append($selectedElements);
+                            console.log("isDropAsChild");
+                        }
+                        else if (isTopHalf) {
                             $targetParent.before($selectedElements);
                         } else {
-                            $targetParent.after($selectedElements.get().reverse());
+                            $targetParent.after($selectedElements);//.get().reverse());
                         }
                         // บันทึกสถานะใหม่
                         const newState = JSON.parse(JSON.stringify(items));
