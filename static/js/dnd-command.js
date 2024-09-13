@@ -486,6 +486,8 @@ $(document).ready(function () {
                 'dnd-type': currentDndType,
                 'dnd-id': $currentTarget.attr('dnd-id'),
                 'dnd-subtype': $currentTarget.attr('dnd-subtype')
+                'dnd-id': $currentTarget.attr('dnd-id'),
+                'dnd-subtype': $currentTarget.attr('dnd-subtype')
             })
             .addClass('clone-container')
             .css({

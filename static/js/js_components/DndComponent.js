@@ -53,6 +53,7 @@ const renderVariables = variables => variables.map(v => `
 `).join('');
 
 export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
+export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
         const spacingIndent = 48;
         const indent = `${level * spacingIndent}px`;
@@ -90,6 +91,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
         const hasVariables = variables?.length;
 
 
+
         const iconSVG = (isExpanded) => `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="collapse-icon ${isExpanded == true ? '' : 'hidden'} size-4">
             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -106,6 +108,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
             <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))]  min-w-[32rem] dark:text-gray-100 text-gray-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
+               
                
                 ${subtype === "group" ? `
                     
