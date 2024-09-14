@@ -265,7 +265,6 @@ $(document).ready(function () {
         let $targetElement = $element;
         let isLeftSide = true;
 
-
         if (dndType === 'container') {
             const $panelContainer = $element.find('[data-class="panelContainerClasses"]').first();
             if ($panelContainer.length) {
@@ -293,19 +292,23 @@ $(document).ready(function () {
         const cssProps = {
             top: isTopHalf ? 0 : 'auto',
             bottom: isTopHalf ? 'auto' : 0,
-            left: isLeftSide ? '0' : 'auto',
-            width: (isVariableContainer || isMessageContainer) ? '100%' :
-                (dndType === 'container' && !isLeftSide && !isTopHalf) ? `calc(100% - ${indent}px)` : '100%',
-            right: (dndType === 'container' && !isLeftSide && !isTopHalf) ? '0' : 'auto'
-        };
+            left: isLeftSide ? 0 : 'auto',
+            right: 'auto',
+            width: '100%'
+          };
+          
+          if (dndType === 'container' && !isLeftSide && !isTopHalf) {
+            dndLine.addClass('isDropAsChild');
+            cssProps.width = `calc(100% - ${indent}px)`;
+            cssProps.right = 0;
+          }
+          
+          if (isVariableContainer || isMessageContainer) {
+            dndLine.removeClass('isDropAsChild');
+            cssProps.width = '100%';
+          }
 
         dndLine.css(cssProps);
-
-        if (!isVariableContainer && !isMessageContainer) {
-            if(dndType === 'container' && isLeftSide && !isTopHalf){
-                dndLine.addClass('isDropAsChild');
-            }
-        }
     }
 
     function cleanupUI() {
@@ -580,7 +583,6 @@ $(document).ready(function () {
                                 // เพิ่ม ml-[ตัวเลขpx] class ใหม่
                                 $(this).addClass(`ml-[${parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0)}px]`);
                             }
-                            console.log((dndLine.hasClass("isDropAsChild") ? indent : 0))
                         });
                         if (dndLine.hasClass("isDropAsChild")) {
                             result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, "child");
@@ -605,9 +607,7 @@ $(document).ready(function () {
                             $targetParent.before($selectedElements);
                         }
                         else if (dndLine.hasClass("isDropAsChild")) {
-                            console.log(dndLine)
                             $targetParent.append($selectedElements);
-                            console.log("isDropAsChild");
                         }
                         else if (isTopHalf) {
                             $targetParent.before($selectedElements);

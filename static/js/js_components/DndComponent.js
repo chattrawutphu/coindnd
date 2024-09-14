@@ -63,13 +63,13 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
             dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
                     <div data-class="panelContainerClasses" class="relative  pb-[1.5px]  pt-[0.75px]">    
                         <div class="flex gap-x-1 justify-between">
-                            <div class="flex gap-x-1 items-center content-center">
+                            <div class="flex gap-x-1 items-center content-center text-nowrap">
                                 ${svgIcon("M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z", "size-3 text-green-500")}
-                                <div class="text-[13px]/[18px] text-green-500">${item.variableType}</div>
+                                <div class="text-[13px]/[18px] text-green-500 ">${item.variableType}</div>
                                 <div class="text-[15px]/[18px] text-green-500 font-bold">${item.name}</div>
                                 <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
                             </div>
-                            ${item.message ? `<div class="text-sm/[18px] text-gray-400"> # ${item.message}</div>` : ''}
+                            ${item.message ? `<div class="text-sm/[18px] text-gray-400 truncate"> # ${item.message}</div>` : ''}
                         </div>
                     </div>
             </div>`
