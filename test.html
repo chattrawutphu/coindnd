@@ -1,179 +1,48 @@
-@model dynamic
+const marginClass = $targetParent.find('.ml-section').first();
 
-@if
- 
-(
-Model 
-!=
- 
-null
-)
+                        // Extract the margin-left value
+                        const targetMlValue = (marginClass.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] ||
+                            ($targetParent.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1];
 
-{
-
-    
-<
-h2
->
-Page Sections/Zones
-</
-h2
->
-
-    
-    @
-if
- 
-(
-Model 
-is
- 
-IEnumerable
-<
-object
->
-)
-
-    
-{
-
-        
-<
-ul
->
-
-            
-@foreach
- 
-(
-var
- item 
-in
- Model
-)
-
-            
-{
-
-                
-<
-li
->
-
-                    
-@if
- 
-(
-item
-.
-GetType
-(
-)
-.
-GetProperty
-(
-"Identifier"
-)
- 
-!=
- 
-null
-)
-
-                    
-{
-
-                        @item
-.
-Identifier
-                    
-}
-
-                    
-else
-
-                    
-{
-
-                        @item
-.
-ToString
-(
-)
-
-                    
-}
-
-                
-</
-li
->
-
-            
-}
-
-        
-</
-ul
->
-
-    
-}
-
-    
-else
-
-    
-{
-
-        
-<
-p
->
-Sections/Zones data structure is not as expected. Received type: 
-@
-Model
-.
-GetType
-(
-)
-.
-Name
-</
-p
->
-
-        
-<
-pre
->
-@
-Json
-.
-Serialize
-(
-Model
-)
-</
-pre
->
-
-    
-}
-
-}
-
-else
-
-{
-
-    
-<
-p
->
-No sections or zones found.
-</
-p
->
-
-}
+                        // ปรับ ml-[ตัวเลขpx] class ของ selectedElements
+                        $selectedElements.each(function () {
+                            const $elementMargin = $(this).find('.ml-section').first();
+                            if ($elementMargin.length && targetMlValue) {
+                                // หาค่า margin เดิม
+                                const oldMargin = parseInt(($elementMargin.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] || '0');
+                                
+                                // ลบ ml-[ตัวเลขpx] class เดิม
+                                $elementMargin.removeClass(function (index, className) {
+                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
+                                });
+                                
+                                // คำนวณค่า margin ใหม่
+                                const newMargin = parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0);
+                                
+                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
+                                $elementMargin.addClass(`ml-[${newMargin}px]`);
+                                
+                                // คำนวณความแตกต่างระหว่าง margin เก่าและใหม่
+                                marginDifference = newMargin - oldMargin;
+                        
+                                // ดำเนินการกับ child elements
+                                const $elementMarginChildren = $(this).find('.ml-section').not(':first');
+                                
+                                $elementMarginChildren.each(function () {
+                                    const oldChildMargin = parseInt(($(this).attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] || '0');
+                                    
+                                    $(this).removeClass(function (index, className) {
+                                        return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
+                                    });
+                        
+                                    // คำนวณ margin ใหม่สำหรับ child โดยเพิ่ม indent
+                                    const newMarginChild = newMargin + indent;
+                                    
+                                    // เพิ่ม ml-[ตัวเลขpx] class ใหม่
+                                    $(this).addClass(`ml-[${newMarginChild}px]`);
+                        
+                                    // อัพเดท marginDifference สำหรับ child ถ้าต้องการ
+                                    // marginDifference = Math.max(marginDifference, newMarginChild - oldChildMargin);
+                                });
+                            }
+                        });

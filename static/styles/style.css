@@ -8,6 +8,31 @@ html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasse
     border-color: rgb(75 85 99)
 }
 
+html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"] {
+    background-color: #4c5291;
+}
+
+html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
+    background-color: #394175;
+}
+
+html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="leftPanelClasses"] {
+    background-color: #424a7f;
+}
+
+html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="rightPanelClasses"] {
+    background-color: #2d3664;
+}
+
+html.dark div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"].select-active {
+    background-color: #53599e;
+}
+
+html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].select-active {
+    background-color: #3f4881;
+}
+
+
 html body {
     background-color: #e5e7eb;
     background-image: radial-gradient(circle, #9ca3af 1px, transparent 1px);
@@ -15,6 +40,7 @@ html body {
     margin: 0;
     height: 100vh;
 }
+
 
 html.dark body {
     background-color: #111827;
@@ -74,4 +100,8 @@ html.dark body {
 }
 .highlight-button:hover {
     opacity: 1;
+}
+
+[data-class="lineAreaClasses"] > div {
+    isolation: isolate;
 }

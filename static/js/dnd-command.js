@@ -1,4 +1,4 @@
-import { RemoveBorderLastcommonFlexClasses } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth } from '/static/js/global-script.js';
 
 $(document).ready(function () {
     const UndoManager = window.UndoManager;
@@ -101,7 +101,7 @@ $(document).ready(function () {
             }
             return null;
         };
-    
+
         const findParentArray = (id, items, parent = null) => {
             for (const item of items) {
                 if (item.id === id) return parent || items;
@@ -120,15 +120,15 @@ $(document).ready(function () {
             }
             return null;
         };
-    
+
         const sourcesAndParents = sourceIds.map(id => ({
             source: findInAll(id, data),
             sourceArray: findParentArray(id, data)
         })).filter(item => item.source && item.sourceArray);
-    
+
         const target = findInAll(targetId, data);
         if (!target) return false;
-    
+
         let targetArray;
         if (side === 'condition') {
             if (!target.conditions) target.conditions = [];
@@ -142,15 +142,15 @@ $(document).ready(function () {
         } else {
             targetArray = findParentArray(targetId, data);
         }
-    
+
         if (!targetArray) return false;
-    
+
         // Remove all sources from their original positions
         sourcesAndParents.forEach(({ source, sourceArray }) => {
             const sourceIndex = sourceArray.findIndex(item => item.id === source.id);
             sourceArray.splice(sourceIndex, 1);
         });
-    
+
         // Add all sources to the target position
         if (side === 'condition' || side === 'action' || side === 'child') {
             targetArray.push(...sourcesAndParents.map(item => item.source));
@@ -233,8 +233,8 @@ $(document).ready(function () {
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
-    const classSelection = 'select-active ring-1 ring-pink-500 bg-pink-500/20';
-    const effectClasses = 'ring-1 ring-pink-500 bg-pink-500/20';
+    const classSelection = 'select-active ring-1 ring-indigo-600 bg-indigo-600/30';
+    const effectClasses = 'ring-1 ring-indigo-600 bg-indigo-600/30';
     const indent = 48;
     let isHandlingDragMove = false;
 
@@ -295,19 +295,18 @@ $(document).ready(function () {
             left: isLeftSide ? 0 : 'auto',
             right: 'auto',
             width: '100%'
-          };
-          
-          if (dndType === 'container' && !isLeftSide && !isTopHalf) {
+        };
+
+        if (dndType === 'container' && !isLeftSide && !isTopHalf) {
             dndLine.addClass('isDropAsChild');
             cssProps.width = `calc(100% - ${indent}px)`;
             cssProps.right = 0;
-          }
-          
-          if (isVariableContainer || isMessageContainer) {
+        }
+
+        if (isVariableContainer || isMessageContainer) {
             dndLine.removeClass('isDropAsChild');
             cssProps.width = '100%';
-          }
-
+        }
         dndLine.css(cssProps);
     }
 
@@ -328,6 +327,9 @@ $(document).ready(function () {
                 $container.css('padding-bottom', '8px');
             }
         });
+
+        countNumberPanels();
+        adjustLineAreaWidth();
     }
 
     function removeLine() {
@@ -522,11 +524,21 @@ $(document).ready(function () {
         handleDragMove(e);
     }
 
+    function countNumberPanels() {
+        $('[data-class="numberPanelClasses"]').each(function(index) {
+          $(this).text(index + 1);
+        });
+      }
 
     async function stopDragging(e) {
         isDragging = false;
         if (clone) {
-            const $selectedElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]').filter('.' + classSelection.split(' ')[0]);
+            const $selectedElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]')
+                .filter('.' + classSelection.split(' ')[0])
+                .filter(function () {
+                    return $(this).parents('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]')
+                        .filter('.' + classSelection.split(' ')[0]).length === 0;
+                });
             if (dndLine) {
                 let $targetParent = dndLine.parent();
                 if ($targetParent.attr('data-class') !== 'addMoreClasses') {
@@ -558,30 +570,68 @@ $(document).ready(function () {
                         }).get();
                         const position = isTopHalf ? 'top' : 'bottom';
 
-                        // หา ml-[ตัวเลขpx] class ของ $targetParent
-                        let $targetMargin = $targetParent.find('[data-class="panelWrapperMargin"], [data-class="groupSectionClasses"]').first();
-                        const marginClass = $targetMargin.length ? $targetMargin : $targetParent;
+                        // หา marginClass จาก $targetParent (ส่วนนี้ยังคงเหมือนเดิม)
+                        const marginClass = $targetParent.hasClass('ml-section')
+                            ? $targetParent
+                            : $targetParent.find('.ml-section').first();
 
-                        // Extract the margin-left value
-                        const targetMlValue = (marginClass.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] ||
-                            ($targetParent.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1];
+                        // ดึง margin-left value จาก $targetParent
+                        const mlClass = marginClass.attr('class').split(' ').find(cls => cls.match(/^ml-\[\d+px\]$/));
+                        const mlValue = mlClass ? parseInt(mlClass.match(/\d+/)[0]) : 0;
 
                         // ปรับ ml-[ตัวเลขpx] class ของ selectedElements
                         $selectedElements.each(function () {
-                            const $elementMargin = $(this).find('[data-class="panelWrapperMargin"], [data-class="groupSectionClasses"]').first();
-                            if ($elementMargin.length && targetMlValue) {
-                                // ลบ ml-[ตัวเลขpx] class เดิม
-                                $elementMargin.removeClass(function (index, className) {
-                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
+                            // ค้นหา $elementMargin (ไม่รวม data-class="lineAreaClasses")
+                            const $elementMargin = $(this).find('.ml-section')
+                                .add($(this).filter('.ml-section'))
+                                .filter(function () {
+                                    return $(this).attr('data-class') !== 'lineAreaClasses';
+                                })
+                                .first();
+
+                            // ค้นหา $elementMarginChildren (รวม data-class="lineAreaClasses" แต่ไม่รวม $elementMargin)
+                            const $elementMarginChildren = $(this).find('.ml-section').not($elementMargin);
+
+                            if ($elementMargin.length) {
+                                // หา ml-[ตัวเลขpx] class ปัจจุบันของ $elementMargin
+                                const currentMlClass = $elementMargin.attr('class').split(' ').find(cls => cls.match(/^ml-\[\d+px\]$/));
+                                const currentMlValue = currentMlClass ? parseInt(currentMlClass.match(/\d+/)[0]) : 0;
+
+                                // ลบ ml-[ตัวเลขpx] class เดิมของ $elementMargin (ถ้ามี)
+                                if (currentMlClass) {
+                                    $elementMargin.removeClass(currentMlClass);
+                                }
+
+                                // คำนวณค่า margin ใหม่สำหรับ parent
+                                var isTrue = dndLine.hasClass("isDropAsChild");
+                                console.log(isTrue);
+                                const newMlValue = mlValue + (dndLine.hasClass("isDropAsChild") ? indent : 0);
+
+                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่สำหรับ parent
+                                $elementMargin.addClass(`ml-[${newMlValue}px]`);
+
+                                // คำนวณการเปลี่ยนแปลงของ margin
+                                const marginChange = newMlValue - currentMlValue;
+
+                                console.log(`Parent margin changed by: ${marginChange}px`);
+
+                                // ปรับปรุง margin ของ children elements
+                                $elementMarginChildren.each(function () {
+                                    const $item = $(this);
+                                    const currentMlChildClass = $item.attr('class').split(' ').find(cls => cls.match(/^ml-\[\d+px\]$/));
+                                    const currentMlChildValue = currentMlChildClass ? parseInt(currentMlChildClass.match(/\d+/)[0]) : 0;
+
+                                    if (currentMlChildClass) {
+                                        $item.removeClass(currentMlChildClass);
+                                    }
+
+                                    // ปรับ margin ของ child โดยเพิ่มค่า marginChange
+                                    const newMlChildValue = currentMlChildValue + marginChange;
+
+                                    $item.addClass(`ml-[${newMlChildValue}px]`);
+
+                                    console.log(`Child margin adjusted from ${currentMlChildValue}px to ${newMlChildValue}px (change: ${marginChange}px)`);
                                 });
-                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                $elementMargin.addClass(`ml-[${parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0)}px]`);
-                            } else {
-                                $(this).removeClass(function (index, className) {
-                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
-                                });
-                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                $(this).addClass(`ml-[${parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0)}px]`);
                             }
                         });
                         if (dndLine.hasClass("isDropAsChild")) {
@@ -590,7 +640,7 @@ $(document).ready(function () {
                         else {
                             result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, position);
                         }
-                        
+
                     }
 
                     else {
@@ -895,4 +945,8 @@ $(document).ready(function () {
     /*
     * END: Multi Selection
     */
+
+    $(window).resize(function() {
+        adjustLineAreaWidth();
+    });
 });

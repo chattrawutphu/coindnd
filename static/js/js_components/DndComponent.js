@@ -59,7 +59,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
 
         if (item.subtype === "variable") {
             return `
-            <div data-class="panelWrapperClasses" class="single-panel  ${item.active ? '' : 'line-through'} ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem] ${item.active ? '' : 'line-through'} ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
             dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
                     <div data-class="panelContainerClasses" class="relative  pb-[1.5px]  pt-[0.75px]">    
                         <div class="flex gap-x-1 justify-between">
@@ -77,7 +77,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
 
         if (item.subtype === "message") {
             return `
-            <div data-class="panelWrapperClasses" class="single-panel ${item.active ? '' : 'line-through'} text-sm text-gray-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem]  ${item.active ? '' : 'line-through'} text-sm text-gray-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
             dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
                     <div data-class="panelContainerClasses"  class="relative  pb-[1.5px] pt-[0.75px]">
                     # ${item.message}
@@ -104,14 +104,14 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
         ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-gray-400 ml-[${indent}]"># ${message}</div>` : ''}        */
 
         return `
-            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))]  min-w-[32rem] dark:text-gray-100 text-gray-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))] dark:text-gray-100 text-gray-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
                
                
                 ${subtype === "group" ? `
                     
-                    <div data-class="groupSectionClasses" class="my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
+                    <div data-class="groupSectionClasses" class="ml-section min-w-[32rem] my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
                         <div data-class="panelContainerClasses" class="">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
@@ -125,16 +125,16 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                 
                     <div 
                         data-class="lineAreaClasses" 
-                        class="ml-[${indent}] absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" 
+                        class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" 
                         style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;">
-                        ${subtype === 'group' ? `<div class="w-[${spacingIndent-3}px] h-full ml-[3px] opacity-20" style="background-color: ${backgroundColor}"></div>` : ''}
+                        ${subtype === 'group' ? `<div class="w-[${spacingIndent-3}px] h-full ml-[3px] opacity-15" style="background-color: ${backgroundColor}"></div>` : ''}
                     </div>
-                <div data-class="panelWrapperMargin" class="col-[span_30/span_30] flex ml-[${indent}]">
+                <div data-class="panelWrapperMargin" class="ml-section  col-[span_30/span_30] flex ml-[${indent}]">
 
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
-                        <div data-class="panelContainerClasses" class="grid relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
+                        <div data-class="panelContainerClasses" class="grid min-w-[32rem] relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                             ${children?.length > 0 ? `
                                 <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}
                             <div data-class="leftPanelClasses">

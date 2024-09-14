@@ -42,7 +42,7 @@ $('#update-button2').on('click', function () {
 });*/
 
 //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth } from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
 
 const addMoreContainerTemplate = `
@@ -125,7 +125,6 @@ $(document).ready(async () => {
         } else {
             localStorage.setItem('items', JSON.stringify(items));
         }
-        console.log(items)
 
         await renderDndEditorScripts(items);
 
@@ -199,7 +198,6 @@ $(document).ready(async () => {
                 $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
                 $('#loadingSection').remove();
 
-
                 //เพิ่มระยะให้ message-panel variable-panel
                 $('.single-panel').each(function (index) {
                     if ($(this).prevAll('.single-panel').length === 0) {
@@ -211,6 +209,8 @@ $(document).ready(async () => {
                 });
                 updateUIheight();
                 RemoveBorderLastcommonFlexClasses();
+                adjustLineAreaWidth();
+                
             }, 50);
         }
 

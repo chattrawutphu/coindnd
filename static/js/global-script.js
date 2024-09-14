@@ -28,3 +28,25 @@ export function RemoveBorderLastcommonFlexClasses() {
         $(this).find('div[data-class="commonFlexClasses"]').removeClass('border-0').last().addClass('border-0');
     });
 };
+
+
+export function adjustLineAreaWidth() {
+    /*$('[data-class="panelWrapperClasses"][dnd-subtype="group"]').each(function() {
+        var $lineArea = $(this).find('[data-class="lineAreaClasses"] div:first');
+        var $groupSection = $(this).find('[data-class="groupSectionClasses"]');
+        
+        // ตรวจสอบว่าเป็น panelWrapperClasses ที่อยู่ในสุดหรือไม่
+        if ($(this).find('[data-class="panelWrapperClasses"][dnd-subtype="group"]').length === 0) {
+            // ตั้งค่าความกว้างของ $lineArea ให้เท่ากับ $groupSection ลบ 3px โดยไม่รวม margin
+            if ($lineArea.length && $groupSection.length) {
+                var newWidth = $groupSection.width() + 22;
+                $lineArea.width(newWidth > 0 ? newWidth : 0);
+            }
+        } else {
+            // กรณีไม่เข้าเงื่อนไข ให้กลับไปใช้ความกว้างเดิม
+            if ($lineArea.length) {
+                $lineArea.width('');  // ลบ inline width style
+            }
+        }
+    });*/
+}
