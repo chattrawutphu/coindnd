@@ -43,7 +43,7 @@ $('#update-button2').on('click', function () {
 
 //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
 import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup
-    ,updateUIheight
+    ,updateUIheight ,appendEventButton
  } from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
 
@@ -54,7 +54,6 @@ const addMoreContainerTemplate = `
             </svg>
             <p>Add Event</p>
         </div>
-        <div class="h-72"></div>
     `;
 
 async function renderDndEditorScripts(items) {
@@ -175,6 +174,7 @@ $(document).ready(async () => {
                 $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
                 $('#loadingSection').remove();
 
+
                 //เพิ่มระยะให้ message-panel variable-panel
                 $('.single-panel').each(function (index) {
                     if ($(this).prevAll('.single-panel').length === 0) {
@@ -184,10 +184,12 @@ $(document).ready(async () => {
                         $(this).find(`[data-class="panelContainerClasses"]`).css('padding-bottom', '8px');
                     }
                 });
+                appendEventButton();
                 updateUIheight();
                 RemoveBorderLastcommonFlexClasses();
                 adjustLineAreaWidth();
                 applyGroupBackgroundColorToNonGroup();
+                
             }, 50);
         }
 

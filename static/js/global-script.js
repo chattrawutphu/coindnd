@@ -118,3 +118,29 @@ export function adjustLineAreaWidth() {
         }
     });*/
 }
+
+export function appendEventButton() {
+    $('[data-class="addEventBuntton"]').remove();
+    $('[data-class="panelWrapperClasses"]').each(function() {
+        var $current = $(this);
+        var $next = $current.next('[data-class="panelWrapperClasses"]');
+        var $childPanelWrappers = $current.find('[data-class="panelWrapperClasses"]');
+        
+        if ($next.length === 0 && $childPanelWrappers.length > 0) {
+            // Find the ml-[px] class from the panelWrapperMargin element
+            var $marginElement = $current.find('[data-class="panelWrapperMargin"]');
+            var mlClass = $marginElement.attr('class').match(/ml-\[\d+px\]/);
+            var marginClass = mlClass ? mlClass[0] : '';
+    
+            // This is the last element with data-class="panelWrapperClasses" and has no child panelWrapperClasses
+            $current.append(`
+                <div data-class="addEventBuntton" class="flex min-w-[32rem] col-[span_30/span_30] bg-[#2B3544] rounded-[0.2rem] text-xs p-1.5 m-[1px] dark:text-gray-500 text-gray-800 ${marginClass}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+                        <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                    </svg>
+                    <p>Add Event</p>
+                </div>
+            `);
+        }
+    });
+}
