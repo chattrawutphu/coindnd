@@ -1,4 +1,6 @@
-import { RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup, toggleExpandButtonVisibility } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup, toggleExpandButtonVisibility
+    ,updateUIheight
+ } from '/static/js/global-script.js';
 
 $(document).ready(function () {
     const UndoManager = window.UndoManager;
@@ -8,9 +10,12 @@ $(document).ready(function () {
 
     let items = [];
 
-    function updateUIFromCache(html) {
-        $('[data-js-component="DndComponent"]').html(html);
+    function updateUIFromCache(html, scrollPosition) {
+        const $content = $('[data-js-component="DndComponent"]');
+        $content.html(html);
         cleanupUI();
+        // Restore scroll position
+        $content.scrollTop(scrollPosition);
     }
 
     function updateButtonStates() {
@@ -18,48 +23,50 @@ $(document).ready(function () {
         $('#redoBtn').prop('disabled', !undoManager.hasRedo());
     }
 
-    $(document).on('keydown', function (e) {
-        if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
-            e.preventDefault();
-            if (e.shiftKey) {
-                if (undoManager.hasRedo()) {
-                    undoManager.redo();
-                    cleanupUI();
-                    updateButtonStates();
-                }
-            } else {
-                if (undoManager.hasUndo()) {
-                    undoManager.undo();
-                    cleanupUI();
-                    updateButtonStates();
-                }
-            }
-        }
-        else if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) {
-            e.preventDefault();
+// Modify the undo and redo button click handlers
+$('#undoBtn').on('click', function () {
+    if (undoManager.hasUndo()) {
+        undoManager.undo();
+        cleanupUI();
+        updateButtonStates();
+    }
+});
+
+$('#redoBtn').on('click', function () {
+    if (undoManager.hasRedo()) {
+        undoManager.redo();
+        cleanupUI();
+        updateButtonStates();
+    }
+});
+
+// Modify the keyboard shortcut handlers
+$(document).on('keydown', function (e) {
+    if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        if (e.shiftKey) {
             if (undoManager.hasRedo()) {
                 undoManager.redo();
                 cleanupUI();
                 updateButtonStates();
             }
+        } else {
+            if (undoManager.hasUndo()) {
+                undoManager.undo();
+                cleanupUI();
+                updateButtonStates();
+            }
         }
-    });
-
-    $('#undoBtn').on('click', function () {
-        if (undoManager.hasUndo()) {
-            undoManager.undo();
-            cleanupUI();
-            updateButtonStates();
-        }
-    });
-
-    $('#redoBtn').on('click', function () {
+    }
+    else if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
         if (undoManager.hasRedo()) {
             undoManager.redo();
             cleanupUI();
             updateButtonStates();
         }
-    });
+    }
+});
 
     function saveToLocalStorage() {
         try {
@@ -314,6 +321,7 @@ $(document).ready(function () {
         removeLine();
         clearCommandSelection();
         RemoveBorderLastcommonFlexClasses();
+        updateUIheight();
 
         //เพิ่มระยะให้ message-panel variable-panel
         $('.single-panel').each(function () {
@@ -555,7 +563,8 @@ $(document).ready(function () {
                 if ($selectedElements.length && $targetParent.length) {
                     // บันทึกสถานะก่อนการเปลี่ยนแปลง
                     const oldState = JSON.parse(JSON.stringify(items));
-                    const oldHtml = $('[data-js-component="DndComponent"]').html();
+                const oldHtml = $('[data-js-component="DndComponent"]').html();
+                const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
                     let result;
                     if ($targetParent.attr('data-class') === 'addMoreClasses') {
                         let parentTarget = $targetParent.closest("[data-class='panelWrapperClasses']");
@@ -668,18 +677,19 @@ $(document).ready(function () {
                         }
                         // บันทึกสถานะใหม่
                         const newState = JSON.parse(JSON.stringify(items));
-                        const newHtml = $('[data-js-component="DndComponent"]').html();
+                    const newHtml = $('[data-js-component="DndComponent"]').html();
+                    const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
                         // เพิ่มการกระทำลงใน undoManager
                         undoManager.add({
                             undo: function () {
                                 items = oldState;
-                                updateUIFromCache(oldHtml);
+                                updateUIFromCache(oldHtml, oldScrollPosition);
                                 updateButtonStates();
                                 cleanupUI();
                             },
                             redo: function () {
                                 items = newState;
-                                updateUIFromCache(newHtml);
+                                updateUIFromCache(newHtml, newScrollPosition);
                                 updateButtonStates();
                                 cleanupUI();
                             }
@@ -687,7 +697,7 @@ $(document).ready(function () {
                     } else {
                         // ถ้าการดำเนินการไม่สำเร็จ ให้กลับไปใช้สถานะเดิม
                         items = oldState;
-                        updateUIFromCache(oldHtml);
+                        updateUIFromCache(oldHtml, oldScrollPosition);
                     }
                     // อัปเดตสถานะปุ่ม undo/redo
                     updateButtonStates();

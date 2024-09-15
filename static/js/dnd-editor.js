@@ -42,7 +42,9 @@ $('#update-button2').on('click', function () {
 });*/
 
 //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup
+    ,updateUIheight
+ } from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
 
 const addMoreContainerTemplate = `
@@ -88,31 +90,6 @@ async function renderComponent($el) {
     } catch (error) {
         console.error(`Error loading component "${componentName}":`, error);
     }
-}
-
-function updateUIheight() {
-    const $panelWrappers = $('[data-class="panelWrapperClasses"]');
-
-    $panelWrappers.each(function () {
-        const $panelWrapper = $(this);
-        const $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
-        const $numberPanel = $panelWrapper.find('[data-class="numberPanelClasses"]').first();
-        const $highlightArea = $panelWrapper.find('[data-class="highlightAreaClasses"]').first();
-
-        //const panelContainer = $panelWrapper.find('[data-class="panelContainerClasses"]').first().height() || 0;
-        const groupSection = $panelWrapper.find('[data-class="groupSectionClasses"]').first().height() || 0;
-
-        const totalOffset = groupSection + 4;
-        const newHeight = $panelWrapper.height() - totalOffset;
-
-        $lineArea.css({
-            'height': `${newHeight}px`,
-            'margin-top': `${totalOffset}px`
-        });
-
-        $numberPanel.css('margin-top', `8px`);
-        $highlightArea.css('margin-top', `${totalOffset}px`);
-    });
 }
 
 $(document).ready(async () => {

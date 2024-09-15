@@ -29,6 +29,31 @@ export function RemoveBorderLastcommonFlexClasses() {
     });
 };
 
+export function updateUIheight() {
+    const $panelWrappers = $('[data-class="panelWrapperClasses"]');
+
+    $panelWrappers.each(function () {
+        const $panelWrapper = $(this);
+        const $lineArea = $panelWrapper.find('[data-class="lineAreaClasses"]').first();
+        const $numberPanel = $panelWrapper.find('[data-class="numberPanelClasses"]').first();
+        const $highlightArea = $panelWrapper.find('[data-class="highlightAreaClasses"]').first();
+
+        //const panelContainer = $panelWrapper.find('[data-class="panelContainerClasses"]').first().height() || 0;
+        const groupSection = $panelWrapper.find('[data-class="groupSectionClasses"]').first().height() || 0;
+
+        const totalOffset = groupSection + 4;
+        const newHeight = $panelWrapper.height() - totalOffset;
+
+        $lineArea.css({
+            'height': `${newHeight}px`,
+            'margin-top': `${totalOffset}px`
+        });
+
+        $numberPanel.css('margin-top', `8px`);
+        $highlightArea.css('margin-top', `${totalOffset}px`);
+    });
+}
+
 export function applyGroupBackgroundColorToNonGroup() {
     $('.bg-color-panel.for-nonegroup').each(function () {
         
