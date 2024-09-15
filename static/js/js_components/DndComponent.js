@@ -111,8 +111,8 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                
                 ${subtype === "group" ? `
                     
-                    <div data-class="groupSectionClasses" class="ml-section min-w-[32rem] my-1 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold pt-1 pb-2 px-3">
-                        <div data-class="panelContainerClasses" class="">
+                    <div data-class="groupSectionClasses" class="ml-section min-w-[32rem] my-0.5 relative rounded-[3px] bg-[${backgroundColor}] text-[${textColor}] col-[span_30/span_30] ml-[${indent}] font-semibold">
+                        <div data-class="panelContainerClasses" class="w-full h-full pt-1 pb-2 px-3">
                         <div class="flex gap-x-1 justify-between">
                             <div class="text-[15px]/[18px]">${title}</div>
                             <div class="text-sm/[18px]"># ${message}</div>
@@ -125,9 +125,9 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                 
                     <div 
                         data-class="lineAreaClasses" 
-                        class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-80 w-[1.5px] bg-gray-700'}" 
+                        class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[3px]' : 'opacity-60 w-[1px] bg-gray-600'}" 
                         style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;">
-                        ${subtype === 'group' ? `<div class="w-[${spacingIndent-3}px] h-full ml-[3px] opacity-15" style="background-color: ${backgroundColor}"></div>` : ''}
+                        <div class="bg-color-panel  ${subtype === 'group' ? `for-group ml-[3px] w-[${spacingIndent-3}px]` : `for-nonegroup ml-[1px] w-[${spacingIndent-1}px]`}  h-full  opacity-10" style="background-color: ${subtype === 'group' ? backgroundColor : ''}"></div>
                     </div>
                 <div data-class="panelWrapperMargin" class="ml-section  col-[span_30/span_30] flex ml-[${indent}]">
 
@@ -135,8 +135,8 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
 
                     ${subtype !== "group" ? `
                         <div data-class="panelContainerClasses" class="grid min-w-[32rem] relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
-                            ${children?.length > 0 ? `
-                                <div data-class="expandButtonClasses">${iconSVG(showChildren)}</div>` : ''}
+                            
+                            <div data-class="expandButtonClasses" class="${children?.length > 0 ? '':'hidden'}">${iconSVG(showChildren)}</div>
                             <div data-class="leftPanelClasses">
                                 ${renderPanel(conditions, 'condition')}
                                 ${addMoreTemplate('condition', 'Add condition')}

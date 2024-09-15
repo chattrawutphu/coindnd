@@ -1,4 +1,4 @@
-import { RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup, toggleExpandButtonVisibility } from '/static/js/global-script.js';
 
 $(document).ready(function () {
     const UndoManager = window.UndoManager;
@@ -233,8 +233,8 @@ $(document).ready(function () {
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
-    const classSelection = 'select-active ring-1 ring-indigo-600 bg-indigo-600/30';
-    const effectClasses = 'ring-1 ring-indigo-600 bg-indigo-600/30';
+    const classSelection = 'select-active ring-1 ring-indigo-600 bg-indigo-600/40';
+    const effectClasses = 'ring-1 ring-indigo-600 bg-indigo-600/40';
     const indent = 48;
     let isHandlingDragMove = false;
 
@@ -330,6 +330,8 @@ $(document).ready(function () {
 
         countNumberPanels();
         adjustLineAreaWidth();
+        applyGroupBackgroundColorToNonGroup();
+        toggleExpandButtonVisibility();
     }
 
     function removeLine() {
@@ -456,8 +458,8 @@ $(document).ready(function () {
         const originalWidth = $currentTarget.outerWidth();
         const originalHeight = $currentTarget.outerHeight();
 
-        const newWidth = Math.min(originalWidth * 0.8, 400);
-        const newHeight = Math.min(originalHeight * 0.8, 200);
+        const newWidth = Math.min(originalWidth * 0.7, 400);
+        const newHeight = Math.min(originalHeight * 0.7, 150);
 
         const activeClass = classSelection;
         if (!e.shiftKey && !e.ctrlKey) {

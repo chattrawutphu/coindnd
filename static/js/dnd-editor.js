@@ -42,7 +42,7 @@ $('#update-button2').on('click', function () {
 });*/
 
 //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup } from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
 
 const addMoreContainerTemplate = `
@@ -210,7 +210,7 @@ $(document).ready(async () => {
                 updateUIheight();
                 RemoveBorderLastcommonFlexClasses();
                 adjustLineAreaWidth();
-                
+                applyGroupBackgroundColorToNonGroup();
             }, 50);
         }
 

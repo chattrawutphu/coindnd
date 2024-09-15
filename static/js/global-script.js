@@ -18,17 +18,60 @@ export function rgb2hex(rgb) {
     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
 
-    
+
 export function RemoveBorderLastcommonFlexClasses() {
-    $('div[data-class="leftPanelClasses"]').each(function() {
+    $('div[data-class="leftPanelClasses"]').each(function () {
         $(this).find('div[data-class="commonFlexClasses"]').removeClass('border-0').last().addClass('border-0');
     });
 
-    $('div[data-class="rightPanelClasses"]').each(function() {
+    $('div[data-class="rightPanelClasses"]').each(function () {
         $(this).find('div[data-class="commonFlexClasses"]').removeClass('border-0').last().addClass('border-0');
     });
 };
 
+export function applyGroupBackgroundColorToNonGroup() {
+    $('.bg-color-panel.for-nonegroup').each(function () {
+        
+        var $nonGroup = $(this);
+        var $panelWrapper = $nonGroup.closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
+        var $closestGroup;
+        $nonGroup.css('background-color', '');
+        function findClosestGroup($wrapper) {
+            return $wrapper.find(' > [data-class="lineAreaClasses"] > div.bg-color-panel.for-group');
+        }
+
+        while ($panelWrapper.length) {
+            $closestGroup = findClosestGroup($panelWrapper);
+
+            if ($closestGroup.length) {
+                var bgColor = $closestGroup.css('background-color');
+                $nonGroup.css('background-color', bgColor);
+                break;
+            }
+
+            // Move to the next parent panelWrapper
+            $panelWrapper = $panelWrapper.parent().closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
+        }
+    });
+}
+
+export function toggleExpandButtonVisibility() {
+    $('[data-class="panelWrapperClasses"]').each(function() {
+      var $panelWrapper = $(this);
+      var $expandButton = $panelWrapper.find('[data-class="expandButtonClasses"]');
+      
+      // Check if this panelWrapper has a child panelWrapper
+      var hasChildPanelWrapper = $panelWrapper.children('[data-class="panelWrapperClasses"]').length > 0;
+      
+      if (hasChildPanelWrapper) {
+        // If it has a child panelWrapper, remove the 'hidden' class from the expand button
+        $expandButton.removeClass('hidden');
+      } else {
+        // If it doesn't have a child panelWrapper, add the 'hidden' class to the expand button
+        $expandButton.addClass('hidden');
+      }
+    });
+  }
 
 export function adjustLineAreaWidth() {
     /*$('[data-class="panelWrapperClasses"][dnd-subtype="group"]').each(function() {
