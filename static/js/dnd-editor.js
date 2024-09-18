@@ -42,7 +42,7 @@ $('#update-button2').on('click', function () {
 });*/
 
 //พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup
+import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, applyGroupBackgroundColorToNonGroup
     ,updateUIheight ,appendEventButton
  } from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
@@ -187,7 +187,6 @@ $(document).ready(async () => {
                 appendEventButton();
                 updateUIheight();
                 RemoveBorderLastcommonFlexClasses();
-                adjustLineAreaWidth();
                 applyGroupBackgroundColorToNonGroup();
                 
             }, 50);

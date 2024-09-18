@@ -56,7 +56,6 @@ export function updateUIheight() {
 
 export function applyGroupBackgroundColorToNonGroup() {
     $('.bg-color-panel.for-nonegroup').each(function () {
-        
         var $nonGroup = $(this);
         var $panelWrapper = $nonGroup.closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
         var $closestGroup;
@@ -74,6 +73,35 @@ export function applyGroupBackgroundColorToNonGroup() {
                 break;
             }
 
+            // Move to the next parent panelWrapper
+            $panelWrapper = $panelWrapper.parent().closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
+        }
+    });
+    $('[data-class="panelWrapperClasses"][dnd-subtype="variable"], [data-class="panelWrapperClasses"][dnd-subtype="message"]').each(function () {
+        var $nonGroup = $(this);
+        var $panelWrapper = $nonGroup.closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
+        var $closestGroup;
+        $nonGroup.css('background-color', '');
+    
+        function findClosestGroup($wrapper) {
+            return $wrapper.find(' > [data-class="lineAreaClasses"] > div.bg-color-panel.for-group');
+        }
+    
+        function rgbToRgba(rgb, opacity) {
+            var rgbValues = rgb.match(/\d+/g);  // Extract the numeric values from the rgb string
+            return `rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${opacity})`;
+        }
+    
+        while ($panelWrapper.length) {
+            $closestGroup = findClosestGroup($panelWrapper);
+    
+            if ($closestGroup.length) {
+                var bgColor = $closestGroup.css('background-color');
+                var rgbaColor = rgbToRgba(bgColor, 0.07); // Convert to rgba with 0.15 opacity
+                $nonGroup.css('background-color', rgbaColor);
+                break;
+            }
+    
             // Move to the next parent panelWrapper
             $panelWrapper = $panelWrapper.parent().closest('[data-class="panelWrapperClasses"][dnd-subtype="group"]');
         }
@@ -98,29 +126,8 @@ export function toggleExpandButtonVisibility() {
     });
   }
 
-export function adjustLineAreaWidth() {
-    /*$('[data-class="panelWrapperClasses"][dnd-subtype="group"]').each(function() {
-        var $lineArea = $(this).find('[data-class="lineAreaClasses"] div:first');
-        var $groupSection = $(this).find('[data-class="groupSectionClasses"]');
-        
-        // ตรวจสอบว่าเป็น panelWrapperClasses ที่อยู่ในสุดหรือไม่
-        if ($(this).find('[data-class="panelWrapperClasses"][dnd-subtype="group"]').length === 0) {
-            // ตั้งค่าความกว้างของ $lineArea ให้เท่ากับ $groupSection ลบ 3px โดยไม่รวม margin
-            if ($lineArea.length && $groupSection.length) {
-                var newWidth = $groupSection.width() + 22;
-                $lineArea.width(newWidth > 0 ? newWidth : 0);
-            }
-        } else {
-            // กรณีไม่เข้าเงื่อนไข ให้กลับไปใช้ความกว้างเดิม
-            if ($lineArea.length) {
-                $lineArea.width('');  // ลบ inline width style
-            }
-        }
-    });*/
-}
-
 export function appendEventButton() {
-    $('[data-class="addEventBuntton"]').remove();
+    /*$('[data-class="addEventBuntton"]').remove();
     $('[data-class="panelWrapperClasses"]').each(function() {
         var $current = $(this);
         var $next = $current.next('[data-class="panelWrapperClasses"]');
@@ -132,15 +139,19 @@ export function appendEventButton() {
             var mlClass = $marginElement.attr('class').match(/ml-\[\d+px\]/);
             var marginClass = mlClass ? mlClass[0] : '';
     
-            // This is the last element with data-class="panelWrapperClasses" and has no child panelWrapperClasses
-            $current.append(`
-                <div data-class="addEventBuntton" class="flex min-w-[32rem] col-[span_30/span_30] bg-[#2B3544] rounded-[0.2rem] text-xs p-1.5 m-[1px] dark:text-gray-500 text-gray-800 ${marginClass}">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
-                        <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                    </svg>
-                    <p>Add Event</p>
+            // Create the new button element
+            var $newButton = $(`
+                <div data-class="addEventBuntton" class="min-w-[32rem] hidden col-[span_30/span_30] bg-[#2B3544] rounded-[0.2rem] text-xs p-1.5 m-[1px] dark:text-gray-500 text-gray-800 ${marginClass}">
+                    <div class="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                        </svg>
+                        <p>move here!</p>
+                    </div>
                 </div>
             `);
+            // Insert the button after the current element
+            $current.after($newButton);
         }
-    });
+    });*/
 }

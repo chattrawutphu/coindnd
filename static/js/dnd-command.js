@@ -1,5 +1,5 @@
 import {
-    RemoveBorderLastcommonFlexClasses, adjustLineAreaWidth, applyGroupBackgroundColorToNonGroup, toggleExpandButtonVisibility
+    RemoveBorderLastcommonFlexClasses, applyGroupBackgroundColorToNonGroup, toggleExpandButtonVisibility
     , updateUIheight, appendEventButton
 } from '/static/js/global-script.js';
 
@@ -280,7 +280,7 @@ $(document).ready(function () {
             }
 
             const rect = $element[0].getBoundingClientRect();
-            isLeftSide = (mouseX - rect.left) < (rect.width * 0.5);
+            isLeftSide = (mouseX - rect.left) < (rect.width * 0.7);
         }
 
         if (!dndLine || dndLine.data('dndType') !== dndType || dndLine.data('isLeftSide') !== isLeftSide || dndLine.data('isTopHalf') !== isTopHalf) {
@@ -339,7 +339,6 @@ $(document).ready(function () {
         });
 
         countNumberPanels();
-        adjustLineAreaWidth();
         applyGroupBackgroundColorToNonGroup();
         toggleExpandButtonVisibility();
     }
@@ -413,28 +412,42 @@ $(document).ready(function () {
                             }
                             break;
 
-                        case 'panelWrapperClasses':
-                            if (currentDndType === 'container' && thisDndType === 'container') {
-                                const topDistance = mouseY - rect.top;
-                                const bottomDistance = rect.bottom - mouseY;
-                                if (topDistance <= 64 || bottomDistance <= 64) {
-                                    const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
-                                        const panelRect = this.getBoundingClientRect();
-                                        return mouseX >= panelRect.left && mouseX <= panelRect.right &&
-                                            mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
-                                            (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
-                                    });
-                                    if ($hoveredPanels.length > 0 && $hoveredPanels.last()[0] === this) {
-                                        const isTopHalf = mouseY < (rect.top + rect.height / 2);
-                                        updateLinePosition($this, isTopHalf, currentDndType, mouseX);
-                                        lastHoveredElement = $this;
-                                        found = true;
+                            case 'panelWrapperClasses':
+                                if (currentDndType === 'container' && thisDndType === 'container') {
+                                    const topDistance = mouseY - rect.top;
+                                    const bottomDistance = rect.bottom - mouseY;
+                                    if (topDistance <= 64 || bottomDistance <= 64) {
+                                        const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
+                                            const panelRect = this.getBoundingClientRect();
+                                            return mouseX >= panelRect.left && mouseX <= panelRect.right &&
+                                                mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
+                                                (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
+                                        });
+                            
+                                        // Sort panels by their nesting level (innermost first)
+                                        $hoveredPanels.sort(function(a, b) {
+                                            return $(b).parents('[data-class="panelWrapperClasses"]').length - 
+                                                   $(a).parents('[data-class="panelWrapperClasses"]').length;
+                                        });
+                            
+                                        // Find the innermost panel that is different from the dragged element
+                                        const $targetPanel = $hoveredPanels.filter(function() {
+                                            return this.getAttribute('dnd-id') !== clone[0].getAttribute('dnd-id');
+                                        }).first();
+                            
+                                        if ($targetPanel.length > 0) {
+                                            
+                                            const targetRect = $targetPanel[0].getBoundingClientRect();
+                                            const isTopHalf = mouseY < (targetRect.top + targetRect.height / 2);
+                                            updateLinePosition($targetPanel, isTopHalf, currentDndType, mouseX);
+                                            lastHoveredElement = $targetPanel;
+                                            found = true;
+                                        }
+                                    } else {
+                                        removeLine();
                                     }
-                                } else {
-                                    removeLine();
                                 }
-                            }
-                            break;
+                                break;
 
                         default: // commonFlexClasses
                             if (thisDndType === currentDndType) {
@@ -532,6 +545,9 @@ $(document).ready(function () {
         }
 
         clonedElement.appendTo(clone);
+
+        $('[data-class="addEventBuntton"]').toggleClass('hidden');
+        updateUIheight();
 
         handleDragMove(e);
     }
@@ -706,6 +722,7 @@ $(document).ready(function () {
                 }
                 cleanupUI();
             }
+            $('[data-class="addEventBuntton"]').toggleClass('hidden');
             clone.remove();
             clone = null;
             $('#updateUI').trigger('click');
@@ -961,8 +978,4 @@ $(document).ready(function () {
     /*
     * END: Multi Selection
     */
-
-    $(window).resize(function () {
-        adjustLineAreaWidth();
-    });
 });
