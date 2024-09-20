@@ -3,7 +3,7 @@ const renderConditionMessage = (params, message) => message.replace(/{params\[(\
     if (!param?.text && !param?.value) return '';
     const text = param.text || param.value;
     return param.color
-        ? `<span class="dark:bg-[#414b5a] text-sm font-medium border-gray-400 border rounded-md px-1 pb-0.5 mb-1" style="color: ${param.color};">${text}${param.unit || ''}</span>`
+        ? `<span class="dark:bg-zinc-700 text-sm font-medium border-gray-400 border rounded-md px-1 pb-0.5 mb-1" style="color: ${param.color};">${text}${param.unit || ''}</span>`
         : `<span>${text}${param.unit || ''}</span>`;
 });
 

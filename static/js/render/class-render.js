@@ -5,7 +5,7 @@ var classesModel = {
 
     commonFlexClasses() {
         const commonClasses = "relative justify-between flex p-1 cursor-default";
-        return `${commonClasses} dark:text-gray-300 text-gray-800`;
+        return `${commonClasses} dark:text-gray-200 text-gray-800`;
     },
     commonTextClasses() {
         const commonClasses = "me-2 pt-1";
@@ -53,7 +53,7 @@ var classesModel = {
     darkmodeContainerClasses: "text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-1.5",
     
     //Property Input
-    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-gray-50 dark:text-gray-300 text-gray-800 text-sm rounded-lg block p-1.5 dark:bg-[#111827]",
+    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-gray-50 dark:text-gray-300 text-gray-800 text-sm rounded-lg block p-1.5 dark:bg-[#202023]",
   
     inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-gray-300 text-gray-800",
   

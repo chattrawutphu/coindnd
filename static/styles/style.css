@@ -32,7 +32,6 @@ html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasse
     background-color: #3f4881;
 }
 
-
 html body {
     background-color: #e5e7eb;
     background-image: radial-gradient(circle, #9ca3af 1px, transparent 1px);
@@ -43,11 +42,15 @@ html body {
 
 
 html.dark body {
-    background-color: #111827;
-    background-image: radial-gradient(circle, #2B3544 1px, transparent 1px);
-    background-size: 16px 16px;
+    background: radial-gradient(circle at 20% 50%, rgb(35, 35, 40) 0%, rgb(21, 21, 23) 100%); /*radial-gradient(circle at 20% 50%, rgb(24 24 27) 0%, rgb(0 0 0) 100%);*/
     margin: 0;
     height: 100vh;
+}
+
+#right-properties-container{
+}
+
+#left-properties-container{
 }
 
 @media (prefers-color-scheme: dark) {
