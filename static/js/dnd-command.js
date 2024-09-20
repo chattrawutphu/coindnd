@@ -436,12 +436,15 @@ $(document).ready(function () {
                                         }).first();
                             
                                         if ($targetPanel.length > 0) {
+                                            console.log($targetPanel[0].getAttribute('dnd-id'), "  ===  ", this.getAttribute('dnd-id'));
                                             
                                             const targetRect = $targetPanel[0].getBoundingClientRect();
                                             const isTopHalf = mouseY < (targetRect.top + targetRect.height / 2);
                                             updateLinePosition($targetPanel, isTopHalf, currentDndType, mouseX);
                                             lastHoveredElement = $targetPanel;
                                             found = true;
+                                        } else {
+                                            console.log("No suitable target panel found");
                                         }
                                     } else {
                                         removeLine();
