@@ -297,7 +297,7 @@ $(document).ready(function () {
     let clone = null;
     let startX, startY, startTime;
     let dndLine = null;
-    const speedThreshold = 0.15; // pixels per millisecond
+    const speedThreshold = 0.2; // pixels per millisecond
     let lastHoveredElement = null;
     let currentDndType = null;
     let mouseX, mouseY;

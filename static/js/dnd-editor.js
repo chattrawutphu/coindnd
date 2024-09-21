@@ -199,7 +199,7 @@ $(document).ready(async () => {
         console.error('Error during initialization:', error);
     }
 
-    /*$(document).on('contextmenu', function(e) {
+    $(document).on('contextmenu', function(e) {
         e.preventDefault();
-    });*/
+    });
 });
