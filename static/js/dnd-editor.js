@@ -135,18 +135,6 @@ $(document).ready(async () => {
             updateUIheight()
         });
 
-        // 5. ตั้งค่าอีเวนต์คลิก
-        $(document).on('click', '[data-class="expandButtonClasses"]', function () {
-            let $parentPanelWrapper = $(this).closest('[data-class="panelWrapperClasses"]');
-            let $siblingsPanelWrappers = $parentPanelWrapper.find('> [data-class="panelWrapperClasses"]');
-
-            $siblingsPanelWrappers.toggleClass('hidden');
-
-            $(this).find('.expand-icon').toggleClass('hidden');
-            $(this).find('.collapse-icon').toggleClass('hidden');
-            updateUIheight(); //รอ 100 สำหรับการเลื่อนแบบสมูท
-        });
-
         // 6. อัพเดต UI height
         $(window).on('resize', function () {
             setTimeout(function () {

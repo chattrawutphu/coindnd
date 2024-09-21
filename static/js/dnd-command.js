@@ -14,11 +14,9 @@ $(document).ready(function () {
     function updateUIFromCache(html, scrollPosition) {
         const $content = $('[data-js-component="DndComponent"]');
         $content.html(html);
-        cleanupUI();
-        // Restore scroll position
         $content.scrollTop(scrollPosition);
+        cleanupUI(); // เรียกใช้ cleanupUI หลังจากอัปเดต HTML
     }
-
     function updateButtonStates() {
         $('#undoBtn').prop('disabled', !undoManager.hasUndo());
         $('#redoBtn').prop('disabled', !undoManager.hasRedo());
@@ -89,6 +87,70 @@ $(document).ready(function () {
     if (storedItems) {
         items = JSON.parse(storedItems);
     }
+
+    function findItemById(id, itemList = items) {
+        for (let item of itemList) {
+            if (item.id === id) return item;
+            if (item.children) {
+                const found = findItemById(id, item.children);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    function toggleExpandCollapse(id) {
+        const item = findItemById(id);
+        if (item && item.subtype === 'group') {
+            const oldState = JSON.parse(JSON.stringify(items));
+            const oldHtml = $('[data-js-component="DndComponent"]').html();
+            const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+
+            item.showChildren = !item.showChildren;
+
+            // อัปเดต UI
+            const $parentPanelWrapper = $(`[data-class="panelWrapperClasses"][dnd-id="${id}"]`);
+            const $siblingsPanelWrappers = $parentPanelWrapper.find('> [data-class="panelWrapperClasses"]');
+            const $expandButton = $parentPanelWrapper.find('[data-class="expandButtonClasses"]');
+
+            $siblingsPanelWrappers.toggleClass('hidden');
+            $expandButton.find('.expand-icon').toggleClass('hidden');
+            $expandButton.find('.collapse-icon').toggleClass('hidden');
+
+            // ใช้ setTimeout เพื่อให้การอัปเดต UI เสร็จสิ้นก่อนที่จะวัดความสูงใหม่
+            updateUIheight();
+
+            const newState = JSON.parse(JSON.stringify(items));
+            const newHtml = $('[data-js-component="DndComponent"]').html();
+            const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+
+            undoManager.add({
+                undo: function () {
+                    items = JSON.parse(JSON.stringify(oldState));
+                    updateUIFromCache(oldHtml, oldScrollPosition);
+                    updateButtonStates();
+                    cleanupUI();
+                },
+                redo: function () {
+                    items = JSON.parse(JSON.stringify(newState));
+                    updateUIFromCache(newHtml, newScrollPosition);
+                    updateButtonStates();
+                    cleanupUI();
+                }
+            });
+
+            updateButtonStates();
+            cleanupUI();
+            // รอ 100ms สำหรับการเลื่อนแบบสมูท
+        }
+    }
+
+    $(document).on('click', '[data-class="expandButtonClasses"]', function (e) {
+        e.preventDefault();
+        const id = $(this).closest('[data-class="panelWrapperClasses"]').attr('dnd-id');
+        toggleExpandCollapse(id);
+    });
+
 
     function moveMultipleItems(sourceIds, targetId, side, data = items) {
         const findInAll = (id, items) => {
@@ -412,45 +474,45 @@ $(document).ready(function () {
                             }
                             break;
 
-                            case 'panelWrapperClasses':
-                                if (currentDndType === 'container' && thisDndType === 'container') {
-                                    const topDistance = mouseY - rect.top;
-                                    const bottomDistance = rect.bottom - mouseY;
-                                    if (topDistance <= 64 || bottomDistance <= 64) {
-                                        const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
-                                            const panelRect = this.getBoundingClientRect();
-                                            return mouseX >= panelRect.left && mouseX <= panelRect.right &&
-                                                mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
-                                                (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
-                                        });
-                            
-                                        // Sort panels by their nesting level (innermost first)
-                                        $hoveredPanels.sort(function(a, b) {
-                                            return $(b).parents('[data-class="panelWrapperClasses"]').length - 
-                                                   $(a).parents('[data-class="panelWrapperClasses"]').length;
-                                        });
-                            
-                                        // Find the innermost panel that is different from the dragged element
-                                        const $targetPanel = $hoveredPanels.filter(function() {
-                                            return this.getAttribute('dnd-id') !== clone[0].getAttribute('dnd-id');
-                                        }).first();
-                            
-                                        if ($targetPanel.length > 0) {
-                                            console.log($targetPanel[0].getAttribute('dnd-id'), "  ===  ", this.getAttribute('dnd-id'));
-                                            
-                                            const targetRect = $targetPanel[0].getBoundingClientRect();
-                                            const isTopHalf = mouseY < (targetRect.top + targetRect.height / 2);
-                                            updateLinePosition($targetPanel, isTopHalf, currentDndType, mouseX);
-                                            lastHoveredElement = $targetPanel;
-                                            found = true;
-                                        } else {
-                                            console.log("No suitable target panel found");
-                                        }
+                        case 'panelWrapperClasses':
+                            if (currentDndType === 'container' && thisDndType === 'container') {
+                                const topDistance = mouseY - rect.top;
+                                const bottomDistance = rect.bottom - mouseY;
+                                if (topDistance <= 64 || bottomDistance <= 64) {
+                                    const $hoveredPanels = $('[data-class="panelWrapperClasses"]').filter(function () {
+                                        const panelRect = this.getBoundingClientRect();
+                                        return mouseX >= panelRect.left && mouseX <= panelRect.right &&
+                                            mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
+                                            (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
+                                    });
+
+                                    // Sort panels by their nesting level (innermost first)
+                                    $hoveredPanels.sort(function (a, b) {
+                                        return $(b).parents('[data-class="panelWrapperClasses"]').length -
+                                            $(a).parents('[data-class="panelWrapperClasses"]').length;
+                                    });
+
+                                    // Find the innermost panel that is different from the dragged element
+                                    const $targetPanel = $hoveredPanels.filter(function () {
+                                        return this.getAttribute('dnd-id') !== clone[0].getAttribute('dnd-id');
+                                    }).first();
+
+                                    if ($targetPanel.length > 0) {
+                                        console.log($targetPanel[0].getAttribute('dnd-id'), "  ===  ", this.getAttribute('dnd-id'));
+
+                                        const targetRect = $targetPanel[0].getBoundingClientRect();
+                                        const isTopHalf = mouseY < (targetRect.top + targetRect.height / 2);
+                                        updateLinePosition($targetPanel, isTopHalf, currentDndType, mouseX);
+                                        lastHoveredElement = $targetPanel;
+                                        found = true;
                                     } else {
-                                        removeLine();
+                                        console.log("No suitable target panel found");
                                     }
+                                } else {
+                                    removeLine();
                                 }
-                                break;
+                            }
+                            break;
 
                         default: // commonFlexClasses
                             if (thisDndType === currentDndType) {
@@ -515,7 +577,7 @@ $(document).ready(function () {
                 'dnd-id': $currentTarget.attr('dnd-id'),
                 'dnd-subtype': $currentTarget.attr('dnd-subtype')
             })
-            .addClass('clone-container')
+            .addClass('clone-container relative')
             .css({
                 position: 'fixed',
                 'pointer-events': 'none',
@@ -524,17 +586,25 @@ $(document).ready(function () {
                 height: newHeight,
                 left: e.clientX - newWidth / 2,
                 top: e.clientY - newHeight / 2,
-                overflow: 'hidden'
             })
-            .append(`
-                <div role="status" class="max-w-sm animate-pulse p-2">
-                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 w-48 mb-2"></div>
-                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2"></div>
-                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 mb-2.5"></div>
-                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2"></div>
-                </div>
-            `)
+            .append($('<div>')
+                .attr('role', 'status')
+                .addClass('max-w-sm animate-pulse p-2')
+                .append(
+                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 w-48 mb-2'),
+                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2'),
+                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 mb-2.5'),
+                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2')
+                )
+            )
             .appendTo('body');
+
+        if (activeCount > 1) {
+            $('<div>')
+                .addClass('absolute inline-flex items-center justify-center w-6 h-6 text-sm text-white bg-red-500 rounded-full -top-1 -right-1')
+                .text(activeCount)
+                .appendTo(clone);
+        }
 
         const clonedElement = $currentTarget.clone()
             .addClass('opacity-0')
@@ -550,13 +620,6 @@ $(document).ready(function () {
 
         if ($currentTarget.attr('data-class') === "panelWrapperClasses") {
             clonedElement.find('[data-class="panelWrapperClasses"]').removeAttr('data-class');
-        }
-
-        if (activeCount > 1) {
-            $('<div>')
-                .addClass('absolute inline-flex items-center justify-center w-8 h-8 text-md font-bold text-white bg-red-500 rounded-full top-2 start-2')
-                .text(activeCount)
-                .appendTo(clonedElement);
         }
 
         clonedElement.appendTo(clone);
@@ -985,9 +1048,33 @@ $(document).ready(function () {
 
     $(document).on('keydown', function (event) {
         if (event.key === "Escape" || event.keyCode === 27) {
-            if ($('.select-active').length > 0) {
+            if (dndLine || clone) {
+                if (dndLine) {
+                    dndLine.remove();
+                    dndLine = null;
+                }
+                if (clone) {
+                    clone.remove();
+                    clone = null;
+                }
+
+                // รีเซ็ตตัวแปรที่เกี่ยวข้องกับการลาก
+                isDragging = false;
+                currentDndType = null;
+                $currentTarget = null;
+
+                // ลบ event listener ที่อาจถูกเพิ่มระหว่างการลาก
+                $(document).off('mousemove', handleDragMove);
+
+                // เรียกใช้ฟังก์ชัน cleanup
+                cleanupUI();
+            }
+            else if ($('.select-active').length > 0) {
                 clearCommandSelection();
             }
+
+            // แยกเงื่อนไขสำหรับการจัดการกับ line และ clone
+
         }
     });
     /*
