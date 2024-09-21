@@ -485,28 +485,11 @@ $(document).ready(function () {
                                             mouseY >= panelRect.top && mouseY <= panelRect.bottom &&
                                             (mouseY - panelRect.top <= 64 || panelRect.bottom - mouseY <= 64);
                                     });
-
-                                    // Sort panels by their nesting level (innermost first)
-                                    $hoveredPanels.sort(function (a, b) {
-                                        return $(b).parents('[data-class="panelWrapperClasses"]').length -
-                                            $(a).parents('[data-class="panelWrapperClasses"]').length;
-                                    });
-
-                                    // Find the innermost panel that is different from the dragged element
-                                    const $targetPanel = $hoveredPanels.filter(function () {
-                                        return this.getAttribute('dnd-id') !== clone[0].getAttribute('dnd-id');
-                                    }).first();
-
-                                    if ($targetPanel.length > 0) {
-                                        console.log($targetPanel[0].getAttribute('dnd-id'), "  ===  ", this.getAttribute('dnd-id'));
-
-                                        const targetRect = $targetPanel[0].getBoundingClientRect();
-                                        const isTopHalf = mouseY < (targetRect.top + targetRect.height / 2);
-                                        updateLinePosition($targetPanel, isTopHalf, currentDndType, mouseX);
-                                        lastHoveredElement = $targetPanel;
+                                    if ($hoveredPanels.length > 0 && $hoveredPanels.last()[0] === this) {
+                                        const isTopHalf = mouseY < (rect.top + rect.height / 2);
+                                        updateLinePosition($this, isTopHalf, currentDndType, mouseX);
+                                        lastHoveredElement = $this;
                                         found = true;
-                                    } else {
-                                        console.log("No suitable target panel found");
                                     }
                                 } else {
                                     removeLine();
@@ -540,7 +523,7 @@ $(document).ready(function () {
             isHandlingDragMove = false;
         });
     }
-
+    
     function startDragging(e) {
         const targetOffset = $currentTarget.offset();
         const originalWidth = $currentTarget.outerWidth();
