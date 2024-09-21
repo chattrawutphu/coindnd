@@ -83,7 +83,9 @@ html.dark body {
 }
 
 #draganddropSection {
-    background-color: #4d556845;
+    background-color: #62626b;
+    opacity: 0.3;
+    border-radius: 8px;
 }
 
 ::-webkit-scrollbar {

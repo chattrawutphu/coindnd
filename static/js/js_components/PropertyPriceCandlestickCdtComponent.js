@@ -1,6 +1,6 @@
 export default function renderContent() {
   const html = `
-      <div class="mx-2 my-3">
+      <div class="mx-5 my-4">
           <form>
               <div data-class="inputFormWrapperClasses">
                   <div data-class="inputGridClasses" data-js-component="InputConditionTypeComponent"></div>

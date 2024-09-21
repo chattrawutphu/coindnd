@@ -280,7 +280,7 @@ $(document).ready(function () {
             }
 
             const rect = $element[0].getBoundingClientRect();
-            isLeftSide = (mouseX - rect.left) < (rect.width * 0.7);
+            isLeftSide = (mouseX - rect.left) < (rect.width * 0.5);
         }
 
         if (!dndLine || dndLine.data('dndType') !== dndType || dndLine.data('isLeftSide') !== isLeftSide || dndLine.data('isTopHalf') !== isTopHalf) {
@@ -484,8 +484,8 @@ $(document).ready(function () {
         const originalWidth = $currentTarget.outerWidth();
         const originalHeight = $currentTarget.outerHeight();
 
-        const newWidth = Math.min(originalWidth * 0.7, 400);
-        const newHeight = Math.min(originalHeight * 0.7, 150);
+        const newWidth = 400;//Math.min(originalWidth * 0.7, 400);
+        const newHeight = 75;//Math.min(originalHeight * 0.7, 150);
 
         const activeClass = classSelection;
         if (!e.shiftKey && !e.ctrlKey) {
@@ -526,10 +526,18 @@ $(document).ready(function () {
                 top: e.clientY - newHeight / 2,
                 overflow: 'hidden'
             })
+            .append(`
+                <div role="status" class="max-w-sm animate-pulse p-2">
+                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 w-48 mb-2"></div>
+                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2"></div>
+                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 mb-2.5"></div>
+                    <div class="h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2"></div>
+                </div>
+            `)
             .appendTo('body');
 
         const clonedElement = $currentTarget.clone()
-            .addClass('opacity-70')
+            .addClass('opacity-0')
             .css({
                 width: originalWidth,
                 height: originalHeight,
