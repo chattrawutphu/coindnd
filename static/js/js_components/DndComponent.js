@@ -1,9 +1,25 @@
+function getDarkColor(color) {
+    switch (color) {
+        case "red": return "darkred";
+        case "yellow": return "goldenrod"; 
+        case "white": return "black";
+        case "green": return "darkgreen";
+        case "blue": return "navy";
+        case "aqua": return "darkcyan";
+        case "lawngreen": return "green";
+        case "pink": return "deeppink";
+        case "orange": return "darkorange";
+        // Add more color mappings as needed
+        default: return color;
+    }
+}
+
 const renderConditionMessage = (params, message) => message.replace(/{params\[(\d+)\]}/g, (_, index) => {
     const param = params[index];
     if (!param?.text && !param?.value) return '';
     const text = param.text || param.value;
     return param.color
-        ? `<span class="dark:bg-zinc-700 text-sm font-medium border-zinc-400 border rounded-md px-1 pb-0.5 mb-1" style="color: ${param.color};">${text}${param.unit || ''}</span>`
+        ? `<span class="dark:bg-zinc-700 bg-zinc-50 text-sm font-medium border-zinc-400 border rounded-md px-1 pb-0.5 mb-1 text-[${getDarkColor(param.color)}] dark:text-[${param.color}]">${text}${param.unit || ''}</span>`
         : `<span>${text}${param.unit || ''}</span>`;
 });
 
@@ -19,7 +35,10 @@ const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="add
 </div>`;
 
 const renderPanel = (items, type) => items.map((item, index, array) => `
-    <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 "
+    <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 border-b
+    ${item.type === 'condition' ? 'bg-zinc-100 dark:bg-[#52525b] border-b-zinc-300 dark:border-b-[#71717a]' : 'bg-zinc-100 dark:bg-[#44444b] border-b-zinc-300 dark:border-b-[#62626b]'}
+    
+    "
          dnd-id="${item.id}" dnd-type="${item.type}" dnd-title="${item.title}"
          dnd-message="${item.message}" dnd-template="${item.template}"
          ${type === 'condition' ? `dnd-param="${LZString.compressToEncodedURIComponent(JSON.stringify(item.params))}"` : ''}>
@@ -64,12 +83,12 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                     <div data-class="panelContainerClasses" class="relative  pb-[1.5px]  pt-[0.75px]">    
                         <div class="flex gap-x-1 justify-between">
                             <div class="flex gap-x-1 items-center content-center text-nowrap">
-                                ${svgIcon("M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z", "size-3 text-green-500")}
-                                <div class="text-[13px]/[18px] text-green-500 ">${item.variableType}</div>
-                                <div class="text-[15px]/[18px] text-green-500 font-bold">${item.name}</div>
-                                <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
+                                ${svgIcon("M2.75 2a.75.75 0 0 0-.75.75v10.5a.75.75 0 0 0 1.5 0v-2.624l.33-.083A6.044 6.044 0 0 1 8 11c1.29.645 2.77.807 4.17.457l1.48-.37a.462.462 0 0 0 .35-.448V3.56a.438.438 0 0 0-.544-.425l-1.287.322C10.77 3.808 9.291 3.646 8 3a6.045 6.045 0 0 0-4.17-.457l-.34.085A.75.75 0 0 0 2.75 2Z", "size-3 text-green-700 dark:text-green-500")}
+                                <div class="text-[13px]/[18px] text-green-600 dark:text-green-500 ">${item.variableType}</div>
+                                <div class="text-[15px]/[18px] text-green-600 dark:text-green-500 font-bold">${item.name}</div>
+                                <div class="text-[13px]/[18px] text-green-600 dark:text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
                             </div>
-                            ${item.message ? `<div class="text-sm/[18px] text-zinc-400 truncate"> # ${item.message}</div>` : ''}
+                            ${item.message ? `<div class="text-sm/[18px] text-zinc-900 dark:text-zinc-400 truncate"> # ${item.message}</div>` : ''}
                         </div>
                     </div>
             </div>`
@@ -77,7 +96,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
 
         if (item.subtype === "message") {
             return `
-            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem]  ${item.active ? '' : 'line-through'} text-sm text-zinc-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem]  ${item.active ? '' : 'line-through'} text-sm text-zinc-900 dark:text-zinc-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
             dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
                     <div data-class="panelContainerClasses"  class="relative  pb-[1.5px] pt-[0.75px]">
                     # ${item.message}
@@ -129,12 +148,12 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                         style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;">
                         <div class="bg-color-panel  ${subtype === 'group' ? `for-group ml-[2px] w-[${spacingIndent-2}px]` : `for-nonegroup ml-[1px] w-[${spacingIndent-1}px]`}  h-full  opacity-10" style="background-color: ${subtype === 'group' ? backgroundColor : ''}"></div>
                     </div>
-                <div data-class="panelWrapperMargin" class="ml-section  col-[span_30/span_30] flex ml-[${indent}]">
+                <div data-class="panelWrapperMargin" class="ml-section col-[span_30/span_30] flex ml-[${indent}]">
 
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
-                        <div data-class="panelContainerClasses" class="grid min-w-[32rem] relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
+                        <div data-class="panelContainerClasses" class="grid min-w-[32rem] border border-zinc-400 dark:border-none relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                             
                             <div data-class="expandButtonClasses" class="${children?.length > 0 ? '':'hidden'}">${iconSVG(showChildren)}</div>
                             <div data-class="leftPanelClasses">

@@ -17,12 +17,12 @@ var classesModel = {
     },
     
     leftPanelClasses() {
-        const commonClasses = "col-[span_12/span_12] rounded-l-[3px] my-[2px] relative text-md content-start items-start border-l-4 ";
-        return `${commonClasses} dark:bg-[#44444b] bg-emerald-50 dark:border-l-indigo-400 border-l-indigo-500`;
+        const commonClasses = "col-[span_12/span_12] dark:rounded-l-[3px] my-[2px] relative text-md content-start items-start border-l-4 ";
+        return `${commonClasses} bg-[#dcdcdc] dark:bg-[#44444b] dark:border-l-indigo-400`;
     },
     rightPanelClasses() {
-        const commonClasses = "col-[span_18/span_18] my-[2px] rounded-r-[3px] relative text-md content-start items-start ";
-        return `${commonClasses} bg-zinc-50 dark:bg-[#333337] dark:border-l-0 border-l-2 border-l-zinc-150`;
+        const commonClasses = "col-[span_18/span_18] my-[2px] dark:rounded-r-[3px] relative text-md content-start items-start ";
+        return `${commonClasses} bg-[#dcdcdc] dark:bg-[#333337] dark:border-l-0 border-l-2 border-l-zinc-300`;
     },
 
     childrenPanelClasses() {
@@ -53,7 +53,7 @@ var classesModel = {
     darkmodeContainerClasses: "text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg text-sm p-1.5",
     
     //Property Input
-    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-zinc-50 dark:text-zinc-300 text-zinc-800 text-sm rounded-lg block p-1.5 dark:bg-[#18181b]",
+    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-zinc-50 dark:text-zinc-300 text-zinc-800 text-sm rounded-lg block p-1.5 dark:bg-[#18181b] bg-zinc-50",
   
     inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-zinc-300 text-zinc-800",
   

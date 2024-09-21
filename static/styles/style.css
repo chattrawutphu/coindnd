@@ -37,8 +37,8 @@ html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasse
 }
 
 html body {
-    background-color: #e5e7eb;
-    background-image: radial-gradient(circle, #9ca3af 1px, transparent 1px);
+    background-color: #ffffff;
+    background-image: radial-gradient(circle, #dedee4 1px, transparent 1px);
     background-size: 16px 16px;
     margin: 0;
     height: 100vh;
@@ -63,20 +63,28 @@ html.dark body {
 }
 
 
-@media (prefers-color-scheme: dark) {
+
+/*@media (prefers-color-scheme: dark) {
     div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"] {
         background-color: #52525b;
-        
-        border-bottom: 1px solid;
-        border-color: #71717a;
+        border-bottom: 1px solid #71717a;
     }
     div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
         background-color: #44444b;
-
-        border-bottom: 1px solid;
-        border-color: #62626b;
+        border-bottom: 1px solid #62626b;
     }
 }
+
+@media (prefers-color-scheme: light) {
+    div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"] {
+        background-color: #a1a1aa;
+        border-bottom: 1px solid #71717a;
+    }
+    div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
+        background-color: #71717a;
+        border-bottom: 1px solid #52525b;
+    }
+}*/
 
 .border-0 {
     border-bottom: none !important;
@@ -98,10 +106,14 @@ html.dark body {
   }
   
   ::-webkit-scrollbar-thumb {
-    background: #52525b;
+    background: #e4e4e7;
     border-radius: 10px;
   }
 
+  html.dark ::-webkit-scrollbar-thumb {
+    background: #52525b;
+    border-radius: 10px;
+  }
 
   .highlight-button {
     position: absolute;
