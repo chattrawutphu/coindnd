@@ -540,6 +540,10 @@ $(document).ready(function () {
             .removeClass(activeClass)
             .find('[data-class="commonFlexClasses"]').removeAttr('data-class').end();
 
+        if ($currentTarget.attr('data-class') === "panelWrapperClasses") {
+            clonedElement.find('[data-class="panelWrapperClasses"]').removeAttr('data-class');
+        }
+
         if (activeCount > 1) {
             $('<div>')
                 .addClass('absolute inline-flex items-center justify-center w-8 h-8 text-md font-bold text-white bg-red-500 rounded-full top-2 start-2')

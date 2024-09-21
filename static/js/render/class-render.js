@@ -5,7 +5,7 @@ var classesModel = {
 
     commonFlexClasses() {
         const commonClasses = "relative justify-between flex p-1 cursor-default";
-        return `${commonClasses} dark:text-gray-200 text-gray-800`;
+        return `${commonClasses} dark:text-zinc-200 text-zinc-800`;
     },
     commonTextClasses() {
         const commonClasses = "me-2 pt-1";
@@ -22,7 +22,7 @@ var classesModel = {
     },
     rightPanelClasses() {
         const commonClasses = "col-[span_18/span_18] my-[2px] rounded-r-[3px] relative text-md content-start items-start ";
-        return `${commonClasses} bg-gray-50 dark:bg-[#333337] dark:border-l-0 border-l-2 border-l-gray-150`;
+        return `${commonClasses} bg-zinc-50 dark:bg-[#333337] dark:border-l-0 border-l-2 border-l-zinc-150`;
     },
 
     childrenPanelClasses() {
@@ -35,7 +35,7 @@ var classesModel = {
     },
 
     expandButtonClasses() {
-        const commonClasses = "absolute top-1 p-1 -left-[24px] text-gray-300 cursor-pointer";
+        const commonClasses = "absolute top-1 p-1 -left-[24px] text-zinc-300 cursor-pointer";
         return `${commonClasses}`;
     },
     
@@ -46,16 +46,16 @@ var classesModel = {
 
     addMoreClasses() {
         const commonClasses = "flex items-start justify-start text-xs m-1 cursor-pointer"// h-full max-h-16";
-        return `${commonClasses} dark:text-gray-500 text-gray-800`;
+        return `${commonClasses} dark:text-zinc-500 text-zinc-800`;
     },
 
     //Darkmode
-    darkmodeContainerClasses: "text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm p-1.5",
+    darkmodeContainerClasses: "text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg text-sm p-1.5",
     
     //Property Input
-    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-gray-50 dark:text-gray-300 text-gray-800 text-sm rounded-lg block p-1.5 dark:bg-[#18181b]",
+    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-zinc-50 dark:text-zinc-300 text-zinc-800 text-sm rounded-lg block p-1.5 dark:bg-[#18181b]",
   
-    inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-gray-300 text-gray-800",
+    inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-zinc-300 text-zinc-800",
   
     inputGridClasses: "flex gap-2",
   
@@ -65,7 +65,7 @@ var classesModel = {
   
     inputContainerContentClasses: "w-full lg:col-span-2",
 
-    inputSmallTextXSClasses: "text-sm col-span-5 dark:text-gray-500 text-gray-800 left-0 -top-2",
+    inputSmallTextXSClasses: "text-sm col-span-5 dark:text-zinc-500 text-zinc-800 left-0 -top-2",
 };
 
 //เพิ่ม class โดยอิงจาก class 

@@ -2,7 +2,7 @@ export default function renderContent() {
     const html = `
         <div class="absolute top-11 right-4" style="z-index:2000;">
             <div id="minimap" class="h-64 w-12 backdrop-blur-sm bg-[#4D5568]/60 rounded-md relative cursor-pointer group">
-                <div id="minimap-slider" class="absolute bg-gray-200/60 rounded-sm w-full cursor-grab active:cursor-grabbing">
+                <div id="minimap-slider" class="absolute bg-zinc-200/60 rounded-sm w-full cursor-grab active:cursor-grabbing">
                 </div>
             </div>
             <button id="hide-minimap" class="absolute -bottom-7 right-3 p-1 bg-[#4D5568] text-white rounded-full hover:bg-[#5A6477] transition-colors duration-200">
