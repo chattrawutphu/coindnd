@@ -145,7 +145,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                     <div 
                         data-class="lineAreaClasses" 
                         class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[2px]' : 'opacity-60 w-[1px] bg-zinc-600'}" 
-                        style="background-color: ${subtype === 'group' ? backgroundColor : ''}; z-index: -1;">
+                        style="background-color: ${subtype === 'group' ? backgroundColor : ''};">
                         <div class="bg-color-panel  ${subtype === 'group' ? `for-group ml-[2px] w-[${spacingIndent-2}px]` : `for-nonegroup ml-[1px] w-[${spacingIndent-1}px]`}  h-full  opacity-10" style="background-color: ${subtype === 'group' ? backgroundColor : ''}"></div>
                     </div>
                 <div data-class="panelWrapperMargin" class="ml-section col-[span_30/span_30] flex ml-[${indent}]">

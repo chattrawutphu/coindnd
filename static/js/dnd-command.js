@@ -303,8 +303,8 @@ $(document).ready(function () {
     let mouseX, mouseY;
     let isScrolling = false;
     let $currentTarget = null;
-    const classSelection = 'select-active ring-1 ring-indigo-600 bg-indigo-600/40';
-    const effectClasses = 'ring-1 ring-indigo-600 bg-indigo-600/40';
+    const classSelection = 'select-active ring-1 dark:ring-indigo-600 dark:bg-indigo-600/40 ring-green-300 bg-green-300/40';
+    const effectClasses = 'ring-1 dark:ring-indigo-600 dark:bg-indigo-600/40 ring-green-300 bg-green-300/40';
     const indent = 48;
     let isHandlingDragMove = false;
 
@@ -574,10 +574,10 @@ $(document).ready(function () {
                 .attr('role', 'status')
                 .addClass('max-w-sm animate-pulse p-2')
                 .append(
-                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 w-48 mb-2'),
-                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2'),
-                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 mb-2.5'),
-                    $('<div>').addClass('h-2 bg-zinc-100 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2')
+                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 w-48 mb-2'),
+                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2'),
+                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 mb-2.5'),
+                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2')
                 )
             )
             .appendTo('body');
