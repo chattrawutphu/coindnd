@@ -8,7 +8,7 @@
     border-color: rgb(75 85 99)
 } */
 
-html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="commonFlexClasses"] span, div[data-class="commonFlexClasses"].select-active span {
+html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="commonFlexClasses"] span,html.dark div[data-class="commonFlexClasses"].select-active span {
     background-color: #2d3664;
 }
 
@@ -36,7 +36,7 @@ html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasse
     background-color: #3f4881;
 }
 
-html div[data-class="panelWrapperClasses"].select-active div[data-class="commonFlexClasses"] span, div[data-class="commonFlexClasses"].select-active span {
+html div[data-class="panelWrapperClasses"].select-active div[data-class="commonFlexClasses"] span,html div[data-class="commonFlexClasses"].select-active span {
     background-color: #d7f7e2;
 }
 

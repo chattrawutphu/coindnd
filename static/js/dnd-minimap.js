@@ -13,7 +13,7 @@ $(document).ready(function () {
 
     function updateToggleButtons() {
         if (isMinimapVisible) {
-            $('#show-minimap').addClass('hidden right-8').removeClass('right-2');
+            $('#show-minimap').addClass('hidden top-[6rem]').removeClass('top-14');
             $('#hide-minimap').removeClass('hidden');
             $('#minimap, #button-container').removeClass('hidden');
         } else {
@@ -22,7 +22,7 @@ $(document).ready(function () {
             $('#minimap, #button-container').addClass('hidden');
             // เคลื่อนที่ปุ่ม show-minimap เข้ามาจากด้านขวาโดยใช้ Tailwind classes
             setTimeout(() => {
-                $('#show-minimap').addClass('right-2').removeClass('right-8');
+                $('#show-minimap').addClass('top-14').removeClass('top-[6rem]');
             }, 0);
         }
     }
@@ -82,7 +82,7 @@ $(document).ready(function () {
             const hexColor = rgb2hex(bgColor);
             const textColor = getContrastColor(hexColor);
             let elementTop = $(this).offset().top - contentTop;
-            let buttonTop = parseInt((parseInt(elementTop * minimapScale) + (parseInt(slidMinimap)) * 0.85) * 1.12);
+            let buttonTop = parseInt((parseInt(elementTop * minimapScale) + (parseInt(slidMinimap)) * 0.68));
 
             const highlightHeight = $(this).outerHeight();
             const buttonHeight = Math.max(16, highlightHeight * minimapScale);

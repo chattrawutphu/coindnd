@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI with jQuery and Rivets.js</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script src="/static/js/jquery.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <script src="/static/js/core/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/undo-manager@1.0.5/lib/undomanager.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <!-- <script src="/static/js/lz-string.min.js"></script> -->
+    <!-- <link href="/static/styles/tailwind.css" rel="stylesheet"> -->
+    <!-- <link href="/static/styles/base-tailwind.css" rel="stylesheet"> -->
+    <link href="/static/styles/style.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="/static/js/tailwind.js"></script> -->
+
+</head>
+
+<body class="">
+    <!-- Modal toggle -->
+<button data-modal-target="static-modal" data-modal-toggle="static-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+    Toggle modal
+  </button>
+  
+  <!-- Main modal -->
+  <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+      <div class="relative p-4 w-full max-w-2xl max-h-full">
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow dark:bg-zinc-700">
+              <!-- Modal header -->
+              <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-zinc-600">
+                  <h3 class="text-xl font-semibold text-zinc-900 dark:text-white">
+                      Static modal
+                  </h3>
+                  <button type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-zinc-600 dark:hover:text-white" data-modal-hide="static-modal">
+                      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                      </svg>
+                      <span class="sr-only">Close modal</span>
+                  </button>
+              </div>
+              <!-- Modal body -->
+              <div class="p-4 md:p-5 space-y-4">
+                  <p class="text-base leading-relaxed text-zinc-500 dark:text-zinc-400">
+                      With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
+                  </p>
+                  <p class="text-base leading-relaxed text-zinc-500 dark:text-zinc-400">
+                      The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
+                  </p>
+              </div>
+              <!-- Modal footer -->
+              <div class="flex items-center p-4 md:p-5 border-t border-zinc-200 rounded-b dark:border-zinc-600">
+                  <button data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                  <button data-modal-hide="static-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-zinc-900 focus:outline-none bg-white rounded-lg border border-zinc-200 hover:bg-zinc-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-zinc-100 dark:focus:ring-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-600 dark:hover:text-white dark:hover:bg-zinc-700">Decline</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+    const $modal = $('#static-modal');
+    const $openButtons = $('[data-modal-target="static-modal"]');
+    const $closeButtons = $('[data-modal-hide="static-modal"]');
+
+    function openModal() {
+        $modal.removeClass('hidden').addClass('flex');
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeModal() {
+        $modal.addClass('hidden').removeClass('flex');
+        $('body').css('overflow', 'auto');
+    }
+
+    $openButtons.on('click', openModal);
+    $closeButtons.on('click', closeModal);
+
+    $modal.on('click', function(event) {
+        if ($(event.target).is($modal)) {
+            closeModal();
+        }
+    });
+
+    $(document).on('keydown', function(event) {
+        if (event.key === 'Escape' && !$modal.hasClass('hidden')) {
+            closeModal();
+        }
+    });
+});
+  </script>
+</body>
+</html>
+

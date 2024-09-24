@@ -70,22 +70,7 @@ export default function renderContent() {
         </div>
     `;
     const script = `
-        <script>
-            tailwind.config = {
-        content: ["./*.html"],
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                blue: {
-                  light: "#00ccdd"
-                }
-              }
-            }
-          }
-        },
-        darkMode: "class"
-      };
+        
       if (
         localStorage.getItem("color-theme") === "dark" ||
         (!("color-theme" in localStorage) &&

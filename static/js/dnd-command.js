@@ -101,29 +101,31 @@ $(document).ready(function () {
 
     function toggleExpandCollapse(id) {
         const item = findItemById(id);
-        if (item && item.subtype === 'group') {
+        if (item && (item.subtype === 'group' || (item.type === 'container' && item.subtype === 'if'))) {
             const oldState = JSON.parse(JSON.stringify(items));
             const oldHtml = $('[data-js-component="DndComponent"]').html();
             const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-
+    
             item.showChildren = !item.showChildren;
-
+    
             // อัปเดต UI
             const $parentPanelWrapper = $(`[data-class="panelWrapperClasses"][dnd-id="${id}"]`);
-            const $siblingsPanelWrappers = $parentPanelWrapper.find('> [data-class="panelWrapperClasses"]');
-            const $expandButton = $parentPanelWrapper.find('[data-class="expandButtonClasses"]');
-
+            const $siblingsPanelWrappers = $parentPanelWrapper.children('[data-class="panelWrapperClasses"]');
+            const $expandButton = $parentPanelWrapper.find('[data-class="expandButtonClasses"]').first();
+    
             $siblingsPanelWrappers.toggleClass('hidden');
             $expandButton.find('.expand-icon').toggleClass('hidden');
             $expandButton.find('.collapse-icon').toggleClass('hidden');
-
+    
             // ใช้ setTimeout เพื่อให้การอัปเดต UI เสร็จสิ้นก่อนที่จะวัดความสูงใหม่
-            updateUIheight();
-
+            setTimeout(() => {
+                updateUIheight();
+            }, 0);
+    
             const newState = JSON.parse(JSON.stringify(items));
             const newHtml = $('[data-js-component="DndComponent"]').html();
             const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-
+    
             undoManager.add({
                 undo: function () {
                     items = JSON.parse(JSON.stringify(oldState));
@@ -138,17 +140,22 @@ $(document).ready(function () {
                     cleanupUI();
                 }
             });
-
+    
             updateButtonStates();
             cleanupUI();
-            // รอ 100ms สำหรับการเลื่อนแบบสมูท
         }
     }
 
     $(document).on('click', '[data-class="expandButtonClasses"]', function (e) {
         e.preventDefault();
-        const id = $(this).closest('[data-class="panelWrapperClasses"]').attr('dnd-id');
-        toggleExpandCollapse(id);
+        const $panelWrapper = $(this).closest('[data-class="panelWrapperClasses"]');
+        const id = $panelWrapper.attr('dnd-id');
+        const type = $panelWrapper.attr('dnd-type');
+        const subtype = $panelWrapper.attr('dnd-subtype');
+        
+        if (subtype === 'group' || (type === 'container' && subtype === 'if')) {
+            toggleExpandCollapse(id);
+        }
     });
 
 
@@ -309,10 +316,19 @@ $(document).ready(function () {
     let isHandlingDragMove = false;
 
     const createDndLine = _.memoize((isTop, dndType, isLeftSide = true) => {
-        const color = dndType === 'action' ? '#4ade80' : (dndType === 'container' ? '#38bdf8' : '#4ade80');
+        const isDarkMode = $('html').hasClass('dark');
+        
+        const getColor = (darkColor, lightColor) => isDarkMode ? lightColor : darkColor;
+        
+        const color = dndType === 'action' 
+        ? getColor('#22c55e', '#4ade80')  // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม
+        : (dndType === 'container' 
+            ? getColor('#0ea5e9', '#38bdf8')  // สีฟ้าเข้มเล็กน้อย -> สีฟ้าดั้งเดิม
+            : getColor('#22c55e', '#4ade80')); // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม (default)
+        
         const width = (dndType === 'container' && !isLeftSide && !isTop) ? `calc(100% - ${indent}px)` : '100%';
         const right = (dndType === 'container' && !isLeftSide && !isTop) ? '0' : 'auto';
-
+    
         const $line = $('<div>').css({
             position: 'absolute',
             width: width,
@@ -323,11 +339,7 @@ $(document).ready(function () {
             [isTop ? 'top' : 'bottom']: '0',
             zIndex: 1
         }).addClass("drop-target-line");
-
-        /*if (dndType === 'container' && !isLeftSide) {
-            $line.addClass('isDropAsChild');
-        }*/
-
+    
         return $line;
     }, (...args) => args.join('|'));
 
@@ -341,7 +353,7 @@ $(document).ready(function () {
                 $targetElement = $panelContainer;
             }
 
-            const rect = $element[0].getBoundingClientRect();
+            const rect = $targetElement[0].getBoundingClientRect();
             isLeftSide = (mouseX - rect.left) < (rect.width * 0.5);
         }
 
@@ -445,7 +457,7 @@ $(document).ready(function () {
             }
 
             let found = false;
-            $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"]')
+            $('[data-class="commonFlexClasses"], [data-class="addMoreClasses"], [data-class="panelWrapperClasses"], [data-class="addEventBuntton"]')
                 .not(clone)
                 .not(clone.find('*'))
                 .each(function () {
@@ -471,6 +483,15 @@ $(document).ready(function () {
                                 updateLinePosition($this, true, currentDndType, mouseX);
                                 lastHoveredElement = $this;
                                 found = true;
+                            }
+                            break;
+
+                        case 'addEventBuntton':
+                            if (currentDndType === 'container' && thisDndType === 'container') {
+                                updateLinePosition($this, true, currentDndType, mouseX);
+                                lastHoveredElement = $this;
+                                found = true;
+                                
                             }
                             break;
 
@@ -630,7 +651,56 @@ $(document).ready(function () {
                 });
             if (dndLine) {
                 let $targetParent = dndLine.parent();
-                if ($targetParent.attr('data-class') !== 'addMoreClasses') {
+                if ($targetParent.attr('data-class') === 'addEventBuntton') {
+                    const targetId = $targetParent.attr('dnd-id');
+                    const sourceIds = $selectedElements.map(function () {
+                        return $(this).attr('dnd-id');
+                    }).get();
+        
+                    // บันทึกสถานะก่อนการเปลี่ยนแปลง
+                    const oldState = JSON.parse(JSON.stringify(items));
+                    const oldHtml = $('[data-js-component="DndComponent"]').html();
+                    const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+        
+                    // หา element ที่มี dnd-id ตรงกับ targetId
+                    const $targetElement = $(`[data-class="panelWrapperClasses"][dnd-id="${targetId}"]`);
+                    
+                    // เรียกใช้ moveMultipleItems เพื่อย้าย items ในข้อมูล
+                    const result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, 'bottom');
+        
+                    if (result) {
+                        // อัปเดต DOM
+                        $targetElement.after($selectedElements);
+        
+                        // บันทึกสถานะใหม่
+                        const newState = JSON.parse(JSON.stringify(items));
+                        const newHtml = $('[data-js-component="DndComponent"]').html();
+                        const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+        
+                        // เพิ่มการกระทำลงใน undoManager
+                        undoManager.add({
+                            undo: function () {
+                                items = oldState;
+                                updateUIFromCache(oldHtml, oldScrollPosition);
+                                updateButtonStates();
+                                cleanupUI();
+                            },
+                            redo: function () {
+                                items = newState;
+                                updateUIFromCache(newHtml, newScrollPosition);
+                                updateButtonStates();
+                                cleanupUI();
+                            }
+                        });
+        
+                        // อัปเดตสถานะปุ่ม undo/redo
+                        updateButtonStates();
+                    } else {
+                        // ถ้าการดำเนินการไม่สำเร็จ ให้กลับไปใช้สถานะเดิม
+                        items = oldState;
+                        updateUIFromCache(oldHtml, oldScrollPosition);
+                    }
+                } else if ($targetParent.attr('data-class') !== 'addMoreClasses') {
                     if ($targetParent.closest('[data-class="commonFlexClasses"]').length) {
                         $targetParent = $targetParent.closest('[data-class="commonFlexClasses"]');
                     }
@@ -900,7 +970,9 @@ $(document).ready(function () {
             if ($target.attr('data-js-component') === 'DndMinimapComponent' || $target.closest('[data-js-component="DndMinimapComponent"]').length) {
                 return;
             }
-
+            if ($target.hasClass('option-for-property') || $target.closest('.option-for-property').length) {
+                return;
+            }
             if ($target.is('input, label, select') || $target.closest('label').length) {
                 return;
             }

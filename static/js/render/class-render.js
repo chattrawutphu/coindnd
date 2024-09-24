@@ -35,7 +35,7 @@ var classesModel = {
     },
 
     expandButtonClasses() {
-        const commonClasses = "absolute top-1 p-1 -left-[24px] text-zinc-300 cursor-pointer";
+        const commonClasses = "absolute top-1 p-1 -left-[24px] text-zinc-800 dark:text-zinc-300 cursor-pointer";
         return `${commonClasses}`;
     },
     

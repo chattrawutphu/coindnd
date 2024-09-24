@@ -23,3 +23,7 @@ async def read_root(request: Request):
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("dnd editior.html", {"request": request})
+
+@app.get("/test", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("test-modal.html", {"request": request})
