@@ -19,7 +19,7 @@ const renderConditionMessage = (params, message) => message.replace(/{params\[(\
     if (!param?.text && !param?.value) return '';
     const text = param.text || param.value;
     return param.color
-        ? `<span class="dark:bg-zinc-700 bg-zinc-50 text-sm font-medium border-zinc-400 border rounded-md px-1 pb-0.5 mb-1 text-[${getDarkColor(param.color)}] dark:text-[${param.color}]">${text}${param.unit || ''}</span>`
+        ? `<span class="dark:bg-primary-700 bg-primary-50 text-sm font-medium border-primary-400 border rounded-md px-1 pb-0.5 mb-1 text-[${getDarkColor(param.color)}] dark:text-[${param.color}]">${text}${param.unit || ''}</span>`
         : `<span>${text}${param.unit || ''}</span>`;
 });
 
@@ -36,7 +36,7 @@ const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="add
 
 const renderPanel = (items, type) => items.map((item, index, array) => `
     <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 border-b
-    ${item.type === 'condition' ? 'bg-zinc-100 dark:bg-zinc-600 border-b-zinc-300 dark:border-b-zinc-500' : 'bg-zinc-100 dark:bg-zinc-675 border-b-zinc-300 dark:border-b-zinc-550'}
+    ${item.type === 'condition' ? 'bg-primary-100 dark:bg-primary-600 border-b-primary-300 dark:border-b-primary-500' : 'bg-primary-100 dark:bg-primary-675 border-b-primary-300 dark:border-b-primary-550'}
     
     "
          dnd-id="${item.id}" dnd-type="${item.type}" dnd-title="${item.title}"
@@ -67,7 +67,7 @@ const renderVariables = variables => variables.map(v => `
             <div class="text-[15px]/[18px] text-green-500 font-bold">${v.name}</div>
             <div class="text-[13px]/[18px] text-green-500"> = ${['integer', 'boolean'].includes(v.type) ? v.value : `"${v.value}"`}</div>
         </div>
-        ${v.description ? `<div class="text-sm/[18px] text-zinc-400"> # ${v.description}</div>` : ''}
+        ${v.description ? `<div class="text-sm/[18px] text-primary-400"> # ${v.description}</div>` : ''}
     </div>
 `).join('');
 
@@ -88,7 +88,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                                 <div class="text-[15px]/[18px] text-green-600 dark:text-green-500 font-bold">${item.name}</div>
                                 <div class="text-[13px]/[18px] text-green-600 dark:text-green-500"> = ${['integer', 'boolean'].includes(item.type) ? item.value : `"${item.value}"`}</div>
                             </div>
-                            ${item.message ? `<div class="text-sm/[18px] text-zinc-900 dark:text-zinc-400 truncate"> # ${item.message}</div>` : ''}
+                            ${item.message ? `<div class="text-sm/[18px] text-primary-900 dark:text-primary-400 truncate"> # ${item.message}</div>` : ''}
                         </div>
                     </div>
             </div>`
@@ -96,7 +96,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
 
         if (item.subtype === "message") {
             return `
-            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem]  ${item.active ? '' : 'line-through'} text-sm text-zinc-900 dark:text-zinc-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
+            <div data-class="panelWrapperClasses" class="single-panel ml-section min-w-[32rem]  ${item.active ? '' : 'line-through'} text-sm text-primary-900 dark:text-primary-400 ml-[${indent}] decoration-rose-500 decoration-2 col-[span_30/span_30]"
             dnd-parent-id="${parentId}" dnd-id="${item.id}" dnd-type="${item.type}" dnd-subtype="${item.subtype}">
                     <div data-class="panelContainerClasses"  class="relative  pb-[1.5px] pt-[0.75px]">
                     # ${item.message}
@@ -120,10 +120,10 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
     `;
         //<div data-class="panelWrapperClasses" class="${isHidden ? 'max-h-[9999px]' : 'max-h-0'}  transition-[max-height] duration-500 ease-in-out" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
         /*${hasVariables ? `<div data-class="variablePanelClasses" class="mb-1 mt-1.5 col-[span_30/span_30] ml-[${indent}]">${renderVariables(variables)}</div>` : ''}
-        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-zinc-400 ml-[${indent}]"># ${message}</div>` : ''}        */
+        ${message ? `<div data-class="messagePanelClasses" class="mb-1.5 col-[span_30/span_30] text-sm text-primary-400 ml-[${indent}]"># ${message}</div>` : ''}        */
 
         return `
-            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))] dark:text-zinc-100 text-zinc-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
+            <div data-class="panelWrapperClasses" class="${active ? '' : 'line-through'} decoration-rose-500 decoration-2  ${isHidden ? '' : 'hidden'}  relative text-sm col-[span_30/span_30] grid grid-cols-[repeat(30,_minmax(0,_1fr))] dark:text-primary-100 text-primary-900" dnd-parent-id="${parentId}" dnd-id="${id}" dnd-type="${type}"
                 dnd-subtype="${subtype}" dnd-title="${title}" dnd-show-children="${showChildren}"
                 dnd-message="${message}" dnd-level="${level}">
                
@@ -144,7 +144,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                 
                     <div 
                         data-class="lineAreaClasses" 
-                        class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[2px]' : 'opacity-60 w-[1px] dark:bg-zinc-600 bg-zinc-400'}" 
+                        class="ml-[${indent}] ml-section absolute h-full ${subtype === 'group' ? 'opacity-60 w-[2px]' : 'opacity-60 w-[1px] dark:bg-primary-600 bg-primary-400'}" 
                         style="background-color: ${subtype === 'group' ? backgroundColor : ''};">
                         <div class="bg-color-panel  ${subtype === 'group' ? `for-group ml-[2px] w-[${spacingIndent-2}px]` : `for-nonegroup ml-[1px] w-[${spacingIndent-1}px]`}  h-full  opacity-10" style="background-color: ${subtype === 'group' ? backgroundColor : ''}"></div>
                     </div>
@@ -153,7 +153,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                     <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
-                        <div data-class="panelContainerClasses" class="grid min-w-[32rem] border border-zinc-400 dark:border-none relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
+                        <div data-class="panelContainerClasses" class="grid min-w-[32rem] border border-primary-400 dark:border-none relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">
                             
                             <div data-class="expandButtonClasses" class="${children?.length > 0 ? '':'hidden'}">${iconSVG(showChildren)}</div>
                             <div data-class="leftPanelClasses">

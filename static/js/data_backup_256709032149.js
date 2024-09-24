@@ -518,7 +518,7 @@ let defaultItems = [
                             { "value": "40", "text": "40%", "color": "orange", "type": "percentage", "unit": "%" },
                             { "value": "30", "text": "30%", "color": "purple", "type": "percentage", "unit": "%" },
                             { "value": "20", "text": "20%", "color": "green", "type": "percentage", "unit": "%" },
-                            { "value": "10", "text": "10%", "color": "gray", "type": "percentage", "unit": "%" }
+                            { "value": "10", "text": "10%", "color": "primary", "type": "percentage", "unit": "%" }
                         ],
                         "template": "rebalancePortfolio"
                     }
@@ -1184,7 +1184,7 @@ let defaultItems = [
                                     { "value": "40", "text": "40%", "color": "orange", "type": "percentage", "unit": "%" },
                                     { "value": "30", "text": "30%", "color": "purple", "type": "percentage", "unit": "%" },
                                     { "value": "20", "text": "20%", "color": "green", "type": "percentage", "unit": "%" },
-                                    { "value": "10", "text": "10%", "color": "gray", "type": "percentage", "unit": "%" }
+                                    { "value": "10", "text": "10%", "color": "primary", "type": "percentage", "unit": "%" }
                                 ],
                                 "template": "rebalancePortfolio"
                             }

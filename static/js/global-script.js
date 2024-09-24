@@ -143,7 +143,7 @@ export function appendEventButton() {
     
             // Create the new button element
             var $newButton = $(`
-                <div data-class="addEventBuntton" dnd-id="${parrentId}" dnd-type="container" class="min-w-[32rem] hidden col-[span_30/span_30] bg-zinc-250 dark:bg-zinc-750 rounded-[0.2rem] text-xs p-1.5 m-[1px] dark:text-gray-500 text-gray-800 ${marginClass}">
+                <div data-class="addEventBuntton" dnd-id="${parrentId}" dnd-type="container" class="min-w-[32rem] hidden col-[span_30/span_30] bg-primary-250 dark:bg-primary-750 rounded-[0.2rem] text-xs p-1.5 m-[1px] dark:text-primary-500 text-primary-800 ${marginClass}">
                     <div class="flex">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                             <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />

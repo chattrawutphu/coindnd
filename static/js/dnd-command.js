@@ -595,10 +595,10 @@ $(document).ready(function () {
                 .attr('role', 'status')
                 .addClass('max-w-sm animate-pulse p-2')
                 .append(
-                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 w-48 mb-2'),
-                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 max-w-[360px] mb-2'),
-                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 mb-2.5'),
-                    $('<div>').addClass('h-2 bg-zinc-300 rounded-full dark:bg-zinc-700 max-w-[330px] mb-2')
+                    $('<div>').addClass('h-2 bg-primary-300 rounded-full dark:bg-primary-700 w-48 mb-2'),
+                    $('<div>').addClass('h-2 bg-primary-300 rounded-full dark:bg-primary-700 max-w-[360px] mb-2'),
+                    $('<div>').addClass('h-2 bg-primary-300 rounded-full dark:bg-primary-700 mb-2.5'),
+                    $('<div>').addClass('h-2 bg-primary-300 rounded-full dark:bg-primary-700 max-w-[330px] mb-2')
                 )
             )
             .appendTo('body');
