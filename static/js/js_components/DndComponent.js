@@ -36,7 +36,7 @@ const addMoreTemplate = (type, text) => `<div dnd-type="${type}" data-class="add
 
 const renderPanel = (items, type) => items.map((item, index, array) => `
     <div data-class="commonFlexClasses" class=" ${item.active ? '' : 'line-through'} decoration-rose-500 decoration-2 border-b
-    ${item.type === 'condition' ? 'bg-zinc-100 dark:bg-[#52525b] border-b-zinc-300 dark:border-b-[#71717a]' : 'bg-zinc-100 dark:bg-[#44444b] border-b-zinc-300 dark:border-b-[#62626b]'}
+    ${item.type === 'condition' ? 'bg-zinc-100 dark:bg-zinc-600 border-b-zinc-300 dark:border-b-zinc-500' : 'bg-zinc-100 dark:bg-zinc-675 border-b-zinc-300 dark:border-b-zinc-550'}
     
     "
          dnd-id="${item.id}" dnd-type="${item.type}" dnd-title="${item.title}"
