@@ -289,8 +289,8 @@ html div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].s
   }
   
   html.dark body {
-    background-color: var(--primary-950);
-    background-image: radial-gradient(circle, var(--primary-800) 1px, transparent 1px);
+    background-color: var(--primary-850);
+    background-image: radial-gradient(circle, var(--primary-775) 1px, transparent 1px);
     background-size: 16px 16px;
     margin: 0;
     height: 100vh;

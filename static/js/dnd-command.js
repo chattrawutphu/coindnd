@@ -967,6 +967,10 @@ $(document).ready(function () {
                 return;
             }
 
+            if ($target.attr('data-class') === 'addMoreClasses' || $target.closest('[data-class="addMoreClasses"]').length) {
+                return;
+            }
+
             if ($target.attr('data-js-component') === 'DndMinimapComponent' || $target.closest('[data-js-component="DndMinimapComponent"]').length) {
                 return;
             }

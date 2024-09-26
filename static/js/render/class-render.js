@@ -53,7 +53,7 @@ var classesModel = {
     darkmodeContainerClasses: "text-primary-500 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-700 rounded-lg text-sm p-1.5",
     
     //Property Input
-    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-primary-50 dark:text-primary-300 text-primary-800 text-sm rounded-lg block p-1.5 dark:bg-primary-900 bg-primary-50",
+    inputContainerClasses: "w-full max-w-full  text-ellipsis whitespace-nowrap bg-primary-50 dark:text-primary-300 text-primary-800 text-sm rounded-lg block p-1.5 dark:bg-primary-850 bg-primary-50",
   
     inputLabelClasses: "float-none lg:float-right pt-1.5 text-sm font-medium dark:text-primary-300 text-primary-800",
   
