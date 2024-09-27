@@ -1,6 +1,6 @@
 export default function renderContent() {
     const html = `
-        <div class="absolute top-[3.75rem] right-4" style="z-index:2000;">
+        <div class="absolute top-[3.75rem] right-4" style="z-index:48;">
             <div id="minimap" class="h-64 w-12 backdrop-blur-sm dark:bg-primary-600/60 bg-primary-500/60 rounded-md relative cursor-pointer group">
                 <div id="minimap-slider" class="absolute dark:bg-primary-200/60 bg-white/60 rounded-sm w-full cursor-grab active:cursor-grabbing">
                 </div>

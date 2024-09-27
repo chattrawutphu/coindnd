@@ -17,6 +17,6 @@ export default function renderContent() {
     `;
 
     return $(html);
-// }
+}
 //                 <option value="in">In list</option>
 //                 <option value="nin">Not in list</option>
