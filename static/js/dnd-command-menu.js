@@ -37,14 +37,41 @@ function showDropdownMenu(event) {
     event.preventDefault();
     $('.option-for-property').remove();
 
-    const $dropdown = $(menuHtml).css('position', 'fixed');
+    const $dropdown = $(menuHtml).css({
+        position: 'fixed',
+        transform: 'scale(0.9)',
+        transition: 'transform 0.15s ease-out, opacity 0.15s ease-out',
+        opacity: 0
+    });
     $('body').append($dropdown);
     positionDropdown($dropdown, event.clientX, event.clientY);
 
-    // เพิ่ม event listener สำหรับการคลิกที่ document
+    // Trigger reflow to ensure the initial state is applied before transitioning
+    $dropdown[0].offsetHeight;
+
+    // Animate to full size
+    $dropdown.css({
+        transform: 'scale(1)',
+        opacity: 1
+    });
+
     $(document).on('click', function (e) {
-        // ตรวจสอบว่าคลิกนอก $dropdown หรือไม่
         if (!$(e.target).closest($dropdown).length) {
+            removeDropdown();
+        }
+    });
+}
+
+function removeDropdown() {
+    const $dropdown = $('.option-for-property');
+    $dropdown.css({
+        transform: 'scale(0.9)',
+        opacity: 0
+    });
+    
+    // Wait for the transition to complete before removing the element
+    $dropdown.on('transitionend', function(e) {
+        if (e.originalEvent.propertyName === 'opacity') {
             $dropdown.remove();
         }
     });
@@ -52,11 +79,7 @@ function showDropdownMenu(event) {
 
 $(document).on('click', '.openProperty', showDropdownMenu);
 
-// เพิ่ม event listener สำหรับการคลิกขวาที่ [data-class="commonTextClasses"]
+// Event listener for right-click on elements with [data-class="panelWrapperClasses"]
 $(document).on('contextmenu', '[data-class="panelWrapperClasses"]', showDropdownMenu);
-
-function removeDropdown() {
-    $('.option-for-property').remove();
-}
 
 $(window).on('resize scroll mousewheel DOMMouseScroll touchmove', removeDropdown);

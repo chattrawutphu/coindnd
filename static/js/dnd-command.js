@@ -3,7 +3,7 @@ import {
     , updateUIheight, appendEventButton
 } from '/static/js/global-script.js';
 import { indentSpacing } from "/static/js/global-script.js";
-import {renderAlertComponent} from '/static/js/js_components/AlertComponent.js';
+import { showAlert } from '/static/js/alert.js';
 
 $(document).ready(function () {
     const UndoManager = window.UndoManager;
@@ -68,53 +68,16 @@ $(document).ready(function () {
             }
         }
     });
-
     function saveToLocalStorage() {
         try {
             localStorage.setItem('items', JSON.stringify(items));
-            console.log("Successfully saved items to localStorage");
-            
-            // Use renderAlertComponent to create success message
-            const { html, id } = renderAlertComponent("Data saved successfully!", 1);
-            
-            // Prepend the HTML to #alert-target
-            $('#alert-target').prepend(html);
-            
-            // Set timeout to remove the alert after 5 seconds
-            setTimeout(() => removeAlert(id), 5000);
+            showAlert("Data saved successfully!", "normal");
         } catch (error) {
-            console.error("Failed to save items to localStorage:", error);
-            
-            // Use renderAlertComponent to create error message
-            const { html, id } = renderAlertComponent("Failed to save data. Please try again.", 2);
-            
-            // Prepend the HTML to #alert-target
-            $('#alert-target').prepend(html);
-            
-            // Set timeout to remove the alert after 5 seconds
-            setTimeout(() => removeAlert(id), 5000);
+            showAlert("Failed to save data. Please try again.", "normal");
         }
     }
-    
-    function removeAlert(id) {
-        const alert = document.getElementById(id);
-        if (alert) {
-            alert.style.transition = 'opacity 0.2s ease-out';
-            alert.style.opacity = '0';
-            setTimeout(() => {
-                alert.remove();
-            }, 200);
-        }
-    }
-    
-    // Add event listener for the save button
+
     $('#saveBtn').on('click', saveToLocalStorage);
-    
-    // Add event delegation for closing alerts
-    $('#alert-target').on('click', '[data-dismiss-target]', function() {
-        const alertId = $(this).attr('data-dismiss-target').substring(1); // Remove the '#' from the start
-        removeAlert(alertId);
-    });
 
     const storedItems = localStorage.getItem('items');
     if (storedItems) {
@@ -138,27 +101,27 @@ $(document).ready(function () {
             const oldState = JSON.parse(JSON.stringify(items));
             const oldHtml = $('[data-js-component="DndComponent"]').html();
             const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-    
+
             item.showChildren = !item.showChildren;
-    
+
             // อัปเดต UI
             const $parentPanelWrapper = $(`[data-class="panelWrapperClasses"][dnd-id="${id}"]`);
             const $siblingsPanelWrappers = $parentPanelWrapper.children('[data-class="panelWrapperClasses"]');
             const $expandButton = $parentPanelWrapper.find('[data-class="expandButtonClasses"]').first();
-    
+
             $siblingsPanelWrappers.toggleClass('hidden');
             $expandButton.find('.expand-icon').toggleClass('hidden');
             $expandButton.find('.collapse-icon').toggleClass('hidden');
-    
+
             // ใช้ setTimeout เพื่อให้การอัปเดต UI เสร็จสิ้นก่อนที่จะวัดความสูงใหม่
             setTimeout(() => {
                 updateUIheight();
             }, 0);
-    
+
             const newState = JSON.parse(JSON.stringify(items));
             const newHtml = $('[data-js-component="DndComponent"]').html();
             const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-    
+
             undoManager.add({
                 undo: function () {
                     items = JSON.parse(JSON.stringify(oldState));
@@ -173,7 +136,7 @@ $(document).ready(function () {
                     cleanupUI();
                 }
             });
-    
+
             updateButtonStates();
             cleanupUI();
         }
@@ -185,7 +148,7 @@ $(document).ready(function () {
         const id = $panelWrapper.attr('dnd-id');
         const type = $panelWrapper.attr('dnd-type');
         const subtype = $panelWrapper.attr('dnd-subtype');
-        
+
         if (subtype === 'group' || (type === 'container' && subtype === 'if')) {
             toggleExpandCollapse(id);
         }
@@ -350,18 +313,18 @@ $(document).ready(function () {
 
     const createDndLine = _.memoize((isTop, dndType, isLeftSide = true) => {
         const isDarkMode = $('html').hasClass('dark');
-        
+
         const getColor = (darkColor, lightColor) => isDarkMode ? lightColor : darkColor;
-        
-        const color = dndType === 'action' 
-        ? getColor('#22c55e', '#4ade80')  // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม
-        : (dndType === 'container' 
-            ? getColor('#0ea5e9', '#38bdf8')  // สีฟ้าเข้มเล็กน้อย -> สีฟ้าดั้งเดิม
-            : getColor('#22c55e', '#4ade80')); // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม (default)
-        
+
+        const color = dndType === 'action'
+            ? getColor('#22c55e', '#4ade80')  // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม
+            : (dndType === 'container'
+                ? getColor('#0ea5e9', '#38bdf8')  // สีฟ้าเข้มเล็กน้อย -> สีฟ้าดั้งเดิม
+                : getColor('#22c55e', '#4ade80')); // สีเขียวเข้มเล็กน้อย -> สีเขียวดั้งเดิม (default)
+
         const width = (dndType === 'container' && !isLeftSide && !isTop) ? `calc(100% - ${indent}px)` : '100%';
         const right = (dndType === 'container' && !isLeftSide && !isTop) ? '0' : 'auto';
-    
+
         const $line = $('<div>').css({
             position: 'absolute',
             width: width,
@@ -372,7 +335,7 @@ $(document).ready(function () {
             [isTop ? 'top' : 'bottom']: '0',
             zIndex: 1
         }).addClass("drop-target-line");
-    
+
         return $line;
     }, (...args) => args.join('|'));
 
@@ -524,7 +487,7 @@ $(document).ready(function () {
                                 updateLinePosition($this, true, currentDndType, mouseX);
                                 lastHoveredElement = $this;
                                 found = true;
-                                
+
                             }
                             break;
 
@@ -577,7 +540,7 @@ $(document).ready(function () {
             isHandlingDragMove = false;
         });
     }
-    
+
     function startDragging(e) {
         const targetOffset = $currentTarget.offset();
         const originalWidth = $currentTarget.outerWidth();
@@ -687,27 +650,27 @@ $(document).ready(function () {
                     const sourceIds = $selectedElements.map(function () {
                         return $(this).attr('dnd-id');
                     }).get();
-        
+
                     // บันทึกสถานะก่อนการเปลี่ยนแปลง
                     const oldState = JSON.parse(JSON.stringify(items));
                     const oldHtml = $('[data-js-component="DndComponent"]').html();
                     const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-        
+
                     // หา element ที่มี dnd-id ตรงกับ targetId
                     const $targetElement = $(`[data-class="panelWrapperClasses"][dnd-id="${targetId}"]`);
-                    
+
                     // เรียกใช้ moveMultipleItems เพื่อย้าย items ในข้อมูล
                     const result = await operationQueue.enqueue(moveMultipleItems, sourceIds, targetId, 'bottom');
-        
+
                     if (result) {
                         // อัปเดต DOM
                         $targetElement.after($selectedElements);
-        
+
                         // บันทึกสถานะใหม่
                         const newState = JSON.parse(JSON.stringify(items));
                         const newHtml = $('[data-js-component="DndComponent"]').html();
                         const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
-        
+
                         // เพิ่มการกระทำลงใน undoManager
                         undoManager.add({
                             undo: function () {
@@ -723,7 +686,7 @@ $(document).ready(function () {
                                 cleanupUI();
                             }
                         });
-        
+
                         // อัปเดตสถานะปุ่ม undo/redo
                         updateButtonStates();
                     } else {
@@ -988,28 +951,34 @@ $(document).ready(function () {
     * START: Multi Selection
     */
     $(document).on('mousedown', function (event) {
-        if (event.which === 1 || event.which === 3) {  // 1 for left click, 3 for right click
+        if (event.which === 1 || event.which === 3) {
             const $target = $(event.target);
             const $selectableElements = $('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
             const activeClass = 'select-active';
-    
-            // Check for excluded elements
-            const excludedSelectors = [
-                '[data-class="expandButtonClasses"]',
-                '[data-class="addMoreClasses"]',
-                '[data-js-component="DndMinimapComponent"]',
-                '.option-for-property',
-                'input, label, select'
-            ];
-    
-            if (excludedSelectors.some(selector => $target.is(selector) || $target.closest(selector).length)) {
+
+            // ตรวจสอบ expandButtonClasses ก่อน
+            if ($target.attr('data-class') === 'expandButtonClasses' || $target.closest('[data-class="expandButtonClasses"]').length) {
                 return;
             }
-    
-            if (true) { // Assuming this condition is always true based on the original code
+
+            if ($target.attr('data-class') === 'addMoreClasses' || $target.closest('[data-class="addMoreClasses"]').length) {
+                return;
+            }
+
+            if ($target.attr('data-js-component') === 'DndMinimapComponent' || $target.closest('[data-js-component="DndMinimapComponent"]').length) {
+                return;
+            }
+            if ($target.hasClass('option-for-property') || $target.closest('.option-for-property').length) {
+                return;
+            }
+            if ($target.is('input, label, select') || $target.closest('label').length) {
+                return;
+            }
+
+            if (true) { //$target.attr('data-js-component') === 'DndComponent' || $target.closest('[data-js-component="DndComponent"]').length
                 const $closestSelectableElement = $target.closest('[data-class="commonFlexClasses"], [data-class="panelWrapperClasses"]');
-    
-                // Additional check for panelWrapperClasses
+
+                // ตรวจสอบเพิ่มเติมสำหรับ panelWrapperClasses
                 if ($closestSelectableElement.attr('data-class') === 'panelWrapperClasses') {
                     const $panelContainer = $closestSelectableElement.find('[data-class="panelContainerClasses"]');
                     if (!$panelContainer.is($target) && !$.contains($panelContainer[0], $target[0])) {
@@ -1017,19 +986,30 @@ $(document).ready(function () {
                         return;
                     }
                 }
-    
+
                 function updateEffects($element, add) {
-                    const $effectTarget = $element.attr('data-class') === 'panelWrapperClasses'
-                        ? $element.find('[data-class="panelContainerClasses"]')
-                        : $element;
-    
-                    if (add) {
-                        $effectTarget.addClass(effectClasses);
+                    if ($element.attr('data-class') === 'panelWrapperClasses') {
+                        const $panelContainer = $element.find('[data-class="panelContainerClasses"]');
+                        if (add) {
+                            $panelContainer.addClass(effectClasses);
+                        } else {
+                            $panelContainer.removeClass(effectClasses);
+                        }
                     } else {
-                        $effectTarget.removeClass(effectClasses);
+                        if (add) {
+                            $element.addClass(effectClasses);
+                        } else {
+                            $element.removeClass(effectClasses);
+                        }
                     }
                 }
-    
+
+                function toggleActiveAndEffects($element) {
+                    const isActive = $element.hasClass(activeClass);
+                    $element.toggleClass(activeClass);
+                    updateEffects($element, !isActive);
+                }
+
                 function activateElement($element) {
                     $selectableElements.removeClass(activeClass);
                     $selectableElements.each(function () {
@@ -1038,7 +1018,7 @@ $(document).ready(function () {
                     $element.addClass(activeClass);
                     updateEffects($element, true);
                 }
-    
+
                 if (!$closestSelectableElement.length) {
                     $selectableElements.removeClass(activeClass);
                     $selectableElements.each(function () {
@@ -1046,39 +1026,44 @@ $(document).ready(function () {
                     });
                     return;
                 }
-    
+
                 const targetDndType = $closestSelectableElement.attr('dnd-type');
                 const elementClass = $closestSelectableElement.attr('data-class');
-    
+                const $firstSelected = $selectableElements.filter('.' + activeClass).first();
+                const firstSelectedDndType = $firstSelected.length ? $firstSelected.attr('dnd-type') : null;
+
                 if (event.which === 3) {  // Right click
                     if (!$closestSelectableElement.hasClass(activeClass)) {
                         activateElement($closestSelectableElement);
                     }
-                    // If it's already active, do nothing
                 } else {  // Left click
-                    const $firstSelected = $selectableElements.filter('.' + activeClass).first();
-                    const firstSelectedDndType = $firstSelected.length ? $firstSelected.attr('dnd-type') : null;
-    
                     if (!event.ctrlKey && !event.shiftKey) {
                         if (!$closestSelectableElement.hasClass(activeClass)) {
-                            activateElement($closestSelectableElement);
+                            $selectableElements.removeClass(activeClass);
+                            $selectableElements.each(function () {
+                                updateEffects($(this), false);
+                            });
+                            toggleActiveAndEffects($closestSelectableElement);
                         }
                     } else if (event.ctrlKey) {
                         if (targetDndType === firstSelectedDndType) {
-                            $closestSelectableElement.toggleClass(activeClass);
-                            updateEffects($closestSelectableElement, $closestSelectableElement.hasClass(activeClass));
+                            toggleActiveAndEffects($closestSelectableElement);
                         } else {
-                            activateElement($closestSelectableElement);
+                            $selectableElements.removeClass(activeClass);
+                            $selectableElements.each(function () {
+                                updateEffects($(this), false);
+                            });
+                            toggleActiveAndEffects($closestSelectableElement);
                         }
                     } else if (event.shiftKey) {
                         if (elementClass === 'panelWrapperClasses') {
                             const $activeParent = $closestSelectableElement.parents('[data-class="panelWrapperClasses"].' + activeClass).first();
-    
+
                             if ($activeParent.length) {
                                 const $relevantElements = $activeParent.find('[data-class="panelWrapperClasses"]').add($activeParent);
                                 const startIndex = $relevantElements.index($activeParent);
                                 const endIndex = $relevantElements.index($closestSelectableElement);
-    
+
                                 $relevantElements.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).each(function () {
                                     $(this).addClass(activeClass);
                                     updateEffects($(this), true);
@@ -1086,17 +1071,17 @@ $(document).ready(function () {
                             } else {
                                 const $siblings = $closestSelectableElement.siblings('[data-class="panelWrapperClasses"]').add($closestSelectableElement);
                                 const $activeElement = $siblings.filter('.' + activeClass).first();
-    
+
                                 if ($activeElement.length) {
                                     const startIndex = $siblings.index($activeElement);
                                     const endIndex = $siblings.index($closestSelectableElement);
-    
+
                                     $siblings.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).each(function () {
                                         $(this).addClass(activeClass);
                                         updateEffects($(this), true);
                                     });
                                 } else {
-                                    activateElement($closestSelectableElement);
+                                    toggleActiveAndEffects($closestSelectableElement);
                                 }
                             }
                         } else {
@@ -1104,11 +1089,11 @@ $(document).ready(function () {
                                 const $lastActive = $selectableElements.filter('.' + activeClass).last();
                                 let startIndex = $selectableElements.index($lastActive);
                                 let endIndex = $selectableElements.index($closestSelectableElement);
-    
+
                                 if (startIndex > endIndex) {
                                     [startIndex, endIndex] = [endIndex, startIndex];
                                 }
-    
+
                                 $selectableElements.slice(startIndex, endIndex + 1).each(function () {
                                     if ($(this).attr('dnd-type') === targetDndType) {
                                         $(this).addClass(activeClass);
@@ -1116,7 +1101,11 @@ $(document).ready(function () {
                                     }
                                 });
                             } else {
-                                activateElement($closestSelectableElement);
+                                $selectableElements.removeClass(activeClass);
+                                $selectableElements.each(function () {
+                                    updateEffects($(this), false);
+                                });
+                                toggleActiveAndEffects($closestSelectableElement);
                             }
                         }
                     }

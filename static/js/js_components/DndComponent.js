@@ -54,7 +54,7 @@ const renderPanel = (items, type) => items.map((item, index, array) => `
             ${createDndParams(item.params, item.message)}
         </div>
         <div data-class="panelBgClasses" class="">
-        <div class="cursor-pointer size-[18px] openProperty">${svgIcon("M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z", "size-4")}</div>
+        <!--<div class="cursor-pointer size-[18px] openProperty">${svgIcon("M2 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM12.5 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z", "size-4")}</div>-->
             
         </div>
     </div>

@@ -78,7 +78,7 @@ export default function renderContent() {
 
     <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
      class="fixed flex top-0 right-0 left-0 z-[1001] justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden opacity-0 pointer-events-none transition-opacity duration-[${modalDuration}ms] ease-in-out">
-      <div class="relative p-4 w-full max-w-[56rem] max-h-full">
+      <div class="relative p-4 w-full max-w-[56rem] max-h-full transform scale-90 transition-transform duration-[${modalDuration}ms] ease-in-out">
         <div class="relative bg-primary-150 rounded-2xl shadow dark:bg-primary-675/40 dark:border dark:border-primary-400/50 flex flex-col">
           <div class="sticky top-0 z-10 rounded-t-lg">
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-primary-300 dark:border-primary-600">
@@ -192,7 +192,7 @@ $(document).ready(function () {
   const $searchForm = $('#search-form');
   const $searchInput = $('#search-dropdown');
   const $tradingConditions = $('#trading-conditions');
-
+const $modalContent = $modal.find('.relative.p-4');
   // Load favorites from localStorage
   let favorites = JSON.parse(localStorage.getItem('favoriteConditions')) || [];
 
@@ -315,12 +315,14 @@ function openModal() {
   setTimeout(() => {
     $backdrop.addClass('opacity-100');
     $modal.addClass('opacity-100');
+    $modalContent.css('transform', 'scale(1)');
   }, 10);
 }
 
 function closeModal() {
   $backdrop.removeClass('opacity-100').addClass('opacity-0 pointer-events-none');
   $modal.removeClass('opacity-100').addClass('opacity-0 pointer-events-none');
+  $modalContent.css('transform', 'scale(0.9)');
   $('body').css('overflow', 'auto');
   
   // Reset search when closing the modal
