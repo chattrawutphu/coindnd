@@ -1,3 +1,4 @@
+import { modalDuration } from "/static/js/global-script.js";
 export default function renderContent() {
   const tradingConditions = {
     price: {
@@ -75,10 +76,8 @@ export default function renderContent() {
       Crypto Trading Events
     </button>
 
-    <div id="modal-backdrop" class="fixed z-[49] inset-0 bg-primary-900 bg-opacity-65 backdrop-blur-xl hidden"></div>
-
     <div id="static-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-      class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+     class="fixed flex top-0 right-0 left-0 z-[1001] justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden opacity-0 pointer-events-none transition-opacity duration-[${modalDuration}ms] ease-in-out">
       <div class="relative p-4 w-full max-w-[56rem] max-h-full">
         <div class="relative bg-primary-150 rounded-2xl shadow dark:bg-primary-675/40 dark:border dark:border-primary-400/50 flex flex-col">
           <div class="sticky top-0 z-10 rounded-t-lg">
@@ -139,7 +138,7 @@ export default function renderContent() {
             </div>
           </div>
           <div class="p-4 md:p-5 rounded-lg ">
-            <div class="overflow-y-auto flex-grow space-y-4 p-5 py-7 max-h-[32rem] rounded-2xl dark:bg-primary-825/70">
+            <div class="overflow-y-auto flex-grow space-y-4 p-5 py-7 max-h-[32rem] rounded-2xl dark:bg-primary-875/70">
               <div id="trading-conditions" class="">
               ${Object.entries(tradingConditions).map(([category, { upgradeBtn = false, icon, conditions }]) => `
                 <div class="mb-3 py-5 category-group" data-category="${category}">
@@ -243,6 +242,7 @@ $(document).ready(function () {
 
   function updateFavoritesCategory() {
     let favoritesHTML = '';
+    favorites = JSON.parse(localStorage.getItem('favoriteConditions')) || [];
     if (favorites.length > 0) {
       favoritesHTML = '<div class="mb-3 py-5 category-group" data-category="favorites">' +
         '<div class="flex items-center gap-x-2 mb-2 pb-2 border-b border-b-primary-650">' +
@@ -307,20 +307,26 @@ $(document).ready(function () {
   // Store the original HTML content
   const originalContent = $tradingConditions.html();
 
-  function openModal() {
-    $modal.removeClass('hidden').addClass('flex');
-    $backdrop.removeClass('hidden');
-    $('body').css('overflow', 'hidden');
-  }
+function openModal() {
+  $backdrop.removeClass('opacity-0 pointer-events-none');
+  $modal.removeClass('opacity-0 pointer-events-none');
+  $('body').css('overflow', 'hidden');
+  updateFavoritesCategory();
+  setTimeout(() => {
+    $backdrop.addClass('opacity-100');
+    $modal.addClass('opacity-100');
+  }, 10);
+}
 
-  function closeModal() {
-    $modal.addClass('hidden').removeClass('flex');
-    $backdrop.addClass('hidden');
-    $('body').css('overflow', 'auto');
-    // Reset search when closing the modal
-    $searchInput.val('');
-    resetSearch();
-  }
+function closeModal() {
+  $backdrop.removeClass('opacity-100').addClass('opacity-0 pointer-events-none');
+  $modal.removeClass('opacity-100').addClass('opacity-0 pointer-events-none');
+  $('body').css('overflow', 'auto');
+  
+  // Reset search when closing the modal
+  $searchInput.val('');
+  resetSearch();
+}
 
   function filterConditions(searchTerm) {
     searchTerm = searchTerm.toLowerCase().trim();

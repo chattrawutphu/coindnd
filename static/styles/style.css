@@ -353,3 +353,19 @@ html div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].s
   [data-class="lineAreaClasses"] > div {
     isolation: isolate;
   }
+
+.alert-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  max-width: 100%;
+  width: 300px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.alert-item {
+  margin-top: 10px;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}

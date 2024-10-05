@@ -1,3 +1,4 @@
+import { indentSpacing } from "/static/js/global-script.js";
 function getDarkColor(color) {
     switch (color) {
         case "red": return "darkred";
@@ -73,7 +74,7 @@ const renderVariables = variables => variables.map(v => `
 
 export const renderContent = async (items, level = 1, parentId = '', isHidden = true) => {
     const results = await Promise.all(items.map(async item => {
-        const spacingIndent = 48;
+        const spacingIndent = indentSpacing; //48
         const indent = `${level * spacingIndent}px`;
 
         if (item.subtype === "variable") {
@@ -150,7 +151,7 @@ export const renderContent = async (items, level = 1, parentId = '', isHidden = 
                     </div>
                 <div data-class="panelWrapperMargin" class="ml-section col-[span_30/span_30] flex ml-[${indent}]">
 
-                    <div data-class="numberPanelClasses" class="absolute opacity-80 left-0.5 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
+                    <div data-class="numberPanelClasses" class="absolute opacity-80 -left-2 top-0 rounded p-0.5 pr-1 text-center text-sm ${highlight ? `rounded-md bg-[${highlight}] isHighlight` : 'opacity-30'}"  style="z-index:1;">xx</div>
 
                     ${subtype !== "group" ? `
                         <div data-class="panelContainerClasses" class="grid min-w-[32rem] border border-primary-400 dark:border-none relative min-h-10 w-full grid-cols-[repeat(30,_minmax(0,_1fr))]">

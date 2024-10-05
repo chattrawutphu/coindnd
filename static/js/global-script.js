@@ -1,3 +1,6 @@
+export var modalDuration = 175;
+export var indentSpacing = 32;
+
 export function getContrastColor(hexcolor) {
     if (hexcolor.slice(0, 1) === '#') {
         hexcolor = hexcolor.slice(1);

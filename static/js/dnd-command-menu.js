@@ -1,6 +1,6 @@
 const commonStyles = 'flex items-center gap-x-2 p-1 rounded-md hover:dark:bg-primary-700/60 hover:bg-primary-200';
 const menuHtml = `
-<div class="option-for-property select-none cursor-pointer absolute min-w-32 p-2 gap-y-2 font-medium dark:text-primary-300 text-primary-700 dark:bg-primary-900/60 backdrop-blur-md bg-primary-100 border dark:border-primary-600/40 border-primary-300 rounded-md dropdown-menu-for-item z-20 text-xs">
+<div class="option-for-property select-none cursor-pointer absolute min-w-32 p-2 gap-y-2 font-medium dark:text-primary-300 text-primary-700 dark:bg-primary-900/60 dark:border-primary-500/30 backdrop-blur-md bg-primary-100 border-2 border-primary-300 rounded-md dropdown-menu-for-item z-20 text-xs">
     <div class="${commonStyles}"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" height="1em" width="1em"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> Edit</div>
     <div class="${commonStyles}"><svg viewBox="0 0 24 24" fill="currentColor" height="1em" width="1em"><path d="M10 6.5C10 4.57 8.43 3 6.5 3S3 4.57 3 6.5 4.57 10 6.5 10a3.45 3.45 0 001.613-.413l2.357 2.528-2.318 2.318A3.46 3.46 0 006.5 14C4.57 14 3 15.57 3 17.5S4.57 21 6.5 21s3.5-1.57 3.5-3.5c0-.601-.166-1.158-.434-1.652l2.269-2.268L17 19.121a3 3 0 002.121.879H22L9.35 8.518c.406-.572.65-1.265.65-2.018zM6.5 8C5.673 8 5 7.327 5 6.5S5.673 5 6.5 5 8 5.673 8 6.5 7.327 8 6.5 8zm0 11c-.827 0-1.5-.673-1.5-1.5S5.673 16 6.5 16s1.5.673 1.5 1.5S7.327 19 6.5 19z"></path><path d="M17 4.879l-3.707 4.414 1.414 1.414L22 4h-2.879A3 3 0 0017 4.879z"></path></svg> Cut</div>
     <div class="${commonStyles}"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" height="1em" width="1em"><path d="M10 8 H20 A2 2 0 0 1 22 10 V20 A2 2 0 0 1 20 22 H10 A2 2 0 0 1 8 20 V10 A2 2 0 0 1 10 8 z"></path><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg> Copy</div>
@@ -11,35 +11,35 @@ const menuHtml = `
 </div>
 `;
 
-function positionDropdown($trigger, $dropdown) {
-    const { top: triggerTop, left: triggerLeft } = $trigger.offset();
-    const triggerHeight = $trigger.outerHeight();
+function positionDropdown($dropdown, x, y) {
     const dropdownWidth = $dropdown.outerWidth();
     const dropdownHeight = $dropdown.outerHeight();
     const windowWidth = $(window).width();
     const windowHeight = $(window).height();
 
-    let top = triggerTop + triggerHeight;
-    let left = triggerLeft;
+    let top = y;
+    let left = x;
 
+    // ตรวจสอบว่าเมนูจะล้นออกทางขวาของหน้าจอหรือไม่
     if (left + dropdownWidth > windowWidth) {
         left = windowWidth - dropdownWidth;
     }
 
+    // ตรวจสอบว่าเมนูจะล้นออกทางล่างของหน้าจอหรือไม่
     if (top + dropdownHeight > windowHeight) {
-        top = triggerTop - dropdownHeight;
+        top = windowHeight - dropdownHeight;
     }
 
     $dropdown.css({ top, left });
 }
 
-$(document).on('click', '.openProperty', function (event) {
-    event.stopPropagation();
+function showDropdownMenu(event) {
+    event.preventDefault();
     $('.option-for-property').remove();
 
     const $dropdown = $(menuHtml).css('position', 'fixed');
     $('body').append($dropdown);
-    positionDropdown($(this), $dropdown);
+    positionDropdown($dropdown, event.clientX, event.clientY);
 
     // เพิ่ม event listener สำหรับการคลิกที่ document
     $(document).on('click', function (e) {
@@ -48,10 +48,15 @@ $(document).on('click', '.openProperty', function (event) {
             $dropdown.remove();
         }
     });
-});
+}
+
+$(document).on('click', '.openProperty', showDropdownMenu);
+
+// เพิ่ม event listener สำหรับการคลิกขวาที่ [data-class="commonTextClasses"]
+$(document).on('contextmenu', '[data-class="panelWrapperClasses"]', showDropdownMenu);
+
 function removeDropdown() {
     $('.option-for-property').remove();
 }
 
 $(window).on('resize scroll mousewheel DOMMouseScroll touchmove', removeDropdown);
-
