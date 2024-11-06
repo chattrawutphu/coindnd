@@ -11,7 +11,7 @@ export function renderAlertComponent(text, template) {
           </svg>
         `;
         templateHTML = `
-          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px]">
+          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px] flex justify-end">
             <div class="inline-flex dark:bg-primary-800/70 border-2 backdrop-blur-sm dark:border-primary-500/30 items-center leading-none dark:text-primary-250 rounded-full p-2 shadow text-teal text-sm">
               ${icon}
               <span class="inline-flex px-2">${text}</span>
@@ -32,7 +32,7 @@ export function renderAlertComponent(text, template) {
           </svg>
         `;
         templateHTML = `
-          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px]">
+          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px] flex justify-end">
             <div class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
               ${icon}
               <div class="ms-3 text-sm font-medium">
@@ -55,7 +55,7 @@ export function renderAlertComponent(text, template) {
           </svg>
         `;
         templateHTML = `
-          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px]">
+          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px] flex justify-end">
             <div class="inline-flex dark:bg-primary-800/70 border-2 backdrop-blur-sm dark:border-primary-500/30 items-center leading-none dark:text-primary-250 rounded-full p-2 shadow text-teal text-sm">
               ${icon}
               <span class="inline-flex px-2">${text}</span>
@@ -76,7 +76,7 @@ export function renderAlertComponent(text, template) {
           </svg>
         `;
         templateHTML = `
-          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px]">
+          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px] flex justify-end">
             <div class="inline-flex dark:bg-primary-800/70 border-2 backdrop-blur-sm dark:border-primary-500/30 items-center leading-none dark:text-primary-250 rounded-full p-2 shadow text-teal text-sm">
               ${icon}
               <span class="inline-flex px-2">${text}</span>
@@ -97,7 +97,7 @@ export function renderAlertComponent(text, template) {
           </svg>
         `;
         templateHTML = `
-          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px]">
+          <div id="${id}" class="alert-item opacity-0 transition-all duration-200 ease-out transform translate-y-[-10px] flex justify-end">
             <div class="inline-flex dark:bg-primary-800/70 border-2 backdrop-blur-sm dark:border-primary-500/30 items-center leading-none dark:text-primary-250 rounded-full p-2 shadow text-teal text-sm">
               ${icon}
               <span class="inline-flex px-2">${text}</span>

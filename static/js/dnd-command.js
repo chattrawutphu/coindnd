@@ -30,6 +30,7 @@ $(document).ready(function () {
             undoManager.undo();
             cleanupUI();
             updateButtonStates();
+            showAlert("Undo", "undo");
         }
     });
 
@@ -38,6 +39,7 @@ $(document).ready(function () {
             undoManager.redo();
             cleanupUI();
             updateButtonStates();
+            showAlert("Redo", "redo");
         }
     });
 
@@ -50,12 +52,14 @@ $(document).ready(function () {
                     undoManager.redo();
                     cleanupUI();
                     updateButtonStates();
+                    showAlert("Redo", "redo");
                 }
             } else {
                 if (undoManager.hasUndo()) {
                     undoManager.undo();
                     cleanupUI();
                     updateButtonStates();
+                    showAlert("Undo", "undo");
                 }
             }
         }
@@ -65,6 +69,7 @@ $(document).ready(function () {
                 undoManager.redo();
                 cleanupUI();
                 updateButtonStates();
+                showAlert("Redo", "redo");
             }
         }
     });
@@ -94,6 +99,62 @@ $(document).ready(function () {
         }
         return null;
     }
+
+    function toggleDisabled(id) {
+        const item = findItemById(id);
+        if (item) {
+            // เก็บสถานะเก่า
+            const oldState = JSON.parse(JSON.stringify(items));
+            const oldHtml = $('[data-js-component="DndComponent"]').html();
+            const oldScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+    
+            // Toggle active state ใน items
+            item.active = !item.active;
+    
+            // อัปเดต UI
+            const $element = $(`[dnd-id="${id}"]`);
+            $element.toggleClass('line-through');
+            
+            // อัปเดต menu text
+            const $menuItem = $('#right-click-menu-disabled');
+            const hasLineThrough = $element.hasClass('line-through');
+            $menuItem.html(`<svg viewBox="0 0 1024 1024" fill="currentColor" height="1em" width="1em"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372 0-89 31.3-170.8 83.5-234.8l523.3 523.3C682.8 852.7 601 884 512 884zm288.5-137.2L277.2 223.5C341.2 171.3 423 140 512 140c205.4 0 372 166.6 372 372 0 89-31.3 170.8-83.5 234.8z"></path></svg> ${hasLineThrough ? 'Enable' : 'Disabled'}`);
+    
+            // เก็บสถานะใหม่
+            const newState = JSON.parse(JSON.stringify(items));
+            const newHtml = $('[data-js-component="DndComponent"]').html();
+            const newScrollPosition = $('[data-js-component="DndComponent"]').scrollTop();
+    
+            // เพิ่มการกระทำลงใน undoManager
+            undoManager.add({
+                undo: function () {
+                    items = JSON.parse(JSON.stringify(oldState));
+                    updateUIFromCache(oldHtml, oldScrollPosition);
+                    updateButtonStates();
+                    cleanupUI();
+                },
+                redo: function () {
+                    items = JSON.parse(JSON.stringify(newState));
+                    updateUIFromCache(newHtml, newScrollPosition);
+                    updateButtonStates();
+                    cleanupUI();
+                }
+            });
+    
+            updateButtonStates();
+            cleanupUI();
+        }
+    }
+    
+    $(document).on('click', '#right-click-menu-disabled', function() {
+        // หา element ที่มี class select-active ทั้งหมด
+        $('.select-active').each(function() {
+            const id = $(this).attr('dnd-id');
+            if (id) {
+                toggleDisabled(id);
+            }
+        });
+    });
 
     function toggleExpandCollapse(id) {
         const item = findItemById(id);

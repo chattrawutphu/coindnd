@@ -89,25 +89,7 @@ export default function renderContent() {
                 <form class="sm:w-[28rem] max-w-[28rem]" id="search-form">
                   <div class="flex w-full">
                     <label for="search-dropdown" class="mb-2 text-sm font-medium text-primary-900 sr-only dark:text-white">Search Trading Events</label>
-                    <button id="dropdown-button" data-dropdown-toggle="dropdown"
-                      class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-primary-900 bg-primary-100 border border-primary-300 rounded-s-lg hover:bg-primary-200 dark:bg-primary-575/40 dark:hover:bg-primary-525/40 dark:text-white dark:border-transparent"
-                      type="button">All categories <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2" d="m1 1 4 4 4-4"></path>
-                      </svg></button>
-                    <div id="dropdown"
-                      class="z-10 hidden bg-white divide-y divide-primary-100 rounded-lg shadow w-44 dark:bg-primary-700/60">
-                      <ul class="py-2 text-sm text-primary-700 dark:text-primary-200"
-                        aria-labelledby="dropdown-button">
-                        ${Object.keys(tradingConditions).map(category => `
-                          <li>
-                            <button type="button"
-                              class="inline-flex w-full px-4 py-2 hover:bg-primary-100 dark:hover:bg-primary-600 dark:hover:text-white">${category}</button>
-                          </li>
-                        `).join('')}
-                      </ul>
-                    </div>
+                    
                     <div class="relative w-full">
                       <input type="search" id="search-dropdown"
                         class="block p-2.5 w-full z-20 text-sm text-primary-900 bg-primary-25 rounded-e-lg border-s-primary-50 border-s-2 border border-primary-300 dark:bg-primary-825 dark:border-transparent dark:border-s-transparent focus:outline-none dark:placeholder-primary-550 dark:text-primary-200"
@@ -153,7 +135,7 @@ export default function renderContent() {
                   </div>
                   <div class="grid grid-rows-none">
                     ${conditions.map(condition => `
-                      <div class="flex gap-x-2 items-center hover:bg-primary-650/60 px-2 py-1 rounded-md condition-item relative" data-condition="${condition.text}">
+                      <div class="condition-item flex gap-x-2 items-center hover:bg-primary-650/60 px-2 py-1 rounded-md condition-item relative" data-condition="${condition.text}">
                         
                         <div class="text-md flex items-center target-search">
                           ${condition.isNew ? `<span class="bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-indigo-900 dark:text-indigo-300">NEW</span>` : ''}
@@ -176,6 +158,14 @@ export default function renderContent() {
               `).join('')}
               </div>
             </div>
+            <div class="flex justify-end mt-2">
+              <button id="conditionListNextBtn" class="opacity-60 relative inline-flex items-center justify-center h-8 p-0.5 overflow-hidden text-sm text-primary-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                  <span class="flex items-center h-full gap-x-1 py-1.5 px-3 relative transition-all ease-in duration-75 bg-white dark:bg-primary-900 rounded-md group-hover:bg-opacity-0">
+                      <p>Next</p>
+                  </span>
+              </button>            
+            </div>
+
           </div>
         </div>
       </div>
@@ -187,7 +177,8 @@ export default function renderContent() {
 $(document).ready(function () {
   const $modal = $('#static-modal');
   const $backdrop = $('#modal-backdrop');
-  const $openButtons = $('[data-modal-target="static-modal"]');
+  //const $openButtons = $('[data-modal-target="static-modal"]');
+  const $openButtons = $('[data-class="addMoreClasses"][dnd-type="condition"]');
   const $closeButtons = $('[data-modal-hide="static-modal"]');
   const $searchForm = $('#search-form');
   const $searchInput = $('#search-dropdown');
@@ -308,6 +299,7 @@ const $modalContent = $modal.find('.relative.p-4');
   const originalContent = $tradingConditions.html();
 
 function openModal() {
+  $('#conditionListNextBtn').addClass('opacity-40').removeClass('opacity-100').prop('disabled', true);;
   $backdrop.removeClass('opacity-0 pointer-events-none');
   $modal.removeClass('opacity-0 pointer-events-none');
   $('body').css('overflow', 'hidden');
@@ -407,6 +399,14 @@ function closeModal() {
   // Initial update of all favorite UI elements
   updateAllFavoriteUI();
   updateFavoritesCategory();
+
+
+  $('.condition-item').click(function() {
+        $('#conditionListNextBtn').removeClass('opacity-40').addClass('opacity-100').prop('disabled', false);;
+        $('.condition-item').removeClass('active');
+        $(this).addClass('active');
+    });
+
 });
 </script>
 `;

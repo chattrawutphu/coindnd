@@ -160,7 +160,7 @@ $(document).ready(async () => {
         function updateUI() {
             setTimeout(function () {
                 $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
-                $('#loadingSection').remove();
+                
 
 
                 //เพิ่มระยะให้ message-panel variable-panel
@@ -176,7 +176,7 @@ $(document).ready(async () => {
                 updateUIheight();
                 RemoveBorderLastcommonFlexClasses();
                 applyGroupBackgroundColorToNonGroup();
-                
+                $('#loadingSection').remove();
             }, 50);
         }
 

@@ -1,3 +1,53 @@
+let conditionTemplate = [
+    {
+        "id": "cdn-0001",
+        "type": "price",
+        "subtype": "priceCondition",
+        "title": "Price Condition",
+        "message": "{params[0]} {params[1]} {params[2]}{params[3]}",
+        "description": "Trigger when price meets the specified condition",
+        "active": true,
+        "params": [
+            { "value": "btcusdt", "text": "BTC/USDT", "color": "yellow", "type": "symbol"},
+            { "value": "gt", "text": "Greater than", "color": "lawngreen", "type": "operator"},
+            { "value": "50000", "text": "50,000", "color": "white", "type": "price"},
+            { "value": "$", "text": "$", "color": "white", "type": "unit"}
+        ]
+    },
+    {
+        "id": "cdn-0002",
+        "type": "price",
+        "subtype": "priceConditionBetween",
+        "title": "Price Condition Between",
+        "message": "{params[0]} price is between {params[1]}$ and {params[2]}$",
+        "description": "Trigger when price is within a specified range",
+        "active": true,
+        "params": [
+            { "value": "", "text": "", "color": "yellow", "type": "symbol"},
+            { "value": "", "text": "", "color": "white", "type": "price"},
+            { "value": "", "text": "", "color": "white", "type": "price"}
+        ]
+    },
+    {
+        "id": "cdn-0003",
+        "type": "price",
+        "subtype": "priceConditionWithCandlestick",
+        "title": "Price Condition With Candlestick",
+        "message": "{params[0]} {params[1]} {params[2]}{params[3]} of the {params[4]} timeframe within the last {params[5]} candlesticks",
+        "description": "Trigger when price condition is met based on candlestick data",
+        "active": true,
+        "params": [
+            { "value": "btcusdt", "text": "BTC/USDT", "color": "yellow", "type": "symbol", "unit": "" },
+            { "value": "gt", "text": "Greater than", "color": "lawngreen", "type": "operator", "unit": "" },
+            { "value": "high", "text": "Highest price", "color": "aqua", "type": "candlePrice", "unit": "" },
+            { "value": "", "text": "", "color": "white", "type": "addition", "unit": "" },
+            { "value": "4h", "text": "4 hours", "color": "aqua", "type": "timeframe", "unit": "" },
+            { "value": "20", "text": "20", "color": "white", "type": "candle", "unit": "" }
+        ]
+    }
+];
+
+
 let defaultItems = [
     {
         "id": "var-001",
@@ -8,7 +58,7 @@ let defaultItems = [
         "initialValue": 3,
         "value": 3,
         "message": "Risk level from 1 (low) to 5 (high)",
-        "active": true,
+        "active": false,
     },
     {
         "id": "var-002",

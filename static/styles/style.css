@@ -1,167 +1,4 @@
 :root {
-    /* Zinc Colors */
-    --zinc-25: #fcfcfd;
-    --zinc-50: #fafafa;
-    --zinc-75: #f7f7f8;
-    --zinc-100: #f4f4f5;
-    --zinc-125: #efeff1;
-    --zinc-150: #eaeaec;
-    --zinc-175: #e5e5e7;
-    --zinc-200: #e4e4e7;
-    --zinc-225: #dfdfdc;
-    --zinc-250: #d9d9dc;
-    --zinc-275: #d4d4d8;
-    --zinc-300: #d4d4d8;
-    --zinc-325: #c4c4ca;
-    --zinc-350: #b5b5bc;
-    --zinc-375: #a5a5ae;
-    --zinc-400: #a1a1aa;
-    --zinc-425: #929299;
-    --zinc-450: #838389;
-    --zinc-475: #747479;
-    --zinc-500: #71717a;
-    --zinc-525: #666670;
-    --zinc-550: #5c5c65;
-    --zinc-575: #51515b;
-    --zinc-600: #52525b;
-    --zinc-625: #4a4a53;
-    --zinc-650: #42424a;
-    --zinc-675: #3b3b42;
-    --zinc-700: #3f3f46;
-    --zinc-725: #38383f;
-    --zinc-750: #323237;
-    --zinc-775: #2b2b30;
-    --zinc-800: #27272a;
-    --zinc-825: #232326;
-    --zinc-850: #1f1f22;
-    --zinc-875: #1b1b1e;
-    --zinc-900: #18181b;
-    --zinc-925: #141416;
-    --zinc-950: #09090b;
-    --zinc-975: #050506;
-  
-    /* Gray Colors */
-    --gray-25: #fcfcfd;
-    --gray-50: #f9fafb;
-    --gray-75: #f6f7f9;
-    --gray-100: #f3f4f6;
-    --gray-125: #ebedf0;
-    --gray-150: #e8eaee;
-    --gray-175: #e5e7eb;
-    --gray-200: #e5e7eb;
-    --gray-225: #d8dbe0;
-    --gray-250: #ccd0d5;
-    --gray-275: #c1c5cc;
-    --gray-300: #d1d5db;
-    --gray-325: #bdc1c7;
-    --gray-350: #aeb2b9;
-    --gray-375: #a5a9b0;
-    --gray-400: #9ca3af;
-    --gray-425: #8e949f;
-    --gray-450: #808690;
-    --gray-475: #727881;
-    --gray-500: #6b7280;
-    --gray-525: #616872;
-    --gray-550: #575d66;
-    --gray-575: #4d535a;
-    --gray-600: #4b5563;
-    --gray-625: #434a56;
-    --gray-650: #3b414b;
-    --gray-675: #343941;
-    --gray-700: #374151;
-    --gray-725: #313946;
-    --gray-750: #2b313c;
-    --gray-775: #252a33;
-    --gray-800: #1f2937;
-    --gray-825: #1b232f;
-    --gray-850: #171e28;
-    --gray-875: #131821;
-    --gray-900: #111827;
-    --gray-925: #0d131d;
-    --gray-950: #030712;
-    --gray-975: #020509;
-
-    /* New blue-gray-purple Colors */
-  --purple-gray-25: #fdfcfe;
-  --purple-gray-50: #faf9fb;
-  --purple-gray-75: #f7f6f8;
-  --purple-gray-100: #f4f2f6;
-  --purple-gray-125: #efedf2;
-  --purple-gray-150: #eae8ee;
-  --purple-gray-175: #e5e3ea;
-  --purple-gray-200: #e2dfe7;
-  --purple-gray-225: #d9d6e0;
-  --purple-gray-250: #d0ccd8;
-  --purple-gray-275: #c7c3d1;
-  --purple-gray-300: #c4bfce;
-  --purple-gray-325: #b7b2c2;
-  --purple-gray-350: #aaa4b7;
-  --purple-gray-375: #9d97ab;
-  --purple-gray-400: #968ea5;
-  --purple-gray-425: #8a8299;
-  --purple-gray-450: #7d758d;
-  --purple-gray-475: #716982;
-  --purple-gray-500: #6b637c;
-  --purple-gray-525: #615971;
-  --purple-gray-550: #574f67;
-  --purple-gray-575: #4d465d;
-  --purple-gray-600: #4a4359;
-  --purple-gray-625: #423c50;
-  --purple-gray-650: #3a3447;
-  --purple-gray-675: #332d3f;
-  --purple-gray-700: #2d2838;
-  --purple-gray-725: #272232;
-  --purple-gray-750: #211c2c;
-  --purple-gray-775: #1b1726;
-  --purple-gray-800: #161220;
-  --purple-gray-825: #120e1a;
-  --purple-gray-850: #0d0a15;
-  --purple-gray-875: #09070f;
-  --purple-gray-900: #05030a;
-  --purple-gray-925: #030206;
-  --purple-gray-950: #010103;
-  --purple-gray-975: #000000;
-
-    /* New Blue-Gray-Purple Colors */
-    --blue-gray-purple-25: #fcfcfe;
-    --blue-gray-purple-50: #f9fafd;
-    --blue-gray-purple-75: #f5f6fa;
-    --blue-gray-purple-100: #f1f3f8;
-    --blue-gray-purple-125: #eceef4;
-    --blue-gray-purple-150: #e7e9f1;
-    --blue-gray-purple-175: #e2e5ed;
-    --blue-gray-purple-200: #dee1ea;
-    --blue-gray-purple-225: #d5d8e3;
-    --blue-gray-purple-250: #ccd0dd;
-    --blue-gray-purple-275: #c3c7d6;
-    --blue-gray-purple-300: #bbc0d0;
-    --blue-gray-purple-325: #adb3c6;
-    --blue-gray-purple-350: #a0a6bc;
-    --blue-gray-purple-375: #9399b2;
-    --blue-gray-purple-400: #8b91ac;
-    --blue-gray-purple-425: #8288a3;
-    --blue-gray-purple-450: #7a809a;
-    --blue-gray-purple-475: #717791;
-    --blue-gray-purple-500: #696f89;
-    --blue-gray-purple-525: #61677f;
-    --blue-gray-purple-550: #595f76;
-    --blue-gray-purple-575: #51576d;
-    --blue-gray-purple-600: #4a5065;
-    --blue-gray-purple-625: #43485c;
-    --blue-gray-purple-650: #3c4154;
-    --blue-gray-purple-675: #353a4c;
-    --blue-gray-purple-700: #2f3344;
-    --blue-gray-purple-725: #292d3c;
-    --blue-gray-purple-750: #232635;
-    --blue-gray-purple-775: #1d202d;
-    --blue-gray-purple-800: #171a26;
-    --blue-gray-purple-825: #12141e;
-    --blue-gray-purple-850: #0c0e17;
-    --blue-gray-purple-875: #07080f;
-    --blue-gray-purple-900: #030408;
-    --blue-gray-purple-925: #020204;
-    --blue-gray-purple-950: #010102;
-    --blue-gray-purple-975: #000000;
 
         /* New primary Colors */
         --primary-25: #fcfcfe;
@@ -215,6 +52,36 @@
 /* html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
     border-color: rgb(75 85 99)
 } */
+
+/*START: DISABLED COMMAND*/
+html.dark div[data-class="panelWrapperClasses"].line-through div[data-class="commonFlexClasses"] span,html.dark div[data-class="commonFlexClasses"].line-through span {
+  background-color: #60364b;
+}
+
+html.dark div[data-class="panelWrapperClasses"].line-through div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"] {
+  background-color: #754c63;
+}
+
+html.dark div[data-class="panelWrapperClasses"].line-through div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"] {
+  background-color: #653b51;
+}
+
+html.dark div[data-class="panelWrapperClasses"].line-through div[data-class="leftPanelClasses"] {
+  background-color: #653b51;
+}
+
+html.dark div[data-class="panelWrapperClasses"].line-through div[data-class="rightPanelClasses"] {
+  background-color: #572c3f;
+}
+
+html.dark div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"].line-through {
+  background-color: #754c63;
+}
+
+html.dark div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].line-through {
+  background-color: #653b51;
+}
+/*END: DISABLED*/
 
 html.dark div[data-class="panelWrapperClasses"].select-active div[data-class="commonFlexClasses"] span,html.dark div[data-class="commonFlexClasses"].select-active span {
     background-color: #2d3664;
@@ -271,6 +138,7 @@ html div[data-class="leftPanelClasses"] > div[data-class="commonFlexClasses"].se
 html div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].select-active {
     background-color: #dfffeb;
 }
+
 
   
   html body {
@@ -368,4 +236,8 @@ html div[data-class="rightPanelClasses"] > div[data-class="commonFlexClasses"].s
 .alert-item {
   margin-top: 10px;
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.condition-item.active {
+  background-color: rgba(60, 65, 84, 0.6);
 }

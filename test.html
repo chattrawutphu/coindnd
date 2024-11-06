@@ -1,48 +1,143 @@
-const marginClass = $targetParent.find('.ml-section').first();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETH/USDT Futures Candlestick Chart with RSI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/technicalindicators/3.1.0/technicalindicators.min.js"></script>
+</head>
+<body>
+    <canvas id="chart"></canvas>
 
-                        // Extract the margin-left value
-                        const targetMlValue = (marginClass.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] ||
-                            ($targetParent.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1];
+    <script>
+        const symbol = 'ETHUSDT';
+        const interval = '4h';
+        const limit = 500;
+        let chart;
+        let data = [];
 
-                        // ปรับ ml-[ตัวเลขpx] class ของ selectedElements
-                        $selectedElements.each(function () {
-                            const $elementMargin = $(this).find('.ml-section').first();
-                            if ($elementMargin.length && targetMlValue) {
-                                // หาค่า margin เดิม
-                                const oldMargin = parseInt(($elementMargin.attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] || '0');
-                                
-                                // ลบ ml-[ตัวเลขpx] class เดิม
-                                $elementMargin.removeClass(function (index, className) {
-                                    return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
-                                });
-                                
-                                // คำนวณค่า margin ใหม่
-                                const newMargin = parseInt(targetMlValue) + (dndLine.hasClass("isDropAsChild") ? indent : 0);
-                                
-                                // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                $elementMargin.addClass(`ml-[${newMargin}px]`);
-                                
-                                // คำนวณความแตกต่างระหว่าง margin เก่าและใหม่
-                                marginDifference = newMargin - oldMargin;
-                        
-                                // ดำเนินการกับ child elements
-                                const $elementMarginChildren = $(this).find('.ml-section').not(':first');
-                                
-                                $elementMarginChildren.each(function () {
-                                    const oldChildMargin = parseInt(($(this).attr('class').match(/\bml-\[(\d+)px\]/) || [])[1] || '0');
-                                    
-                                    $(this).removeClass(function (index, className) {
-                                        return (className.match(/\bml-\[\d+px\]/) || []).join(' ');
-                                    });
-                        
-                                    // คำนวณ margin ใหม่สำหรับ child โดยเพิ่ม indent
-                                    const newMarginChild = newMargin + indent;
-                                    
-                                    // เพิ่ม ml-[ตัวเลขpx] class ใหม่
-                                    $(this).addClass(`ml-[${newMarginChild}px]`);
-                        
-                                    // อัพเดท marginDifference สำหรับ child ถ้าต้องการ
-                                    // marginDifference = Math.max(marginDifference, newMarginChild - oldChildMargin);
-                                });
+        async function fetchData() {
+            const response = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+            const rawData = await response.json();
+            data = rawData.map(d => ({
+                time: d[0],
+                open: parseFloat(d[1]),
+                high: parseFloat(d[2]),
+                low: parseFloat(d[3]),
+                close: parseFloat(d[4])
+            }));
+            updateChart();
+        }
+
+        function calculateRSI(data, length = 7) {
+            const closes = data.map(d => d.close);
+            const rsi = technicalindicators.RSI.calculate({
+                values: closes,
+                period: length
+            });
+            return Array(length - 1).fill(null).concat(rsi);
+        }
+
+        function updateChart() {
+            const rsiValues = calculateRSI(data);
+            const rsiOverBought = 68;
+            const rsiOverSold = 32;
+
+            const buySignals = [];
+            const sellSignals = [];
+
+            for (let i = 1; i < rsiValues.length; i++) {
+                if (rsiValues[i - 1] < rsiOverSold && rsiValues[i] >= rsiOverSold) {
+                    buySignals.push({ x: data[i].time, y: data[i].low });
+                } else if (rsiValues[i - 1] > rsiOverBought && rsiValues[i] <= rsiOverBought) {
+                    sellSignals.push({ x: data[i].time, y: data[i].high });
+                }
+            }
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (chart) {
+                chart.destroy();
+            }
+            chart = new Chart(ctx, {
+                type: 'candlestick',
+                data: {
+                    datasets: [{
+                        label: 'ETH/USDT',
+                        data: data.map(d => ({
+                            x: d.time,
+                            o: d.open,
+                            h: d.high,
+                            l: d.low,
+                            c: d.close
+                        }))
+                    }, {
+                        label: 'RSI',
+                        data: rsiValues.map((v, i) => ({ x: data[i].time, y: v })),
+                        yAxisID: 'rsi',
+                        type: 'line',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }, {
+                        label: 'Buy Signals',
+                        data: buySignals,
+                        type: 'scatter',
+                        pointStyle: 'triangle',
+                        pointRadius: 10,
+                        pointHoverRadius: 15,
+                        backgroundColor: 'green',
+                        yAxisID: 'price'
+                    }, {
+                        label: 'Sell Signals',
+                        data: sellSignals,
+                        type: 'scatter',
+                        pointStyle: 'triangle',
+                        pointRadius: 10,
+                        pointHoverRadius: 15,
+                        backgroundColor: 'red',
+                        yAxisID: 'price'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
                             }
-                        });
+                        },
+                        price: {
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Price'
+                            }
+                        },
+                        rsi: {
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'RSI'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+
+        fetchData();
+        setInterval(fetchData, 1000);
+    </script>
+</body>
+</html>
