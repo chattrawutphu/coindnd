@@ -1,143 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETH/USDT Futures Candlestick Chart with RSI</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/technicalindicators/3.1.0/technicalindicators.min.js"></script>
-</head>
-<body>
-    <canvas id="chart"></canvas>
-
-    <script>
-        const symbol = 'ETHUSDT';
-        const interval = '4h';
-        const limit = 500;
-        let chart;
-        let data = [];
-
-        async function fetchData() {
-            const response = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
-            const rawData = await response.json();
-            data = rawData.map(d => ({
-                time: d[0],
-                open: parseFloat(d[1]),
-                high: parseFloat(d[2]),
-                low: parseFloat(d[3]),
-                close: parseFloat(d[4])
-            }));
-            updateChart();
-        }
-
-        function calculateRSI(data, length = 7) {
-            const closes = data.map(d => d.close);
-            const rsi = technicalindicators.RSI.calculate({
-                values: closes,
-                period: length
-            });
-            return Array(length - 1).fill(null).concat(rsi);
-        }
-
-        function updateChart() {
-            const rsiValues = calculateRSI(data);
-            const rsiOverBought = 68;
-            const rsiOverSold = 32;
-
-            const buySignals = [];
-            const sellSignals = [];
-
-            for (let i = 1; i < rsiValues.length; i++) {
-                if (rsiValues[i - 1] < rsiOverSold && rsiValues[i] >= rsiOverSold) {
-                    buySignals.push({ x: data[i].time, y: data[i].low });
-                } else if (rsiValues[i - 1] > rsiOverBought && rsiValues[i] <= rsiOverBought) {
-                    sellSignals.push({ x: data[i].time, y: data[i].high });
-                }
-            }
-
-            const ctx = document.getElementById('chart').getContext('2d');
-            if (chart) {
-                chart.destroy();
-            }
-            chart = new Chart(ctx, {
-                type: 'candlestick',
-                data: {
-                    datasets: [{
-                        label: 'ETH/USDT',
-                        data: data.map(d => ({
-                            x: d.time,
-                            o: d.open,
-                            h: d.high,
-                            l: d.low,
-                            c: d.close
-                        }))
-                    }, {
-                        label: 'RSI',
-                        data: rsiValues.map((v, i) => ({ x: data[i].time, y: v })),
-                        yAxisID: 'rsi',
-                        type: 'line',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        fill: false
-                    }, {
-                        label: 'Buy Signals',
-                        data: buySignals,
-                        type: 'scatter',
-                        pointStyle: 'triangle',
-                        pointRadius: 10,
-                        pointHoverRadius: 15,
-                        backgroundColor: 'green',
-                        yAxisID: 'price'
-                    }, {
-                        label: 'Sell Signals',
-                        data: sellSignals,
-                        type: 'scatter',
-                        pointStyle: 'triangle',
-                        pointRadius: 10,
-                        pointHoverRadius: 15,
-                        backgroundColor: 'red',
-                        yAxisID: 'price'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day'
-                            }
-                        },
-                        price: {
-                            position: 'left',
-                            title: {
-                                display: true,
-                                text: 'Price'
-                            }
-                        },
-                        rsi: {
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'RSI'
-                            },
-                            min: 0,
-                            max: 100
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    }
-                }
-            });
-        }
-
-        fetchData();
-        setInterval(fetchData, 1000);
-    </script>
-</body>
-</html>
+<div id="divshContent" class="row">
+    <div class="FM col-6 col-sm-4" control="" id="fundmang-">
+        <div class="show">
+            <div class="FM-img img-Higher">
+                <img alt="fund manager" src="">
+            </div>
+            <div class="FM-img img-IE8">
+                <a href="">
+                    <img alt="fund manager" src="">
+                  
+                </a>
+            </div>
+            <div class="FM-name txt-Higher">นางสุภาพร ลีนะบรรจง</div>
+            <div class="FM-edu txt-Higher">กรรมการผู้จัดการ</div>
+            <div class="FM-name txt-IE8">
+                <a href="">นางสุภาพร ลีนะบรรจง</a>
+            </div>
+            <div class="FM-edu txt-IE8">
+                <a href="">กรรมการผู้จัดการ</a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="FM col-6 col-sm-4" control="" id="fundmang-">
+        <div class="show">
+            <div class="FM-img img-Higher">
+                <img alt="fund manager" src="">
+            </div>
+            <div class="FM-img img-IE8">
+                <a href="">
+                    <img alt="fund manager" src="">
+                  
+                </a>
+            </div>
+            <div class="FM-name txt-Higher">นายเอนกพร โพธิทัต</div>
+            <div class="FM-edu txt-Higher">ประธานเจ้าหน้าที่กลุ่มบริหารตัวแทนขาย และรักษาการประธานเจ้าหน้าที่กลุ่มลูกค้าสถาบันและลูกค้าบุคคล</div>
+            <div class="FM-name txt-IE8">
+                <a href="">นายเอนกพร โพธิทัต</a>
+            </div>
+            <div class="FM-edu txt-IE8">
+                <a href="">ประธานเจ้าหน้าที่กลุ่มบริหารตัวแทนขาย และรักษาการประธานเจ้าหน้าที่กลุ่มลูกค้าสถาบันและลูกค้าบุคคล</a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="FM col-6 col-sm-4" control="" id="fundmang-">
+        <div class="show">
+            <div class="FM-img img-Higher">
+                <img alt="fund manager" src="">
+            </div>
+            <div class="FM-img img-IE8">
+                <a href="">
+                    <img alt="fund manager" src="">
+                  
+                </a>
+            </div>
+            <div class="FM-name txt-Higher">นายประเสริฐ อิ่มพรรุจี</div>
+            <div class="FM-edu txt-Higher">ประธานเจ้าหน้าที่กลุ่มเทคโนโลยีและสารสนเทศ</div>
+            <div class="FM-name txt-IE8">
+                <a href="">นายประเสริฐ อิ่มพรรุจี</a>
+            </div>
+            <div class="FM-edu txt-IE8">
+                <a href="">ประธานเจ้าหน้าที่กลุ่มเทคโนโลยีและสารสนเทศ</a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="FM col-6 col-sm-4" control="" id="fundmang-">
+        <div class="show">
+            <div class="FM-img img-Higher">
+                <img alt="fund manager" src="">
+            </div>
+            <div class="FM-img img-IE8">
+                <a href="">
+                    <img alt="fund manager" src="">
+                  
+                </a>
+            </div>
+            <div class="FM-name txt-Higher">นายศิระ คล่องวิชา</div>
+            <div class="FM-edu txt-Higher">ประธานเจ้าหน้าที่กลุ่มการลงทุน</div>
+            <div class="FM-name txt-IE8">
+                <a href="">นายศิระ คล่องวิชา</a>
+            </div>
+            <div class="FM-edu txt-IE8">
+                <a href="">ประธานเจ้าหน้าที่กลุ่มการลงทุน</a>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="FM col-6 col-sm-4" control="" id="fundmang-">
+        <div class="show">
+            <div class="FM-img img-Higher">
+                <img alt="fund manager" src="">
+            </div>
+            <div class="FM-img img-IE8">
+                <a href="">
+                    <img alt="fund manager" src="">
+                  
+                </a>
+            </div>
+            <div class="FM-name txt-Higher">นางสาวเนาวพร ธนพฤทธิ์ภิญโญ</div>
+            <div class="FM-edu txt-Higher">ประธานเจ้าหน้าที่กลุ่มปฏิบัติการ และรักษาการผู้บริหารฝ่ายปฏิบัติการกองทุน</div>
+            <div class="FM-name txt-IE8">
+                <a href="">นางสาวเนาวพร ธนพฤทธิ์ภิญโญ</a>
+            </div>
+            <div class="FM-edu txt-IE8">
+                <a href="">ประธานเจ้าหน้าที่กลุ่มปฏิบัติการ และรักษาการผู้บริหารฝ่ายปฏิบัติการกองทุน</a>
+            </div>
+        </div>
+    </div>
+    
+    </div>

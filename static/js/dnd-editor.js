@@ -1,60 +1,16 @@
-
-/*function updateParamValueById(targetId, paramIndex, paramKey, newValue) {
-    for (let condition of test_data.conditions) {
-        if (condition.id === targetId) {
-            if (condition.params[paramIndex]) {
-                if (paramKey in condition.params[paramIndex]) {
-                    condition.params[paramIndex][paramKey] = newValue;
-                    console.log('Updated test_data:', test_data);
-                } else {
-                    console.error('Invalid paramKey:', paramKey);
-                }
-            } else {
-                console.error('Param index out of range:', paramIndex);
-            }
-            break;
-        }
-    }
-    loadComponentScripts();
-}
-
-$('#update-button').on('click', function () {
-    updateParamValueById('WwBwoxYfR0OEbmAPtWkE2g', 0, 'value', 'SKOPUSDT');
-});
-
-function updateAttributeValueById(targetId, attributeName, newValue) {
-    for (let condition of test_data.conditions) {
-        if (condition.id === targetId) {
-            if (attributeName in condition) {
-                condition[attributeName] = newValue;
-                console.log('Updated test_data:', test_data);
-            } else {
-                console.error('Invalid attribute name:', attributeName);
-            }
-            break;
-        }
-    }
-    loadComponentScripts();
-}
-
-$('#update-button2').on('click', function () {
-    updateAttributeValueById('eRwWPP-o80yVeskQDGjdHg', 'title', 'or');
-});*/
-
-//พิจารณาเปลี่ยนเป็นการ แก้ไข หรือ render เฉพาะที่เกี่ยวข้อง
-import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, applyGroupBackgroundColorToNonGroup
-    ,updateUIheight ,appendEventButton
- } from '/static/js/global-script.js';
+import { RemoveBorderLastcommonFlexClasses, getContrastColor, rgb2hex, applyGroupBackgroundColorToNonGroup,
+    updateUIheight, appendEventButton
+} from '/static/js/global-script.js';
 import { defaultItems } from '/static/js/data.js';
 
 const addMoreContainerTemplate = `
-        <div data-class="addMoreClasses">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
-                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-            </svg>
-            <p>Add Event</p>
-        </div>
-    `;
+    <div data-class="addMoreClasses">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+        </svg>
+        <p>Add Event</p>
+    </div>
+`;
 
 async function renderDndEditorScripts(items) {
     try {
@@ -82,19 +38,62 @@ async function renderComponent($el) {
         const content = renderContent();
         $el.html(content);
 
+        // Process nested components sequentially
         const $nestedComponents = $el.find('[data-js-component]');
-        await Promise.all($nestedComponents.map(function () {
-            return renderComponent($(this));
-        }));
+        for (let i = 0; i < $nestedComponents.length; i++) {
+            await renderComponent($($nestedComponents[i]));
+        }
     } catch (error) {
         console.error(`Error loading component "${componentName}":`, error);
     }
 }
 
+async function renderAllComponents($components) {
+    for (let i = 0; i < $components.length; i++) {
+        await renderComponent($($components[i]));
+    }
+}
+
+async function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+    });
+}
+
+function updateUI() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
+            
+            // Add spacing for message-panel and variable-panel
+            $('.single-panel').each(function (index) {
+                if ($(this).prevAll('.single-panel').length === 0) {
+                    $(this).find(`[data-class="panelContainerClasses"]`).css('padding-top', '8px');
+                }
+                if ($(this).nextAll('.single-panel').length === 0) {
+                    $(this).find(`[data-class="panelContainerClasses"]`).css('padding-bottom', '8px');
+                }
+            });
+
+            appendEventButton();
+            updateUIheight();
+            RemoveBorderLastcommonFlexClasses();
+            applyGroupBackgroundColorToNonGroup();
+            $('#loadingSection').remove();
+            resolve();
+        }, 50);
+    });
+}
+
 $(document).ready(async () => {
     try {
-        // 1. เรียกใช้ renderDndEditorScripts
-        let items = defaultItems
+        // 1. Initialize items
+        let items = defaultItems;
         const storedItems = localStorage.getItem('items');
         if (storedItems) {
             items = JSON.parse(storedItems);
@@ -102,22 +101,20 @@ $(document).ready(async () => {
             localStorage.setItem('items', JSON.stringify(items));
         }
 
+        // 2. Render DndEditor
         await renderDndEditorScripts(items);
 
-        // 2. เรนเดอร์คอมโพเนนต์ที่มี data-js-component (ยกเว้น DndComponent)
+        // 3. Render other components sequentially
         const $components = $('[data-js-component]').not('[data-js-component="DndComponent"]');
-        await Promise.all($components.map(function () {
-            return renderComponent($(this));
-        }));
+        await renderAllComponents($components);
 
-        // 3. โหลด applyClasses จากไฟล์ class-render.js
+        // 4. Apply classes
         const { default: applyClasses } = await import('/static/js/render/class-render.js');
         await applyClasses();
 
-        // 4. อัพเดตการแสดงผลสำหรับ numberPanelClasses
+        // 5. Update number panels and group sections
         $('[data-class="numberPanelClasses"]').each(function (index) {
             $(this).html(`<span>${index + 1}</span>`);
-
             const bgColor = $(this).css('background-color');
             const hexColor = rgb2hex(bgColor);
             const textColor = getContrastColor(hexColor);
@@ -131,56 +128,14 @@ $(document).ready(async () => {
             $(this).css('color', textColor);
         });
 
-        $(document).on('click', '#updateUI', function () {
-            updateUIheight()
+        // 6. Set up event handlers
+        $(document).on('click', '#updateUI', updateUIheight);
+        
+        $(window).on('resize', () => {
+            setTimeout(updateUIheight, 50);
         });
 
-        // 6. อัพเดต UI height
-        $(window).on('resize', function () {
-            setTimeout(function () {
-                updateUIheight();
-            }, 50);
-        });
-
-
-        // 7. เพิ่มสคริปต์จากไฟล์ input-property.js และ dnd-minimap.js และตรวจสอบการโหลดสคริปต์
-        // ฟังก์ชันสำหรับสร้างและเพิ่ม script element
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.type = 'module';
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.body.appendChild(script);
-            });
-        }
-
-        // ฟังก์ชันสำหรับอัพเดท UI
-        function updateUI() {
-            setTimeout(function () {
-                $('[data-class="containerClasses"]').removeClass('hidden').hide().fadeIn(500);
-                
-
-
-                //เพิ่มระยะให้ message-panel variable-panel
-                $('.single-panel').each(function (index) {
-                    if ($(this).prevAll('.single-panel').length === 0) {
-                        $(this).find(`[data-class="panelContainerClasses"]`).css('padding-top', '8px');
-                    }
-                    if ($(this).nextAll('.single-panel').length === 0) {
-                        $(this).find(`[data-class="panelContainerClasses"]`).css('padding-bottom', '8px');
-                    }
-                });
-                appendEventButton();
-                updateUIheight();
-                RemoveBorderLastcommonFlexClasses();
-                applyGroupBackgroundColorToNonGroup();
-                $('#loadingSection').remove();
-            }, 50);
-        }
-
-        //ป้องกัน id ซ้ำ
+        // 7. Prevent duplicate IDs
         $('[data-class="commonFlexClasses"]').each(function () {
             const dndId = $(this).attr('dnd-id');
             const $duplicates = $(`[data-class="commonFlexClasses"][dnd-id="${dndId}"]`);
@@ -188,18 +143,18 @@ $(document).ready(async () => {
                 $(this).attr('dnd-id', crypto.randomUUID());
             });
         });
-        // โหลดสคริปต์ทั้งหมดพร้อมกัน
-        Promise.all([
+
+        // 8. Load additional scripts and update UI
+        await Promise.all([
+            loadScript('/static/js/dnd-command.js'),
+            loadScript('/static/js/dnd-command-menu.js'),
             loadScript('/static/js/input-property.js'),
             loadScript('/static/js/dnd-minimap.js')
-        ])
-            .then(updateUI)
-            .catch(error => console.error('Script loading error:', error));
+        ]);
+        
+        await updateUI();
+
     } catch (error) {
         console.error('Error during initialization:', error);
     }
-
-    /*$(document).on('contextmenu', function(e) {
-        e.preventDefault();
-    });*/
 });
